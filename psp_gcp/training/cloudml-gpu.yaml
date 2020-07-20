@@ -1,0 +1,18 @@
+trainingInput:
+  #scaleTier: BASIC_GPU
+    scaleTier: CUSTOM
+    # standard_gpu provides 1 GPU. Change to complex_model_m_gpu for 4 GPUs
+    #masterType: standard_gpu
+    #masterType: complex_model_l_gpu
+    masterType: complex_model_m_p100
+    #masterType: complex_model_l_v100
+    runtimeVersion: "1.0"
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-highcpu-16
+#   workerType: cloud_tpu
+#   workerCount: 1
+#   workerConfig:
+#     acceleratorConfig:
+#       type: TPU_V2
+#       count: 8
