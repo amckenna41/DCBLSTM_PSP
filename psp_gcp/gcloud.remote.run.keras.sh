@@ -2,7 +2,7 @@
 
 gcloud ai-platform jobs submit training JOB1
 --package-path=training
---module-name=training.cnn_with_keras
+--module-name=training.psp_lstm_gcp
 #--staging-bucket="${TRAIN_BUCKET}"   \
 --job-dir=gs://keras-python-models
 --region=us-central1
