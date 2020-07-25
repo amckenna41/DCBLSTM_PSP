@@ -5,25 +5,27 @@ import numpy as np
 import gzip
 import h5py
 import os
-from get_dataset import *
+import get_dataset
 
 #File paths for train and test datasets
-TRAIN_PATH = '/cullpdb+profile_6133_filtered.npy'
-TEST_PATH = '/cb513+profile_split1.npy'
-CASP10_PATH = '/casp10.h5'
-CASP11_PATH = '/casp11.h5'
+TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy'
+TEST_PATH = 'cb513+profile_split1.npy'
+CASP10_PATH = 'casp10.h5'
+CASP11_PATH = 'casp11.h5'
 
 
-
+#load filtered cullpdb training data
 def load_cul6133_filted():
 
-    print("Loading training dataset (Cullpdb_filtered)...")
+    print("Loading training dataset (Cullpdb_filtered)...\n")
+
+    #download dataset if not already in current directory
     if not (os.path.isfile(TRAIN_PATH)):
         #if training data not present then download to current working dir
-        get_dataset.download_export_dataset()
+        get_dataset.get_cullpdb_filtered()
 
     #load dataset
-    data = np.load('cullpdb+profile_6133_filtered.npy')
+    data = np.load(TRAIN_PATH)
 
     data = np.reshape(data, (-1, 700, 57))
     #sequence feature
@@ -65,23 +67,25 @@ def load_cul6133_filted():
 
     return train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel
 
-
+#loading CB513 test dataset
 def load_cb513():
 
-    print("Loading test dataset (CB513)...")
-    if not (os.path.isfile(TRAIN_PATH)):
-        get_dataset.download_export_dataset()
+    print("Loading test dataset (CB513)...\n")
 
-    CB513= np.load('cb513+profile_split1_2.npy')
+    #download dataset if not already in current directory
+    if not (os.path.isfile(TEST_PATH)):
+        get_dataset.get_cb513()
+
+    #load test dataset
+    CB513= np.load(TEST_PATH)
     CB513= np.reshape(CB513,(-1,700,57))
 
-    datahot=CB513[:, :, 0:21]#sequence feature
-    datapssm=CB513[:, :, 35:56]#profile feature
-
-    labels = CB513[:, :, 22:30] # secondary struture label
-    testhot = datahot
-    testlabel = labels
-    testpssm = datapssm
+    #sequence feature
+    testhot=CB513[:, :, 0:21]
+    #profile feature
+    testpssm=CB513[:, :, 35:56]
+    #secondary struture label
+    testlabel = CB513[:, :, 22:30]
 
     test_hot = np.ones((testhot.shape[0], testhot.shape[1]))
     for i in range(testhot.shape[0]):
@@ -90,14 +94,17 @@ def load_cb513():
                 test_hot[i,j] = np.argmax(testhot[i,j,:])
 
     return test_hot, testpssm, testlabel
-    pass
 
-
+#load CASP10 test dataset
 def load_casp10():
-    def load_casp10_data():
 
+    print("Loading CASP10 dataset...\n")
+
+    #download dataset if not already in current directory
+    if not (os.path.isfile(CASP10_PATH)):
+        get_dataset.get_casp10()
     #load casp10 dataset
-    casp10_data = h5py.File("casp10.h5")
+    casp10_data = h5py.File(CASP10_PATH)
 
     #load protein sequence and profile feature data
     casp10_data_hot = casp10_data['features'][:, :, 0:21]
@@ -112,10 +119,46 @@ def load_casp10():
                if np.sum(casp10_data_hot[x,y,:]) != 0:
                     casp10_data_test_hot[x,y] = np.argmax(casp10_data_hot[x,y,:])
 
+    print('CASP10 dataset loaded...\n')
+
     return casp10_data_test_hot, casp10_data_pssm, test_labels
 
-    pass
-
-
+#load CASP11 test dataset
 def load_casp11():
-    pass
+
+    print("Loading CASP11 dataset...\n")
+
+    #download dataset if not already in current directory
+    if not (os.path.isfile(CASP11_PATH)):
+        get_dataset.get_casp11()
+
+    #load casp11 dataset
+    casp11_data = h5py.File(CASP11_PATH)
+
+    #load protein sequence and profile feature data
+    casp11_data_hot = casp11_data['features'][:,:,0:21]
+    casp11_data_pssm = casp11_data['features'][:,:,21:42]
+    #load protein label data
+    test_labels = casp11_data['labels'][:,:,0:8]
+
+    #create new protein sequence feature, set values to max value if if value!=0 ?
+    casp11_data_test_hot = np.ones((casp11_data_hot.shape[0], casp11_data_hot.shape[1]))
+    for x in range(casp11_data_hot.shape[0]):
+        for y in range(casp11_data_hot.shape[1]):
+            if np.sum(casp11_data_hot[x,y,:]) != 0:
+                casp11_data_test_hot[x,y] = np.argmax(casp11_data_hot[x,y,:])
+
+    print('CASP11 dataset loaded...\n')
+
+    return casp11_data_test_hot, casp11_data_test_hot, test_labels
+
+#download all datasets used in PSP
+def download_all_data():
+
+    load_cul6133_filted()
+    load_cb513()
+    load_casp10()
+    load_casp11()
+
+if __name__ == 'main':
+    download_all_data()

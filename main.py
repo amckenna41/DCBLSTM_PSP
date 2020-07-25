@@ -6,7 +6,7 @@ import numpy as np
 import argparse
 from data.get_dataset import download_export_dataset
 from utils import *
-
+from data.load_dataset import *
 # PSP Arguments
 # **************
 parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
@@ -26,5 +26,7 @@ parser.add_argument('-op', '--optimizer', default = 'adam',
                     help='The optimizer used in compiling and fitting the models')
 parser.add_argument('-e', '--epochs', type=int, default=100,
                     help='The number of epochs to run on the model')
+
+
 
 args = parser.parse_args()
