@@ -1,4 +1,3 @@
-import os
 #os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="practical-6-259701-4d5aef3b333e.json"
 # os.environ["BUCKET_NAME"]="keras-python-models"
 # os.environ["REGION"]="us-central1"
@@ -31,54 +30,98 @@ import random as rn
 import pandas as pd
 from io import BytesIO
 from tensorflow.python.lib.io import file_io
+import os
+import sys
+import importlib
+#import os.path as path
 #
-# resolver = tf.distribute.cluster_resolver.TPUClusterResolver()
-# tf.config.experimental_connect_to_cluster(resolver)
-# tf.tpu.experimental.initialize_tpu_system(resolver)
-# strategy = tf.distribute.experimental.TPUStrategy(resolver)
 #
-# np.random.seed(2018)
-# rn.seed(2018)
+# sys.path.append('../../')
+# from models.psp_lstm_model import *
+# from models.psp_gru_model import *
+# from data.load_dataset import *
+# from data.get_dataset import *
 
-def load_cul6133_filted():
-    '''
-    TRAIN data Cullpdb+profile_6133_filtered
-    Test data  CB513 CASP10 CASP11
-    '''
-    print("Loading train data (Cullpdb_filted)...")
+print('cwd from top of psp_lstm_gcp file ', os.getcwd())
+# sys.path.append('../')
+# sys.path.append('/Users/adammckenna/protein_structure_prediction_DeepLearning/data')
+# sys.path.append('/Users/adammckenna/protein_structure_prediction_DeepLearning/models')
+#
+# from .. models.psp_lstm_model import *
+# from .. models.psp_gru_model import *
+# from .. data.load_dataset import *
+# from .. data.get_dataset import *
+# spec = importlib.util.spec_from_file_location("module.", "/path/to/file.py")
+# foo = importlib.util.module_from_spec(spec)
+# # spec.loader.exec_module(foo)
+# from protein_structure_prediction_DeepLearning.models import psp_lstm_model, psp_gru_model
+# from protein_structure_prediction_DeepLearning.data import get_dataset, load_dataset
+# from google.cloud import storage
+# from protein_structure_prediction_DeepLearning.models import psp_lstm_model
+# from protein_structure_prediction_DeepLearning.data import load_dataset, get_dataset
+# data_dir = path.abspath(path.join(__file__ ,"../../../data"))
+# sys.path.append(data_dir )
+# from load_dataset import *
+#
+# model_dir = path.abspath(path.join(__file__ ,"../../../models"))
+# sys.path.append(model_dir)
+# from psp_lstm_model import *
 
+BUCKET_NAME = "keras-python-models"
+TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy'
+
+#Data and models are packages due to the __init__ - they contain modules, e.g psp_lstm_model.py, get_dataset.py
+# client = storage.Client()
+# bucket = client.get_bucket(BUCKET_NAME)
+
+#load filtered cullpdb training data
+def load_cul6133_filted_2():
+
+    # storage_client = storage.Client.from_service_account_json('psp-keras-training.json')
+    print("Loading training dataset (Cullpdb_filtered)...\n")
+
+    # #download dataset if not already in current directory
+    # if not (os.path.isfile(TRAIN_PATH)):
+    #     #if training data not present then download to current working dir
+    #     get_dataset.get_cullpdb_filtered()
+
+    # cur_path = os.path.dirname(__file__)
+    # new_path = os.path.relpath('../data/TRAIN_PATH', cur_path)
+    #load dataset
+    # data = np.load('gs://keras-python-models/'+TRAIN_PATH)
+    #
+    # bucket = storage_client.bucket(BUCKET_NAME)
+    # g = bucket.get_blob(TRAIN_PATH)
+    # g_download = g.download_as_string()
     f = BytesIO(file_io.read_file_to_string('gs://keras-python-models/cullpdb+profile_6133_filtered.npy', binary_mode=True))
+    # f = BytesIO(file_io.read_file_to_string(g_download, binary_mode=True))
+
     data = np.load(f)
-    #data = np.load('cullpdb+profile_6133_filtered.npy')
+
     data = np.reshape(data, (-1, 700, 57))
-    # print data.shape
-    datahot = data[:, :, 0:21]#sequence feature
-    # print 'sequence feature',dataonehot[1,:3,:]
-    datapssm = data[:, :, 35:56]#profile feature
-    # print 'profile feature',datapssm[1,:3,:]
-    labels = data[:, :, 22:30]    # secondary struture label , 8-d
-    np.random.seed(2018)
+    #sequence feature
+    datahot = data[:, :, 0:21]
+    #profile features
+    datapssm = data[:, :, 35:56]
+    #secondary struture labels
+    labels = data[:, :, 22:30]
+    #np.random.seed(2018)
+
     # shuffle data
     num_seqs, seqlen, feature_dim = np.shape(data)
     num_classes = labels.shape[2]
     seq_index = np.arange(0, num_seqs)#
     np.random.shuffle(seq_index)
 
-    # #train data
-    # trainhot = datahot[seq_index[:5278]] #21
-    # trainlabel = labels[seq_index[:5278]] #8
-    # trainpssm = datapssm[seq_index[:5278]] #21
+    #get training data
+    trainhot = datahot[seq_index[:1320]]
+    trainlabel = labels[seq_index[:1320]]
+    trainpssm = datapssm[seq_index[:1320]]
 
-    trainhot = datahot[seq_index[:1500]] #21
-    trainlabel = labels[seq_index[:1500]] #8
-    trainpssm = datapssm[seq_index[:1500]]
-
-
-    #val data
-    vallabel = labels[seq_index[1500:1575]] #8
-    valpssm = datapssm[seq_index[1500:1575]] # 21
-    valhot = datahot[seq_index[1500:1575]] #21
-
+    #get validation data
+    vallabel = labels[seq_index[1320:1384]] #8
+    valpssm = datapssm[seq_index[1320:1384]] # 21
+    valhot = datahot[seq_index[1320:1384]] #21
 
     train_hot = np.ones((trainhot.shape[0], trainhot.shape[1]))
     for i in range(trainhot.shape[0]):
@@ -95,87 +138,107 @@ def load_cul6133_filted():
 
     return train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel
 
-def build_model():
-    # design the deepaclstm model
-    main_input = Input(shape=(700,), dtype='float32', name='main_input')
-    #main_input = Masking(mask_value=23)(main_input)
-    x = Embedding(output_dim=21, input_dim=21, input_length=700)(main_input)
-    auxiliary_input = Input(shape=(700,21), name='aux_input')  #24
-    #auxiliary_input = Masking(mask_value=0)(auxiliary_input)
-    print (main_input.get_shape())
-    print (auxiliary_input.get_shape())
-    #concat = merge([x, auxiliary_input], mode='concat', concat_axis=-1)
-    concat = Concatenate(axis=-1)([x, auxiliary_input])
+# def main(job_dir, **args):
+# def main(job_dir, args):
+def main():
 
-    conv1_features = Convolution1D(42,1,activation='relu', padding='same')(concat)
-    # print 'conv1_features shape', conv1_features.get_shape()
-    conv1_features = Reshape((700, 42, 1))(conv1_features)
+    print('cwd from psp_lstm_gcp dir ', os.getcwd())
 
-    conv2_features = Convolution2D(42,3,1,activation='relu', padding='same')(conv1_features)
-    # print 'conv2_features.get_shape()', conv2_features.get_shape()
+    job_dir = os.environ["JOB_DIR"]
 
-    conv2_features = Reshape((700,42*42))(conv2_features)
-    conv2_features = Dropout(0.5)(conv2_features)
-    conv2_features = Dense(400, activation='relu')(conv2_features)
-
-    #, activation='tanh', inner_activation='sigmoid',dropout_W=0.5,dropout_U=0.5
-    lstm_f1 = LSTM(300,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(conv2_features)
-    lstm_b1 = LSTM(300, return_sequences=True, activation='tanh',go_backwards=True,recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(conv2_features)
-
-    lstm_f2 = LSTM(300, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_f1)
-    lstm_b2 = LSTM(300, return_sequences=True,activation='tanh', go_backwards=True,recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_b1)
-
-    #concat_features = merge([lstm_f2, lstm_b2, conv2_features], mode='concat', concat_axis=-1)
-    concat_features = Concatenate(axis=-1)([lstm_f2, lstm_b2, conv2_features])
-    concat_features = Dropout(0.4)(concat_features)
-    protein_features = Dense(600,activation='relu')(concat_features)
-    # protein_features = TimeDistributedDense(600,activation='relu')(concat_features)
-    # protein_features = TimeDistributedDense(100,activation='relu', W_regularizer=l2(0.001))(protein_features)
-
-    main_output = Dense(8, activation='softmax', name='main_output')(protein_features)
-
-
-    model = Model(inputs=[main_input, auxiliary_input], outputs=[main_output])
-    adam = Adam(lr=0.003)
-    model.compile(optimizer = adam, loss={'main_output': 'categorical_crossentropy'}, metrics=['accuracy'])
-    model.summary()
-
-    return model
-
-def main(job_dir, **args):
     logs_path = job_dir + 'logs/tensorboard'
 
     with tf.device('/device:GPU:0'):
         #Load data
-        train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted()
+        print(os.getcwd())
+        #train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted_2()
 
         #build model
-        model = build_model()
-
+        #model = build_model()
+        #model = build_model_lstm()
+        model = load_model('model_1')
+        #do google cloud authentication for outside users calling function
+        print(os.getcwd())
+        #
+        # batch_size = str(args.batch_size)
+        # epochs = str(args.epochs)
+        # job_dir = str(args.job_dir)
+        # storage_bucket = str(args.storage_bucket)
+        # print(batch_size, epochs)
+        #subprocess.call("chmod +x gcp_deploy.sh", shell=True)
+        #create storage bucket if doesn't exist
+        # os.environ["BATCH_SIZE"] = batch_size
+        # os.environ["EPOCHS"]= epochs
+        # os.environ["JOB_DIR"] = job_dir
+        # os.environ["STORAGE_BUCKET"] = storage_bucket
+            # call(['bash', 'run.sh', batch_size, epochs])
+            # process = subprocess.run('./gcp_deploy.sh',  check=True, timeout=10, env ={"BATCH_SIZE": batch_size, "EPOCHS":epochs})
+            #chmod +x gcp_deploy.sh
+        #subprocess.call(["../gcp_deploy.sh"],shell =True)
+            # subprocess.Popen("./gcp_deploy.sh", shell =True, env ={"BATCH_SIZE": batch_size, "EPOCHS":epochs})
+        print(os.getcwd())
         #add callbacks for tesnorboard and history
         tensorboard = callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
 
+        print(os.environ.get('BATCH_SIZE'))
+        print(os.environ.get('EPOCHS'))
+        batch_size = os.environ.get('BATCH_SIZE')
+        epochs = os.environ.get('EPOCHS')
+
         #fit model
+        print('Fitting model...')
         model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
-        epochs=10, batch_size=42, verbose=2, callbacks=[tensorboard],shuffle=True)
+        epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard],shuffle=True)
 
         #save model
+        print('Saving model')
         model.save('model_1.h5')
         with file_io.FileIO('model_1.h5', mode='r') as input_f:
             with file_io.FileIO(job_dir + 'model/model_1.h5', mode='w+') as output_f:
                 output_f.write(input_f.read())
 
-##Running the app
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-
-    # Input Arguments
-    parser.add_argument(
-      '--job-dir',
-      help='GCS location to write checkpoints and export models',
-      required=True
-    )
-    args = parser.parse_args()
-    arguments = args.__dict__
-
-    main(**arguments)
+main()
+# ##Running the app
+# if __name__ == "__main__":
+#
+#     parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
+#     parser.add_argument('-b', '--batch_size', type=int, default=42,
+#                         help='batch size for training data (default: 42)')
+#     # parser.add_argument('-b_test', '--batch_size_test', type=int, default=1024,
+#     #                     help='input batch size for testing (default: 1024)')
+#     parser.add_argument('--data_dir', type=str, default='../data',
+#                         help='Directory for training and test datasets')
+#     parser.add_argument('-sb','--storage_bucket', type=str, default='test_bucket',
+#                         help='Google Storage Bucket storing data and logs')
+#     # parser.add_argument('--result_dir', type=str, default='./result',
+#     #                     help='Output directory (default: ./result)')
+#     # parser.add_argument('--seed', type=int, default=1, metavar='S',
+#     #                     help='random seed (default: 1)')
+#     parser.add_argument('-lstm_1', '--lstm_layers1', type=int, default=400,
+#                         help ='The number of nodes for first LSTM hidden layer')
+#     parser.add_argument('-lstm_2', '--lstm_layers2', type=int, default=300,
+#                         help ='The number of nodes for second LSTM hidden layer')
+#     parser.add_argument('-dr', '--dropout', type=float, default = 0.5,
+#                         help='The dropout applied to input (default = 0.5)')
+#     parser.add_argument('-op', '--optimizer', default = 'adam',
+#                         help='The optimizer used in compiling and fitting the models')
+#     parser.add_argument('-e', '--epochs', type=int, default=10,
+#                         help='The number of epochs to run on the model')
+#     parser.add_argument('-jd', '--job_dir', help='GCS location to write checkpoints and export models',required=False,
+#                         default = 'gs://keras-python-models')
+#     args = parser.parse_args()
+#     # parser = argparse.ArgumentParser()
+#     #
+#     # # Input Arguments
+#     # parser.add_argument(
+#     #   '--job-dir',
+#     #   help='GCS location to write checkpoints and export models',
+#     #   required=True
+#     # )
+#     # args = parser.parse_args()
+#     # arguments = args.__dict__
+#     #
+#
+#     main(args.job_dir, args)
+    # main(**arguments)
+#gcp shell script calls the psp_lstm_gcp script, does not have to be a main function ??

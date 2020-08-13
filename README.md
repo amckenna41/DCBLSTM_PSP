@@ -1,9 +1,13 @@
 # protein_structure_prediction_DeepLearning
-Secondary Protein Structure Prediction using Neural Networks and Deep Learning. 
+Secondary Protein Structure Prediction using Neural Networks and Deep Learning.
+
+**status**
+> Development Stage
+
 
 Datasets used for training:
-cullpdb+profile_6133.npy.gz - this dataset is dividied into training/testing/validation/test sets. 
-cullpdb+profile_6133_filtered.npy.gz - this dataset is filtered to remove redundancies with the CB513 test dataset. 
+cullpdb+profile_6133.npy.gz - this dataset is dividied into training/testing/validation/test sets.
+cullpdb+profile_6133_filtered.npy.gz - this dataset is filtered to remove redundancies with the CB513 test dataset.
 
 The cullpdf_profile6133 dataset is in numpy format, thus for training and usabilitiy, it is reshaped into a 3-D array of size 6133 x 700 x 57 (Protein x amino acids(peptide chain) x features (for each amino acid)).
 
@@ -26,17 +30,17 @@ And the structure for these amino acids can be found at:
 http://130.88.97.239/bioactivity/aastructfrm.html
 
 ##
-The last feature of both amino acid residues and secondary structure labels just mark end of the protein sequence. 
+The last feature of both amino acid residues and secondary structure labels just mark end of the protein sequence.
 [22,31) and [33,35) are hidden during testing.
 
 
 The dataset division for the first cullpdb+profile_6133.npy.gz dataset is
 [0,5600) training
-[5605,5877) test 
+[5605,5877) test
 [5877,6133) validation
 
  For the filtered dataset cullpdb+profile_6133_filtered.npy.gz, all proteins can be used for training and test on CB513 dataset.
- 
+
 ###
 
 These datasets are available at:
@@ -44,11 +48,27 @@ https://www.princeton.edu/~jzthree/datasets/ICML2014/
 
 Datasets used for testing:
 cb513+profile_split1.npy.gz
-casp10.h5 
-casp11.h5 
+casp10.h5
+casp11.h5
 
 The CB513 dataset is available at:
 https://www.princeton.edu/~jzthree/datasets/ICML2014/
 
 The CASP10 and CASP11 datasets are available at:
 https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
+
+Installation:
+Run pip install requirements.txt to install all the relevant packages/modules required.
+Running model locally:
+
+Running model and deploying to GCP:
+from main directory, on a terminal or python shell run:
+python -i -m psp_gcp.main
+python -i main_gcp.py
+
+Running model and deploying to AWS:
+
+**References**
+
+**status**
+> Development Stage

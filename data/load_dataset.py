@@ -5,7 +5,7 @@ import numpy as np
 import gzip
 import h5py
 import os
-import get_dataset
+from data.get_dataset import *
 
 #File paths for train and test datasets
 TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy'
@@ -15,17 +15,64 @@ CASP11_PATH = 'casp11.h5'
 
 
 #load filtered cullpdb training data
-def load_cul6133_filted():
+def load_cul6133_filted(all_data=1):
 
     print("Loading training dataset (Cullpdb_filtered)...\n")
 
-    #download dataset if not already in current directory
-    if not (os.path.isfile(TRAIN_PATH)):
-        #if training data not present then download to current working dir
-        get_dataset.get_cullpdb_filtered()
+    #Below code allows for function to be called from data dir or top-level dir
+    cwd = os.getcwd()
+    print(cwd)
+    # if cwd[len(cwd)-4:len(cwd)] != 'data':
+    #     os.chdir('data')
+    #     new_cwd = os.getcwd() #now in the data dir
+    #     #TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
 
+    #validation if load_dataset called from models dir
+    # os.chdir('..')
+    os.chdir('data') #change cwd to data dir 
+    new_cwd = os.getcwd() #now in the data dir
+    TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
+    TRAIN_PATH_ = os.getcwd() + '/' + TRAIN_PATH
+
+    if not (os.path.isfile(TRAIN_PATH_)):
+        print('Getting dataset')
+        get_cullpdb_filtered()
+
+    data = np.load(TRAIN_PATH_)
+
+
+    #change back direcotry to main
+    # #download dataset if not already in current directory
+    # if not (os.path.isfile(TRAIN_PATH)):
+    #     #if training data not present then download to current working dir
+    #     get_dataset.get_cullpdb_filtered()
+
+    # cur_path = os.path.dirname(__file__)
+    # new_path = os.path.relpath('../data/TRAIN_PATH', cur_path)
+    # d = os.getcwd()
+    # print(d)
+    # os.chdir("..")
+    # os.chdir("..")
+    # print(os.getcwd())
+    # o = [os.path.join(d,o) for o in os.listdir(d) if os.path.isdir(os.path.join(d,o))] # Gets all directories in the folder as a tuple
+    # for item in o:
+    #     if os.path.exists(item + 'TRAIN_PATH'):
+    #         file = item + 'TRAIN_PATH'
+    #         print(file)
+    # d = os.getcwd()
+    # if d[len(d)-4:len(d)] != 'data':
+    #     os.chdir('data')
+    #     new_d = os.getcwd()
+    #     TRAIN_PATH_ = new_d + '/' + TRAIN_PATH
+    #     print(TRAIN_PATH_)
+    #     print('CWD Pre Load - {}\n'.format(os.getcwd()))
+    #     data = np.load(TRAIN_PATH_)
+    # else:
+    #     print(TRAIN_PATH)
+    #     print('CWD Pre Load - {}'.format(os.getcwd()))
+    #     data = np.load(TRAIN_PATH)
     #load dataset
-    data = np.load(TRAIN_PATH)
+    #data = np.load(TRAIN_PATH)
 
     data = np.reshape(data, (-1, 700, 57))
     #sequence feature
@@ -36,21 +83,27 @@ def load_cul6133_filted():
     labels = data[:, :, 22:30]
     #np.random.seed(2018)
 
+
     # shuffle data
     num_seqs, seqlen, feature_dim = np.shape(data)
     num_classes = labels.shape[2]
     seq_index = np.arange(0, num_seqs)#
     np.random.shuffle(seq_index)
 
+    data_index = int(5278 * all_data)
+    val_data_index =  int(256 * all_data)
+    val_data_upper = data_index + val_data_index
+
     #get training data
-    trainhot = datahot[seq_index[:5278]]
-    trainlabel = labels[seq_index[:5278]]
-    trainpssm = datapssm[seq_index[:5278]]
+    trainhot = datahot[seq_index[:data_index]]
+    trainlabel = labels[seq_index[:data_index]]
+    trainpssm = datapssm[seq_index[:data_index]]
 
     #get validation data
-    vallabel = labels[seq_index[5278:5534]] #8
-    valpssm = datapssm[seq_index[5278:5534]] # 21
-    valhot = datahot[seq_index[5278:5534]] #21
+    vallabel = labels[seq_index[data_index:val_data_upper]] #8
+    valpssm = datapssm[seq_index[data_index:val_data_upper]] # 21
+    valhot = datahot[seq_index[data_index:val_data_upper]] #21
+
 
     train_hot = np.ones((trainhot.shape[0], trainhot.shape[1]))
     for i in range(trainhot.shape[0]):
@@ -65,19 +118,35 @@ def load_cul6133_filted():
             if np.sum(valhot[i,j,:]) != 0:
                 val_hot[i,j] = np.argmax(valhot[i,j,:])
 
+
     return train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel
 
 #loading CB513 test dataset
-def load_cb513():
+def load_cb513(all_data=1):
 
     print("Loading test dataset (CB513)...\n")
 
+    #Below code allows for function to be called from data dir or top-level dir
+    cwd = os.getcwd()
+    if cwd[len(cwd)-4:len(cwd)] != 'data':
+        os.chdir('data')
+        new_cwd = os.getcwd() #now in the data dir
+        #TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
+
+    TEST_PATH_ = os.getcwd() + '/' + TEST_PATH
+
+    if not (os.path.isfile(TEST_PATH_)):
+        print('Getting dataset')
+        get_cb513()
+
+    CB513 = np.load(TEST_PATH_)
+
     #download dataset if not already in current directory
-    if not (os.path.isfile(TEST_PATH)):
-        get_dataset.get_cb513()
+    # if not (os.path.isfile(TEST_PATH)):
+    #     get_dataset.get_cb513()
 
     #load test dataset
-    CB513= np.load(TEST_PATH)
+    #CB513= np.load(TEST_PATH)
     CB513= np.reshape(CB513,(-1,700,57))
 
     #sequence feature
@@ -86,6 +155,12 @@ def load_cb513():
     testpssm=CB513[:, :, 35:56]
     #secondary struture label
     testlabel = CB513[:, :, 22:30]
+
+    test_data_index = int(514 * all_data)
+
+    testhot = testhot[:test_data_index]
+    testpssm = testpssm[:test_data_index]
+    testlabel = testlabel[:test_data_index]
 
     test_hot = np.ones((testhot.shape[0], testhot.shape[1]))
     for i in range(testhot.shape[0]):
@@ -100,11 +175,21 @@ def load_casp10():
 
     print("Loading CASP10 dataset...\n")
 
-    #download dataset if not already in current directory
-    if not (os.path.isfile(CASP10_PATH)):
-        get_dataset.get_casp10()
+    #Below code allows for function to be called from data dir or top-level dir
+    cwd = os.getcwd()
+    if cwd[len(cwd)-4:len(cwd)] != 'data':
+        os.chdir('data')
+        new_cwd = os.getcwd() #now in the data dir
+        #TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
+
+    CASP10_PATH_ = os.getcwd() + '/' + CASP10_PATH
+
+    if not (os.path.isfile(CASP10_PATH_)):
+        print('Getting dataset')
+        get_casp10()
+
     #load casp10 dataset
-    casp10_data = h5py.File(CASP10_PATH)
+    casp10_data = h5py.File(CASP10_PATH_)
 
     #load protein sequence and profile feature data
     casp10_data_hot = casp10_data['features'][:, :, 0:21]
@@ -161,4 +246,6 @@ def download_all_data():
     load_casp11()
 
 if __name__ == 'main':
+
+    #Will this script really be called by itself??
     download_all_data()

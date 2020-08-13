@@ -26,14 +26,18 @@ def get_cullpdb_filtered():
 
     print('Downloading Cullpdb 6133 dataset...\n')
 
+    cwd = os.getcwd()
+    if cwd[len(cwd)-4:len(cwd)] != 'data':
+        os.chdir('data')
+
     try:
-        if not (os.path.isfile(TRAIN_PATH)):
+        print('CWD in get_cullpdb_filtered - {}'.format(os.getcwd()))
+        if not (os.path.isfile(os.getcwd() + '/' + TRAIN_PATH)):
             r = requests.get(TRAIN_URL, allow_redirects = True)
             open(TRAIN_PATH, 'wb').write(r.content)
             dir_path = os.path.dirname(os.path.realpath(TRAIN_PATH))
             source_path = dir_path + '/' + TRAIN_PATH
             destination_path = dir_path + '/' + TRAIN_NPY
-
             print('Exporting Cullpdb 6133 datatset....')
             with gzip.open(TRAIN_PATH, 'rb') as f_in:
                 with open(TRAIN_NPY, 'wb') as f_out:
@@ -50,8 +54,12 @@ def get_cb513():
 
     print('Downloading CB513 dataset...\n')
 
+    cwd = os.getcwd()
+    if cwd[len(cwd)-4:len(cwd)] != 'data':
+        os.chdir('data')
+
     try:
-        if not (os.path.isfile(TEST_PATH)):
+        if not (os.path.isfile(os.getcwd() + '/' + TEST_PATH)):
             #os.system(f'wget -O {TEST_PATH} {TEST_URL}')
             r = requests.get(TEST_URL, allow_redirects = True)
             open(TEST_PATH, 'wb').write(r.content)

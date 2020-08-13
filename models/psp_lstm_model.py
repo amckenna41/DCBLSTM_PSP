@@ -1,24 +1,29 @@
 #PSP model using the Keras functional API with a LSTM neural network
 
 #Importing libraries and dependancies required for building the model
-import keras
-from keras.models import Sequential
-from keras.models import Model
-from keras.layers.core import Dense, Dropout, Activation
-from keras.layers.embeddings import Embedding
-from keras.layers.recurrent import LSTM, GRU
-from keras.layers import Input, GlobalMaxPooling1D, TimeDistributed, Embedding, MaxPooling1D, LSTM, Dense, merge, Conv1D, Conv2D, Convolution2D, GRU, Concatenate, Reshape,MaxPooling2D,Convolution1D,BatchNormalization
-from keras.optimizers import Adam
-from keras.regularizers import l2
-from keras.callbacks import EarlyStopping ,ModelCheckpoint
+import tensorflow as tf
+#from tensorflow import keras
+import argparse
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Conv1D, Embedding, LSTM, Dense, Dropout, Activation, Convolution2D, GRU, Concatenate, Reshape,MaxPooling1D, Conv2D, MaxPooling2D,Convolution1D,BatchNormalization
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 import numpy as np
 import random as rn
 import pandas as pd
-import tensorflow as tf
 import time
+import os
+from sys import path
+from os.path import dirname as dir
+import sys
 from datetime import datetime
+sys.path.append('..')
+from data import load_dataset
 
+#turn into a class and have hyperparameters as class arguments
 #Function to build the model
 def build_model_lstm():
 
@@ -44,26 +49,24 @@ def build_model_lstm():
     max_pool_1d = MaxPooling1D(pool_size = 2, strides =1, padding='same')(conv1_features)
     conv1_features = Reshape((700, 42, 1))(max_pool_1d)
 
-    #max_pool_1d = GlobalMaxPooling1D()(conv1_features)
-
     # print ('conv1_features shape', conv1_features.get_shape())
     #print ('max_pool_1d shape', max_pool_1d.get_shape())
-    conv1_features = Reshape((700, 42, 1))(max_pool_1d)
 
-    print (conv1_features.get_shape())
+    #reshape 1D convolutional layer
+    conv1_features = Reshape((700, 42, 1))(max_pool_1d)
 
     #2D Convolutional layers and 2D Max Pooling
     conv2_features = Conv2D(42,3,strides=1,activation='relu', padding='same')(conv1_features)
     print ('Conv2D layer1 shape',conv2_features.get_shape())
 
-
-
     max_pool_2D = MaxPooling2D(pool_size=(2,2), strides=1, padding ='same')(conv2_features)
+    max_pool_2D = Dropout(0.5)(max_pool_2D)
     print ('MaxPooling Shape', max_pool_2D.get_shape())
 
-    #conv2_batch_normal = BatchNormalization()(conv2_features)
+    #2D Convolutional layers and 2D Max Pooling
     conv2_features = Conv2D(84,3,strides=1,activation='relu', padding='same')(max_pool_2D)
     max_pool_2D = MaxPooling2D(pool_size=(2,2), strides=1, padding ='same')(conv2_features)
+    max_pool_2D = Dropout(0.5)(max_pool_2D)
     print ('Conv2D layer1 shape',conv2_features.get_shape())
 
     #conv2_batch_normal = BatchNormalization()(conv2_features)
@@ -72,41 +75,62 @@ def build_model_lstm():
     #conv2_features = Convolution2D(84,3,1,activation='relu', padding='same')(conv2_features)
     # print 'conv2_features.get_shape()', conv2_features.get_shape()
 
-    #conv2_features = Reshape((175,11*42))(max_pool_2D)
+    #reshape 2D convolutional layers
     conv2_features = Reshape((700, 84*42))(max_pool_2D)
-    conv2_features = Dropout(0.5)(conv2_features)
-    conv2_features = Dense(500, activation='relu')(conv2_features)
 
-    #, activation='tanh', inner_activation='sigmoid',dropout_W=0.5,dropout_U=0.5
+    #conv2_features = Dense(500, activation='relu')(conv2_features)
+
+    #Long Short Term Memory layers with tanh activation, sigmoid recurrent activiation and dropout of 0.5
     lstm_f1 = LSTM(400,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(conv2_features)
     lstm_b1 = LSTM(400, return_sequences=True, activation='tanh',go_backwards=True,recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(conv2_features)
 
     lstm_f2 = LSTM(300, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_f1)
     lstm_b2 = LSTM(300, return_sequences=True,activation='tanh', go_backwards=True,recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_b1)
 
-    #concat_features = merge([lstm_f2, lstm_b2, conv2_features], mode='concat', concat_axis=-1)
+    #concatenate LSTM with convolutional layers
     concat_features = Concatenate(axis=-1)([lstm_f2, lstm_b2, conv2_features])
     concat_features = Dropout(0.4)(concat_features)
-    protein_features = Dense(600,activation='relu')(concat_features)
+
+    #Dense layers
+    #protein_features = Dense(600,activation='relu')(concat_features)
+    #protein_features = Dropout(0.4)(protein_features)
+
     # protein_features = TimeDistributedDense(600,activation='relu')(concat_features)
     # protein_features = TimeDistributedDense(100,activation='relu', W_regularizer=l2(0.001))(protein_features)
-    protein_features_2 = Dense(300,activation='relu')(protein_features)
-    main_output = Dense(8, activation='softmax', name='main_output')(protein_features_2)
-    #main_output = TimeDistributedt()(protein_features)
+    #protein_features_2 = Dense(300,activation='relu')(protein_features)
+    #protein_features_2 = Dropout(0.4)(protein_features_2)
 
+    #Final Dense layer with 8 nodes for the 8 output classifications
+    main_output = Dense(8, activation='softmax', name='main_output')(concat_features)
 
+    #create model from inputs and outputs
     model = Model(inputs=[main_input, auxiliary_input], outputs=[main_output])
+    #use Adam optimizer
     adam = Adam(lr=0.003)
     #Adam is fast, but tends to over-fit
     #SGD is low but gives great results, sometimes RMSProp works best, SWA can easily improve quality, AdaTune
+
+    #compile model using adam optimizer and the cateogorical crossentropy loss function
     model.compile(optimizer = adam, loss={'main_output': 'categorical_crossentropy'}, metrics=['accuracy'])
     model.summary()
 
     earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
     # load_file = "./model/ac_LSTM_best_time_17.h5" # M: weighted_accuracy E: val_weighted_accuracy
-#     checkpoint_path = "./model/deepRNN_LSTM_best" + str(datetime.date(datetime.now())) + ".h5"
-#     checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
+    checkpoint_path = "/deepRNN_LSTM_best" + str(datetime.date(datetime.now())) + ".h5"
+    checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
 #     checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_loss', mode='min')
 
 
     return model
+
+def main():
+
+    #build model
+    model = build_model_lstm()
+
+
+if __name__ == '__main__':
+    print('Executed')
+    train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_dataset.load_cul6133_filted()
+    print(train_hot.shape)
+    print(trainpssm.shape)    

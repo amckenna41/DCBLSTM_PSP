@@ -24,7 +24,7 @@ trainingInput:
       - 500
       - 400
       - 300
-      
+
     - parameterName: LSTM_units_layer2
       type: DISCRETE
       discreteValues:
@@ -65,3 +65,4 @@ trainingInput:
       - rms
       - adagrad
       - adamax
+#Learning rate

@@ -70,6 +70,3 @@ gcloud ai-platform jobs submit training $JOB_NAME \
  --runtime-version $RUNTIME_VERSION \
  --python-version $PYTHON_VERSION \
  --job-dir $JOB_DIR
-
-#view logs on terminal/cmd line
- #gcloud ai-platform jobs stream-logs $JOB_NAME

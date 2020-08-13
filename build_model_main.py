@@ -23,7 +23,6 @@ model_files = [f for f in model_files if f[-5:] == 'model']
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 sesh = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
-
 def main():
 
     all_data = int(args.alldata)
@@ -65,13 +64,6 @@ def main():
     model.save(save_path)
 
     # tensorboard --logdir models/logs - visualise model results on TensorBoard
-
-    #model.load_weights(model_filepath)
-
-    #evaluating model
-    score = model.evaluate({'main_input': test_hot},{'main_output': test_label}, verbose=2, batch_size=2)
-    print ('Test Loss:', score[0])
-    print 'Test Accuracy:', score[1]
 
     # plot_model(history)
 
@@ -134,3 +126,26 @@ if __name__ == "__main__":
     print('Running ')
 
     main()
+
+#
+# train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted()
+#
+# test_hot, testpssm, testlabel = load_cb513()
+#
+# d = os.getcwd()
+# if d[len(d)-4:len(d)] == 'data':
+#     os.chdir('..')
+#     print(os.getcwd())
+#
+# print(os.getcwd())
+# os.chdir('psp_gcp')
+# print(os.getcwd())
+# process = subprocess.run('./gcp_deploy.sh', shell=True, check=True, timeout=10)
+# os.chdir('..')
+
+# process.wait() # Wait for process to complete.
+#
+# # iterate on the stdout line by line
+# for line in process.stdout.readlines():
+#     print(line)
+#change directory to psp_gcp dir and call shell scipt
