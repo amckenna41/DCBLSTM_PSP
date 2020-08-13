@@ -1,0 +1,7 @@
+numpy>=1.18.0
+pandas>=0.25.3
+six>=1.13.0
+tensorflow==2.1.0
+h5py==2.10.0
+cloudml-hypertune==0.1.0.dev6
+google-cloud==0.34.0

@@ -1,0 +1,61 @@
+#Hyperparameter tuning on 25% of training dataset to find optimum hyperparameters
+
+trainingInput:
+  scaleTier: CUSTOM
+  masterType: n1-standard-32
+  workerType: n1-standard-32
+  parameterServerType: n1-standard-32
+  workerCount: 8
+  parameterServerCount: 5
+  hyperparameters:
+    goal: MAXIMIZE
+    hyperparameterMetricTag: eval_score
+    maxTrials: 10
+    maxParallelTrials: 4
+    enableTrialEarlyStopping: True
+    params:
+    # - parameterName: conv2d_dropout
+    #   type: discreteValues
+    #   - 0.25
+    #   - 0.50
+    #   - 0.75
+    # - parameterName: lstm_layer1_nodes
+    #   type: DISCRETE
+    #   discreteValues:
+    #   - 600
+    #   - 500
+    #   - 400
+    # - parameterName: lstm_layer2_nodes
+    #   type: DISCRETE
+    #   discreteValues:
+    #   - 500
+    #   - 400
+    #   - 300
+    # - parameterName: lstm_dropout
+    #   type: discreteValues
+    #   - 0.25
+    #   - 0.50
+    #   - 0.75
+    # - parameterName: after_lstm_dropout
+    #   type: discreteValues
+    #   - 0.25
+    #   - 0.50
+    #   - 0.75
+    # - parameterName: optimizer
+    #   type: CATEGORICAL
+    #   categoricalValues:
+    #   - adam
+    #   - sgd
+    #   - rms
+    #   - adagrad
+    #   - adamax
+    # - parameterName: learning_rate
+    #   type: discreteValues
+    #   - 0.001
+    #   - 0.002
+    #   - 0.003
+    - parameterName: learning_rate
+      type: DOUBLE
+      minValue: 0.001
+      maxValue: 0.05
+      scaleType: UNIT_LINEAR_SCALE
