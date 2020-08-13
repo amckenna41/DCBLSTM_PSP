@@ -3,6 +3,7 @@
 __pycache__/
 .ipynb_checkpoints
 *.DS_Store
+.Rhistory
 
 
 .env
@@ -11,19 +12,16 @@ env/
 venv/
 psp_venv/
 
-/psp_gcp_test_dir/venv
-/psp_gcp_test_dir/*.npy
-/psp_gcp_test_dir/*.gz
-/psp_gcp_test_dir/*.json
+/psp_gcp/venv
+/psp_gcp/*.npy
+/psp_gcp/*.gz
+/psp_gcp/*.json
 
 
 /data/*.npy
 /data/*.gz
 /models/*.npy
 /models/*.h5
-
-/psp_gcp/*.npy
-/psp_gcp/training/*.npy
 
 /psp_gcp/*.h5
 

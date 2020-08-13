@@ -57,16 +57,16 @@ https://www.princeton.edu/~jzthree/datasets/ICML2014/
 The CASP10 and CASP11 datasets are available at:
 https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
 
-Installation:
+**Installation:**
 Run pip install requirements.txt to install all the relevant packages/modules required.
 Running model locally:
 
-Running model and deploying to GCP:
+**Running model and deploying to GCP:**
 from main directory, on a terminal or python shell run:
 python -i -m psp_gcp.main
 python -i main_gcp.py
 
-Running model and deploying to AWS:
+**Running model and deploying to AWS:**
 
 **References**
 
