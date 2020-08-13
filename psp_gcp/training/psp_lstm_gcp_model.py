@@ -45,9 +45,6 @@ print(g)
 import json
 from google.oauth2 import service_account
 
-import tempfile
-jsonfile = u"""-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCpxk6xw8k35Zyb\\nXTOn3yNpOAB2/5F/NE2ksruc2h8aeAbqa5gKLJatshlB5zM0iezpFnJfv4Y4GL62\nzroHBaVj0UwXdUSG2oR5h3sR/O1HK+z92JegfKb15XTXzBkd9HDTv8JGby5nfoeq\\ny1HZL1BrKs8N6ZahWptemdJ7RL9wUdSoE2lo3ByuEBvNvEsMTf9lHDm+hqR9zfRS\\nmla4HSbj5tQHab0Zay0nK6oAmg6JdWFN5mExTuHcIDUgl4cPucsug9XGWfvTU5FC\\n9X1Z44MYNCNBkubtNjC8abRIoBWE1sapY1+ud0CSwM1cYYA4E2KakCIsUgQA6hIX\\nMb+w4hPxAgMBAAECggEAOFZVm9i354QaxVWWxCCgPBS41sQ1EGyXTU2AQ2sAQkTN\\nKrIciFfGgookpoFltQwF4U0xFAPWsrvHYZtVEOp3ORnlca1Y2ZUeu8NQ/CWdyW3S\\nnWPn4PosX1HOxaN1PEL2w9WQztWrJO3QcEU6+mKggYd5oQjAEvghsbFCruQf0NHT\\nnIP25JxIheG3RV8XHTjLjnBYVOW/xrpcyuY20EDQWtsOVWMiaTvkJElWdifPCOqf\\nsxONb2o/FS/ZSqNi02DoYFOUJ7hS76ODABltuGBiYD4mNIAZI5DqP7w7j8zHtBEF\\nnb5T+KL8HGBPhm1QRglwaf1flgF1H1EC9SIaxpmlfwKBgQDocmHS3zDpS/xPn323\\nfvrMrcP35jCODFwWrlJ06+mCZdO6leOrzP4m75la9CtSBxb/BkE4tKzFf/Mrz6UW\\nCI/NuOZ3TBR5dS0yzvhRgkBApOcNJGnZKaLwpgL3Xut/sj534xOh4E+0c1GQ3UbS\\nJc18VvvtSBVooEcna43U/IIexwKBgQC6+jktw9LYb0/A9h6lfPOy5Jhum+4XMN7q\nmtuO99ZJo2cpwOSo2hMD5WCi2wlLIrY9J/uaDvBNgzqD1XNSZUAonGJz/////Ijqrlr6\\n2ndffG5hEQVVgeQhU4Kbj9MApUMXMWBMAtjPz2ccQRiQbJz21qXm+hwc+q82YwfC\\ndpvuUmhfhwKBgBZaGWoLqEpm0iZd8drZTQitlPCbpAOk0J4luSwhG108qXWBwFje\\n53mbBKYoYJoMsHtpgJARX6PGP/3wg7FwtVNU+mRyXm2nhOcj2+EKo18T/FvZKoyF\\nYnO9ov9ik0a+Px+MKHEifsedZzSE8rB2jiHsw2D304cyEmWKBCN8/I41AoGAfWsK\\nn6AS9gr0PELbG7ZM4VpkxQzjD7tAS63ESIoFuy9YK7Gvr3NX/e0GfTbfbP7DrxH6\\nusP6fIPh5DxxNnukJZmAkLx8Oq7paArSt8IHaCS6pziRhak2mpJGvtAbyJreNR5T\\nwFEmoNUpXPb98rTYY66w3N9qV9jlg5N71MiCKlECgYA99xKY2NRnCwlHmQDMG7Du\\ni8HrZLDMxZW5PrCUNOAaZwqsr1RgAjgQ0UKCcoin8Ur6Nm+7/fCaUccErtXtqpTr\\nKADPpKLZXKRx7PKyuJmP0kTuKhmYNXtPD/1g4X4WiEKYb0bNnZIcm9EYz4e/5k/H\\nsg0S15YHr/TPEwdH9dr5oA==\\n-----END PRIVATE KEY-----\\n"""
-
 # fd, path = tempfile.mkstemp()
 # with os.fdopen(fd, 'w') as tmp:
 #     tmp.write(jsonfile)
