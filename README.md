@@ -59,14 +59,15 @@ https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
 
 **Installation:**
 Run pip install requirements.txt to install all the relevant packages/modules required.
+pip3 install requirements.txt or pip3 install -r requirements.txt
 Running model locally:
 
-**Running model and deploying to GCP:**
-from main directory, on a terminal or python shell run:
-python -i -m psp_gcp.main
-python -i main_gcp.py
+**Running model and deploying to GCP:** <br>
+Change current working directory to psp_gcp - cd psp_gcp <br>
+Call bash script ./""
 
-**Running model and deploying to AWS:**
+**Running model and deploying to AWS:** <br>
+Change current working directory to psp_aws - cd psp_aws <br>
 
 **References**
 

@@ -1,36 +1,36 @@
 
-
+#ignore any cache folders or files
 __pycache__/
+data/__pycache__/
+models/__pycache__/
 .ipynb_checkpoints
 *.DS_Store
 .Rhistory
 
-
+#ignore any environments
+*.pyc
 .env
 .venv
 env/
 venv/
 psp_venv/
-
 /psp_gcp/venv
+
+#ignore dataset files and models
 /psp_gcp/*.npy
 /psp_gcp/*.gz
 /psp_gcp/*.json
-
-
 /data/*.npy
 /data/*.gz
 /models/*.npy
 /models/*.h5
-
 /psp_gcp/*.h5
-
-#ignore dataset files and models
 *.npy
 *.gz
 *.h5
 
+#ignore local folder used to store models
+/saved_models
+
 #ignore json files, specifically json storing cloud credentials
 *.json
-
-#######

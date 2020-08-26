@@ -25,11 +25,13 @@ CASP_11_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLe
 def get_cullpdb_filtered():
 
     print('Downloading Cullpdb 6133 dataset...\n')
+    #
+    # cwd = os.getcwd()
+    # if cwd[len(cwd)-4:len(cwd)] != 'data':
+    #     os.chdir('data')
 
-    cwd = os.getcwd()
-    if cwd[len(cwd)-4:len(cwd)] != 'data':
-        os.chdir('data')
-
+    #get training dataset from URL using requests library
+    #unzip and save data into data dir
     try:
         print('CWD in get_cullpdb_filtered - {}'.format(os.getcwd()))
         if not (os.path.isfile(os.getcwd() + '/' + TRAIN_PATH)):
@@ -53,11 +55,13 @@ def get_cullpdb_filtered():
 def get_cb513():
 
     print('Downloading CB513 dataset...\n')
+    #
+    # cwd = os.getcwd()
+    # if cwd[len(cwd)-4:len(cwd)] != 'data':
+    #     os.chdir('data')
 
-    cwd = os.getcwd()
-    if cwd[len(cwd)-4:len(cwd)] != 'data':
-        os.chdir('data')
-
+    #get test dataset from URL using requests library
+    #unzip and save data into data dir
     try:
         if not (os.path.isfile(os.getcwd() + '/' + TEST_PATH)):
             #os.system(f'wget -O {TEST_PATH} {TEST_URL}')
@@ -81,6 +85,7 @@ def get_cb513():
 #downloading CASP10 test dataset
 def get_casp10():
 
+    #get casp10 dataset from URL using requests library
     try:
         if not (os.path.isfile(CASP10_PATH)):
             #os.system(f'wget -O {CASP10_PATH} {CASP_10_URL}')
@@ -98,6 +103,7 @@ def get_casp10():
 #downloading CASP11 test dataset
 def get_casp11():
 
+    #get casp11 dataset from URL using requests library
     try:
         if not (os.path.isfile(CASP11_PATH)):
             #os.system(f'wget -O {CASP10_PATH} {CASP_10_URL}') #errors using wget so using requests
@@ -111,3 +117,18 @@ def get_casp11():
 
     except OSError:
         print('Error downloading and exporting CASP11 dataset\n')
+
+#Tests and assertions 
+def test_dataset_url():
+
+    r = requests.get(TRAIN_URL, allow_redirects = True)
+    assert(r.status_code == 200)
+
+    r = requests.get(TEST_URL, allow_redirects = True)
+    assert(r.status_code == 200)
+
+    r = requests.get(CASP_10_URL, allow_redirects = True)
+    assert(r.status_code == 200)
+
+    r = requests.get(CASP_11_URL, allow_redirects = True)
+    assert(r.status_code == 200)

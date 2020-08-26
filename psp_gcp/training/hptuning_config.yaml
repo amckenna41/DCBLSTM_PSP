@@ -1,17 +1,22 @@
 #Hyperparameter tuning on 25% of training dataset to find optimum hyperparameters
 
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-standard-32
+#   workerType: n1-standard-32
+#   parameterServerType: n1-standard-32
+#   workerCount: 8
+#   parameterServerCount: 5
 trainingInput:
   scaleTier: CUSTOM
-  masterType: n1-standard-32
-  workerType: n1-standard-32
-  parameterServerType: n1-standard-32
-  workerCount: 8
-  parameterServerCount: 5
+  masterType: n1-highmem-4
+  runtimeVersion: '2.1'
+  pythonVersion: '3.7'
   hyperparameters:
-    goal: MAXIMIZE
+    goal: MAXIMIZE            #Hyperparameter Tuning run to maximise accuracy in models
     hyperparameterMetricTag: eval_score
-    maxTrials: 10
-    maxParallelTrials: 4
+    maxTrials: 20                       #for CATEGORICAL/Discrete values, maxTrials = # of CATEGORICAL/Discrete variables
+    maxParallelTrials: 5
     enableTrialEarlyStopping: True
     params:
     # - parameterName: conv2d_dropout
@@ -19,24 +24,39 @@ trainingInput:
     #   - 0.25
     #   - 0.50
     #   - 0.75
-    # - parameterName: lstm_layer1_nodes
+    # - parameterName: conv2d_layer1_filters
+    #   type: INTEGER
+    #   minValue: 20
+    #   maxValue: 80
+    #   scaleType: UNIT_LINEAR_SCALE
+    # - parameterName: conv2d_layer2_filters
+    #   type: INTEGER
+    #   minValue: 40
+    #   maxValue: 100
+    #   scaleType: UNIT_LINEAR_SCALE
+    # - parameterName: recurrent_layer1
     #   type: DISCRETE
     #   discreteValues:
     #   - 600
     #   - 500
     #   - 400
-    # - parameterName: lstm_layer2_nodes
+    # - parameterName: recurrent_layer2
     #   type: DISCRETE
     #   discreteValues:
     #   - 500
     #   - 400
     #   - 300
-    # - parameterName: lstm_dropout
+    # - parameterName: recurrent_dropout
     #   type: discreteValues
     #   - 0.25
     #   - 0.50
     #   - 0.75
-    # - parameterName: after_lstm_dropout
+    # - parameterName: after_recurrent_dropout
+    #   type: discreteValues
+    #   - 0.25
+    #   - 0.50
+    #   - 0.75
+    # - parameterName: recurrent_recurrent_dropout
     #   type: discreteValues
     #   - 0.25
     #   - 0.50
@@ -50,12 +70,12 @@ trainingInput:
     #   - adagrad
     #   - adamax
     # - parameterName: learning_rate
-    #   type: discreteValues
-    #   - 0.001
-    #   - 0.002
-    #   - 0.003
-    - parameterName: learning_rate
-      type: DOUBLE
-      minValue: 0.001
-      maxValue: 0.05
-      scaleType: UNIT_LINEAR_SCALE
+    #   type: DOUBLE
+    #   minValue: 0.001
+    #   maxValue: 0.05
+    #   scaleType: UNIT_LINEAR_SCALE
+    # - parameterName: batch_size
+    #   type: INTEGER
+    #   minValue: 42
+    #   maxValue: 200
+    #   scaleType: UNIT_LINEAR_SCALE

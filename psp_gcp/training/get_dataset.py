@@ -1,3 +1,5 @@
+###Downloading the training and test datasets and uploading them to a GCP Storage
+#bucket to be used in the models
 
 #importing libraries and dependancies
 import numpy as np
@@ -6,14 +8,9 @@ import h5py
 import os
 import requests
 import shutil
-#File paths for train and test datasets
-TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy'
-TEST_PATH = 'cb513+profile_split1.npy'
-CASP10_PATH = 'casp10.h5'
-CASP11_PATH = 'casp11.h5'
+import training.gcp_utils as utils
 
-
-#File paths for train and test datasets
+#File names for train and test datasets
 TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy.gz'
 TEST_PATH = 'cb513+profile_split1.npy.gz'
 TRAIN_NPY = 'cullpdb+profile_6133_filtered.npy'
@@ -26,16 +23,13 @@ TRAIN_URL = "http://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile
 TEST_URL = "http://www.princeton.edu/~jzthree/datasets/ICML2014/cb513+profile_split1.npy.gz"
 CASP_10_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp10.h5"
 CASP_11_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp11.h5"
+BUCKET_NAME = "gs://keras-python-models"
 
 #turn into class and add asertions
 #download and unzip filtered cullpdb training data
 def get_cullpdb_filtered():
 
     print('Downloading Cullpdb 6133 dataset...\n')
-    #
-    # cwd = os.getcwd()
-    # if cwd[len(cwd)-4:len(cwd)] != 'data':
-    #     os.chdir('data')
 
     try:
         print('CWD in get_cullpdb_filtered - {}'.format(os.getcwd()))
@@ -56,14 +50,15 @@ def get_cullpdb_filtered():
         print('Error downloading and exporting training dataset\n')
         return
 
+    #uploading training data to GCP Storage
+    blob_path = BUCKET_NAME + '/data/' + TRAIN_NPY
+    utils.upload_file(blob_path, TRAIN_NPY)
+
+
 #download and unzip CB513 test data
 def get_cb513():
 
     print('Downloading CB513 dataset...\n')
-
-    # cwd = os.getcwd()
-    # if cwd[len(cwd)-4:len(cwd)] != 'data':
-    #     os.chdir('data')
 
     try:
         if not (os.path.isfile(os.getcwd() + '/' + TEST_PATH)):
@@ -85,6 +80,10 @@ def get_cb513():
         print('Error downloading and exporting testing dataset\n')
         return
 
+    #uploading test data to GCP Storage
+    blob_path = BUCKET_NAME + '/data/' + TEST_NPY
+    utils.upload_file(blob_path, TEST_NPY)
+
 #downloading CASP10 test dataset
 def get_casp10():
 
@@ -102,6 +101,10 @@ def get_casp10():
     except OSError:
         print('Error downloading and exporting CASP10 dataset\n')
 
+    #uploading test data to GCP Storage
+    blob_path = BUCKET_NAME + '/data/' + CASP10_PATH
+    utils.upload_file(blob_path, CASP10_PATH)
+
 #downloading CASP11 test dataset
 def get_casp11():
 
@@ -118,6 +121,10 @@ def get_casp11():
 
     except OSError:
         print('Error downloading and exporting CASP11 dataset\n')
+
+    #uploading test data to GCP Storage
+    blob_path = BUCKET_NAME + '/data/' + CASP11_PATH
+    utils.upload_file(blob_path, CASP11_PATH)
 
 #load filtered cullpdb training data
 def load_cul6133_filted(all_data = 1):
@@ -319,3 +326,37 @@ def download_all_data():
     load_cb513()
     load_casp10()
     load_casp11()
+
+if __name__ == "main":
+    download_all_data()
+
+# def test_function():
+# #     assert f() == 4
+#
+# def test_zero_division():
+#     with pytest.raises(ZeroDivisionError):
+# #         1 / 0
+# import unittest
+# class TestSum(unittest.TestCase):
+#
+#     def test_sum(self):
+#         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
+#
+#     def test_sum_tuple(self):
+#         self.assertEqual(sum((1, 2, 2)), 6, "Should be 6")
+
+def test_get_cullpdb_filtered():
+    #test http status code 200 of URL
+    #test file extension
+    #.assertIsInstance(a, b)
+#     if resp.status_code == 200: https://stackoverflow.com/questions/54087303/python-requests-how-to-check-for-200-ok
+#     print ('OK!')
+# else:
+#     print ('Boo!')
+    pass
+
+def load_cul6133_filted_test():
+    #assert size of each dimension in dataset is correct
+    #assert 5278 * all_data = dimension of data
+    #assert dimension of training and validation data
+    pass

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Script for configuring connection to the Google Cloud to be able to train and evaluate
 #model in GCP
 
@@ -9,12 +11,14 @@
 # curl https://sdk.cloud.google.com > install.sh
 # bash install.sh --disable-prompts
 
-#Authorizing with user account
+#2. Authenticate with user account
 #authenticate GCP SDK, credentials will be automatically stored in config file
 #where the SDK looks for the relevant credentials when using sdk tools
 # gcloud auth login
+#gcloud auth application-default login - authenticate via browser with Google Account
 
-#Authenticate using a service account
+
+#2a) Authenticate using a service account
 # gcloud auth activate-service-account --key-file service-account.json [KEY_FILE_PATH]
 # gcloud auth activate-service-account [ACCOUNT] --key-file=[KEY_FILE_PATH]
 # # gcloud iam service-accounts keys create - create key for existing service account, save to cwd
@@ -22,7 +26,7 @@
 #list accounts with credentials on the current system
 gcloud auth list
 
-#crrate configuration
+#create configuration
 #gcloud config configurations create [NAME]
 
 #switch active account
@@ -31,10 +35,8 @@ gcloud auth list
 #switch accounts by creating seperate configuration that specifies different account
 gcloud config configurations activate [CONFIGURATION]
 
-
 #revoke credentials for an account
 gcloud auth revoke [ACCOUNT ]
-
 
 #view relevant GCP and SDK info
 gcloud info
@@ -59,13 +61,35 @@ gcloud config configurations delete [NAME]
 #get current version of sdk
 gcloud version
 #configuring SDK behind proxy/firewall - https://cloud.google.com/sdk/docs/proxy-settings
-# gcloud auth application-default login
-#initialise gcloud sd
 
+
+#3.) Initialise gcloud sdk
 # gcloud init
 # gcloud auth activate-service-account
 #gcloud auth application-default login
 
 
+# 4.) Enable API Access - Go to APIs and Services, Enable APIs and Services,
+#enable AI Platform Training & Prediction API, Compute Engine API, Cloud Logging API
+
+
 #Full step-by-step setup and configuration for the GCP and SDK can be found in the docs:
 #https://cloud.google.com/sdk/docs/
+#
+# #!/bin/bash
+#
+# URL=https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash
+#
+# function download {
+#   scratch="$(mktemp -d -t tmp.XXXXXXXXXX)" || exit
+#   script_file="$scratch/install_google_cloud_sdk.bash"
+#
+#   echo "Downloading Google Cloud SDK install script: $URL"
+#   curl -# "$URL" > "$script_file" || exit
+#   chmod 775 "$script_file"
+#
+#   echo "Running install script from: $script_file"
+#   "$script_file" "$@"
+# }
+#
+# download "$@"

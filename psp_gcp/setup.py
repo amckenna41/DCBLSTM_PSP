@@ -1,29 +1,29 @@
-from setuptools import setup, find_packages
+#Setup.py installs all the required packages and dependancies when packaging
+#the GCP application for training
 
-setup(name='training',
+from setuptools import setup, find_packages
+# import os, sys
+# sys.path.append(os.path.abspath(os.path.join('..', 'models')))
+
+# currentdir = os.path.dirname(os.path.realpath(__file__))
+# parentdir = os.path.dirname(currentdir)
+# sys.path.append(parentdir)
+
+setup(name='training',#psp_gcp/training
       version='0.1',
       description='Running Deep CNN on Google Cloud Ai-platform',
       author='Adam McKenna',
       author_email='amckenna41@qub.ac.uk',
-      license='MIT',
+      license='',
       install_requires=[
-          'tensorflow>=2.2',
+          'tensorflow==2.1',
+          # 'tensorflow-gpu==1.15',
           'h5py',
           'keras',
-          'google.cloud'
-         # 'keras==2.4.2',
-         # 'tensorflow==2.1.0',
-          #'h5py==2.10.0'
-          #'tensorflow'
-          #'tensorflow>=2.2.0',
-          #'keras==2.4.3',
-
-          #'h5py==2.10.0'
+          'google.cloud',
+          'matplotlib',
+          'seaborn'
       ],
      packages=find_packages(),
      include_package_data=True,
-
-
      zip_safe=False)
-
-# REQUIRED_PACKAGES = ['some_PyPI_package>=1.0']

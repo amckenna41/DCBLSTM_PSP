@@ -1,0 +1,131 @@
+#trainingInput:
+  #scaleTier: BASIC_GPU
+    #scaleTier: CUSTOM
+    # standard_gpu provides 1 GPU. Change to complex_model_m_gpu for 4 GPUs
+    #masterType: standard_gpu
+    #masterType: complex_model_l_gpu
+    #masterType: complex_model_m_p100
+    #masterType: complex_model_l_v100
+    #runtimeVersion: "1.0"
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-highcpu-16
+#   workerType: cloud_tpu
+#   workerCount: 1
+#   workerConfig:
+#     acceleratorConfig:
+#       type: TPU_V2
+#       count: 8
+#
+# trainingInput:
+#     scaleTier: CUSTOM
+#     # masterType: complex_model_s complex_model_m_gpu
+#     # workerType: complex_model_m
+#     masterType: large_model
+#     workerType: large_model
+#     parameterServerType: standard
+#     workerCount: 5
+#     parameterServerCount: 3
+#     runtimeVersion: '2.1'
+#     pythonVersion: '3.7'
+# trainingInput:
+#   scaleTier: STANDARD_1 #Compute Engine machine name, master: n1-highcpu-8, workers: n1-highcpu-8, parameter servers: n1-standard-4
+
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-highmem-16
+#   workerType: n1-highmem-16
+#   parameterServerType: n1-highmem-16
+#   workerCount: 9
+#   parameterServerCount: 6
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-highmem-32
+#   workerType: n1-highmem-32
+#   parameterServerType: n1-highmem-32
+#   workerCount: 9
+#   parameterServerCount: 5
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
+# trainingInput:
+#   scaleTier: CUSTOM
+#   # masterType: n1-highmem-16
+#   masterType: n1-standard-16
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: complex_model_m_gpu
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
+
+  # masterType: e2-highmem-16
+# #https://cloud.google.com/compute/docs/machine-types#predefined_machine_types
+
+
+
+####Training Using GPU's####
+# trainingInput:
+#   scaleTier: BASIC_GPU    # n1-standard-8 with one k80 GPU - OOM
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
+    # scaleTier: CUSTOM
+    # masterType: standard_p100   1 (P100 GPU)  - OOM
+    # masterType: complex_model_m_gpu - Quota failure
+
+# trainingInput:
+#   scaleTier: CUSTOM    # n1-standard-8 with one k80 GPU - OOM
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
+#   masterType: cloud_tpu
+
+# trainingInput:
+#   scaleTier: CUSTOM    # n1-standard-8 with one k80 GPU - OOM
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
+#   masterType: complex_model_m_gpu
+
+# trainingInput:
+#   scaleTier: CUSTOM           #OOM
+#   masterType: complex_model_m
+#   workerType: cloud_tpu
+#   workerCount: 4
+
+####Training Using TPU's####
+# trainingInput:
+#   scaleTier: BASIC_TPU    # n1-standard-4, workers: Cloud TPU (8 TPU v2 cores)
+#   runtimeVersion: '2.1'
+# #   pythonVersion: '3.7'
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-highcpu-16
+#   workerType: cloud_tpu
+#   workerCount: 1
+#   workerConfig:
+#     acceleratorConfig:
+#       type: TPU_V2
+#       count: 8
+
+
+#https://cloud.google.com/ai-platform/training/docs/using-tpus#configuring_a_custom_tpu_machine
+
+####Training Using High Memory n1 machine types####
+trainingInput:
+  scaleTier: CUSTOM
+  masterType: n1-highmem-16
+  runtimeVersion: '2.1'
+  pythonVersion: '3.7'
+
+####Training Using 50% of dataset####
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-highmem-16
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
+
+####Training Using 25% of dataset####
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-highmem-8
+#   runtimeVersion: '2.1'
+#   pythonVersion: '3.7'
