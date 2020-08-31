@@ -10,7 +10,7 @@ Using a terminal/command line, ensure that the current working directory is psps
 
 From psp_gcp directory, from a command line, run - ./training/gcp_config
 <br>
-2.) Execute 
+2.) Execute
 
 
 
@@ -19,3 +19,7 @@ From psp_gcp directory, from a command line, run - ./training/gcp_config
 **How to change model hyperparameters:** <br>
 
 **How to change GCP Ai-Platform parameters:** <br>
+
+**Google Cloud Platform Architecture**<br>
+
+![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/master/psp_gcp/gcp_architecture.png?raw=true)

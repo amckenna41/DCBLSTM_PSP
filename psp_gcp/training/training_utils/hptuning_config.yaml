@@ -1,0 +1,125 @@
+#Hyperparameter tuning on training dataset to find optimum hyperparameters
+
+# trainingInput:
+#   scaleTier: CUSTOM
+#   masterType: n1-standard-32
+#   workerType: n1-standard-32
+#   parameterServerType: n1-standard-32
+#   workerCount: 8
+#   parameterServerCount: 5
+trainingInput:
+  scaleTier: CUSTOM
+  masterType: n1-highmem-4
+  runtimeVersion: '2.1'
+  pythonVersion: '3.7'
+  hyperparameters:
+    goal: MAXIMIZE            #Hyperparameter Tuning run to maximise accuracy in models
+    hyperparameterMetricTag: eval_score
+    maxTrials: 40                       #for CATEGORICAL/Discrete values, maxTrials = # of CATEGORICAL/Discrete variables
+    maxParallelTrials: 10
+    enableTrialEarlyStopping: True
+    params:
+    - parameterName: recurrent_layer1
+      type: INTEGER
+      minValue: 400
+      maxValue: 700
+    - parameterName: recurrent_layer2
+      type: INTEGER
+      minValue: 200
+      maxValue: 500
+    - parameterName: recurrent_dropout
+      type: DOUBLE
+      minValue: 0.20
+      maxValue: 0.70
+    - parameterName: after_recurrent_dropout
+      type: discreteValues
+      minValue: 0.20
+      maxValue: 0.70
+    - parameterName: recurrent_recurrent_dropout
+      type: discreteValues
+      minValue: 0.20
+      maxValue: 0.70
+    - parameterName: conv1_filters
+      type: DISCRETE
+      discreteValues:
+      - 32
+      - 64
+      - 128
+      - 256
+    - parameterName: conv2_filters
+      type: DISCRETE
+      discreteValues:
+      - 64
+      - 128
+      - 256
+    - parameterName: conv3_filters
+      type: DISCRETE
+      discreteValues:
+      - 128
+      - 256
+      - 512
+    - parameterName: window_size
+      type: DISCRETE
+      discreteValues:
+      - 5
+      - 7
+      - 11
+    - parameterName: conv2d_dropout
+      type: DOUBLE
+      minValue: 0.25
+      maxValue: 0.75
+      scaleType: UNIT_LINEAR_SCALE
+    - parameterName: dense_dropout
+      type: DOUBLE
+      minValue: 0.2
+      maxValue: 0.8
+    - parameterName: dense_1
+      type: DISCRETE
+      discreteValues:
+      - 100
+      - 128
+      - 200
+      - 300
+    - parameterName: dense_2
+      type: DISCRETE
+      discreteValues:
+      - 50
+      - 64
+      - 80
+      - 100
+    - parameterName: dense_3
+      type: DISCRETE
+      discreteValues:
+      - 16
+      - 20
+      - 32
+      - 40
+    - parameterName: dense_4
+      type: DISCRETE
+      discreteValues:
+      - 10
+      - 16
+      - 20
+    - parameterName: kernel_regularizer
+      type: DISCRETE
+      discreteValues:
+      - l1
+      - l2
+    - parameterName: optimizer
+      type: CATEGORICAL
+      categoricalValues:
+      - adam
+      - sgd
+      - rms
+      - adagrad
+      - adamax
+    - parameterName: learning_rate
+      type: DOUBLE
+      minValue: 0.0003
+      maxValue: 0.05
+      scaleType: UNIT_LINEAR_SCALE
+    # - parameterName: batch_size
+    #   type: INTEGER
+    #   minValue: 42
+    #   maxValue: 200
+    #   scaleType: UNIT_LINEAR_SCALE

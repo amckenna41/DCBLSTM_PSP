@@ -1,4 +1,5 @@
 ###Downloading the training and test datasets and uploading them to a GCP Storage
+#Datasets stored in local psp_gcp directory
 #bucket to be used in the models
 
 #importing libraries and dependancies
@@ -8,7 +9,7 @@ import h5py
 import os
 import requests
 import shutil
-import training.gcp_utils as utils
+import training.training_utils.gcp_utils as utils
 
 #File names for train and test datasets
 TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy.gz'
@@ -23,7 +24,7 @@ TRAIN_URL = "http://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile
 TEST_URL = "http://www.princeton.edu/~jzthree/datasets/ICML2014/cb513+profile_split1.npy.gz"
 CASP_10_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp10.h5"
 CASP_11_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp11.h5"
-BUCKET_NAME = "gs://keras-python-models"
+BUCKET_NAME = "gs://keras-python-models-2"
 
 #turn into class and add asertions
 #download and unzip filtered cullpdb training data
@@ -164,6 +165,11 @@ def load_cul6133_filted(all_data = 1):
     data_index = int(5278 * all_data)
     val_data_index =  int(256 * all_data)
     val_data_upper = data_index + val_data_index
+
+    data_index = int(5278 * all_data)
+    val_data_index =  int(256 * all_data)
+    val_data_upper = data_index + val_data_index
+
     #get training data
     trainhot = datahot[seq_index[:data_index]]
     trainlabel = labels[seq_index[:data_index]]
@@ -213,6 +219,7 @@ def load_cb513(all_data = 1):
     #     os.chdir('data')
     #     new_cwd = os.getcwd() #now in the data dir
         #TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
+    TEST_PATH = 'cb513+profile_split1.npy.gz'
 
     TEST_PATH_ = os.getcwd() + '/' + TEST_PATH
 
@@ -329,34 +336,3 @@ def download_all_data():
 
 if __name__ == "main":
     download_all_data()
-
-# def test_function():
-# #     assert f() == 4
-#
-# def test_zero_division():
-#     with pytest.raises(ZeroDivisionError):
-# #         1 / 0
-# import unittest
-# class TestSum(unittest.TestCase):
-#
-#     def test_sum(self):
-#         self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
-#
-#     def test_sum_tuple(self):
-#         self.assertEqual(sum((1, 2, 2)), 6, "Should be 6")
-
-def test_get_cullpdb_filtered():
-    #test http status code 200 of URL
-    #test file extension
-    #.assertIsInstance(a, b)
-#     if resp.status_code == 200: https://stackoverflow.com/questions/54087303/python-requests-how-to-check-for-200-ok
-#     print ('OK!')
-# else:
-#     print ('Boo!')
-    pass
-
-def load_cul6133_filted_test():
-    #assert size of each dimension in dataset is correct
-    #assert 5278 * all_data = dimension of data
-    #assert dimension of training and validation data
-    pass

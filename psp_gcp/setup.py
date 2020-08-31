@@ -22,7 +22,8 @@ setup(name='training',#psp_gcp/training
           'keras',
           'google.cloud',
           'matplotlib',
-          'seaborn'
+          'seaborn',
+          'cloudml-hypertune'
       ],
      packages=find_packages(),
      include_package_data=True,

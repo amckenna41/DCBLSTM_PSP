@@ -31,6 +31,8 @@ psp_venv/
 
 #ignore local folder used to store models
 /saved_models
+/old_stuff
+/psp_gcp.egg-info
 
 #ignore json files, specifically json storing cloud credentials
 *.json

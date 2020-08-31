@@ -1,38 +1,33 @@
-import time
 #Importing libraries and dependancies required for building the model
 import numpy as np
-import gzip
-import h5py
-import tensorflow as tf
-import argparse
-import random as rn
 import pandas as pd
-from io import BytesIO
-from tensorflow.python.lib.io import file_io
 import os
 import sys
-import importlib
 from datetime import date
+import time
 from datetime import datetime
-import hypertune
 from google.cloud import storage, exceptions
-import subprocess
+from googleapiclient import errors
+from googleapiclient import discovery
+from google.oauth2 import service_account
+from oauth2client.client import GoogleCredentials
+import pandas as pd
 import pickle
 import json
-from training.get_dataset import *
-from training.plot_model import *
+from training.training_utils.get_dataset import *
+from training.training_utils.plot_model import *
+# storage_client = storage.Client.from_service_account_json("service-account.json")
 
-# storage_client = storage.Client.from_service_account_json("service-account.json")
-# storage_client = storage.Client.from_service_account_json("psp-keras-training.json")
-# storage_client = storage.Client.from_service_account_json("service-account.json")
-BUCKET_NAME = "keras-python-models"
+#initialise bucket name and GCP storage client
+global BUCKET_NAME
+BUCKET_NAME = "keras-python-models-2"
 storage_client = storage.Client()
-# storage_client = storage.Client.from_service_account_json("psp-keras-training.json")
 bucket = storage_client.get_bucket(BUCKET_NAME)
+#credentials = GoogleCredentials.get_application_default()
 
-def upload_history(history, model_save_path, score):
+#save and upload model history to bucket
+def upload_history(history, score, model_blob_path):
 
-    print('set gcp env var')
     # storage_client = storage.Client()
     # # storage_client = storage.Client.from_service_account_json("psp-keras-training.json")
     # bucket = storage_client.get_bucket("keras-python-models")
@@ -55,20 +50,16 @@ def upload_history(history, model_save_path, score):
         print(traceback.format_exc(e))
         print('Error creating history pickle')
 
-
-    blob_path = 'history/history_'+ str(datetime.date(datetime.now())) + \
+    # blob_path = 'history/history_'+ str(datetime.date(datetime.now())) + \
+    #     '_' + str((datetime.now().strftime('%H:%M'))) +'.pckl'
+    blob_path = str(model_blob_path) + 'history/history_'+ str(datetime.date(datetime.now())) + \
         '_' + str((datetime.now().strftime('%H:%M'))) +'.pckl'
+
     blob = bucket.blob(blob_path)
     upload_file(blob_path,history_filepath)
     time.sleep(2)
 
-    #
-    # blob.download_to_filename(history_filepath)
-    # time.sleep(2)
-    # upload_file(blob_path,history_filepath)
-
-    # time.sleep(2)
-    # blob.upload_from_filename(history_filepath)
+    ## Set MetaData of history blob to store results from history ##
 
 #     history_meta = {}
 #     for key, value in (history.history.items()):
@@ -98,7 +89,7 @@ def upload_history(history, model_save_path, score):
 #     metadata['best_val_mean_absolute_error'] = min(history_meta['val_mean_absolute_error'])
 #     metadata['Evaluation_Loss'] = str(score[0])
 #     metadata['Evaluation_Accuracy'] = str(score[1])
-#     metadata['Model_Name'] = model_save_path
+#     metadata['Model_Name'] = model_blob_path
 #
 #     #do statistical analysis/summary stats on above variables e.g std dev, variance,
 #     #create json
@@ -118,30 +109,17 @@ def upload_history(history, model_save_path, score):
 #         # call get_iam_policy and change_iam_policy func to view and change IAM policy to get rid of error
 # #cloudstorage.Error, cloudstorage.AuthorizationError, cloudstorage.ForbiddenError, cloudstorage.NotFoundError, cloudstorage.TimeoutError
 
+#save and upload model to bucket
+def upload_model(model, model_blob_path,model_save_path):
 
-def upload_model(model, args, model_save_path):
-
+    #model.get_layer dense_1
+    #get file name from args
     print('Saving model')
-    # #get model name by accessing args
-    # if (args.bidirection):
-    #     model_prefix = 'model_blstm_hpconfig_'
-    # else:
-    #     model_prefix = 'model_lstm_hpconfig_'
-    #
-    # model_save_path = model_prefix + str(datetime.date(datetime.now())) + \
-    #     '_' + str((datetime.now().strftime('%H:%M')))+ '.h5'
-
-    # blob_path = 'models/'+ model_prefix + str(datetime.date(datetime.now())) +\
-    #      '_' + str((datetime.now().strftime('%H:%M')))+'.h5'
-    blob_path = 'models/' + model_save_path
 
     model.save(model_save_path)
+    upload_file(model_blob_path, model_save_path)
 
-    # blob = bucket.blob(blob_path)
-    # blob.upload_from_filename(model_save_path)
-    upload_file(blob_path, model_save_path)
-
-
+#upload blob to bucket
 def upload_file(blob_path, filepath):
 
     print('Uploading blob to GCP Storage')
@@ -151,51 +129,92 @@ def upload_file(blob_path, filepath):
     #blob_path is GCP Storage filepath
     #filepath is local path to file
 
+#download blob from bucket to local dir
 def download_file(blob_path, filepath):
 
     print('Downloading file...')
     blob = bucket.blob(blob_path)
     blob.download_to_filename(filepath)
 
-def list_bucket_objects(bucket_name):
-    # """Lists all the blobs in the bucket."""
-    # # bucket_name = "your-bucket-name"
-    #
-    # storage_client = storage.Client()
-    #
-    # # Note: Client.list_blobs requires at least package version 1.17.0.
-    # blobs = storage_client.list_blobs(bucket_name)
-    #
-    # for blob in blobs:
-    #     print(blob.name)
-    pass
+def get_best_model(project_id, job_name):
 
-def delete_blob(bucket_name, blob_name):
-    #     """Deletes a blob from the bucket."""
-    # # bucket_name = "your-bucket-name"
-    # # blob_name = "your-object-name"
-    #
-    # storage_client = storage.Client()
-    #
-    # bucket = storage_client.bucket(bucket_name)
-    # blob = bucket.blob(blob_name)
-    # blob.delete()
-    #
-    # print("Blob {} deleted.".format(blob_name))
-    pass
+    # Define the credentials for the service account
+    credentials = service_account.Credentials.from_service_account_file("service-account.json")
+    #credentials = GoogleCredentials.get_application_default()
 
-#
-# def view_bucket_iam_members(bucket_name):
-#     """View IAM Policy for a bucket"""
-#     # bucket_name = "your-bucket-name"
-#
-#     storage_client = storage.Client()
-#     bucket = storage_client.bucket(bucket_name)
-#
-#     policy = bucket.get_iam_policy(requested_policy_version=3)
-#
-#     for binding in policy.bindings:
-#         print("Role: {}, Members: {}".format(binding["role"], binding["members"]))
+    project_id = 'projects/{}'.format(project_id)
+    job_id = '{}/jobs/{}'.format(project_id, job_name)
+
+    ml = discovery.build('ml', 'v1', credentials=credentials)
+
+    try:
+        request = ml.projects().jobs().get(name=job_id).execute()
+    except errors.HttpError as err:
+        print('Error getting job details')
+        print(err._get_reason())
+
+    #get first best model
+    best_model = request['trainingOutput']['trials'][0]
+
+    print('Best Hyperparameters:')
+    print(json.dumps(best_model, indent=4))
+
+# Create a list for each field
+
+    trial_id, eval_score, conv1_filters, conv1_filters, conv3_filters, window_size,  conv2d_dropout, \
+    kernel_regularizer, pool_size, recurrent_layer1, recurrent_layer1, recurrent_dropout, \
+    recurrent_recurrent_dropout, after_recurrent_dropout, bidirection, recurrent_layer, \
+    dense_1, dense_2, dense_3, dense_4, dense_dropout, optimizer, learning_rate, epochs, \
+    batch_size, elapsed_time = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], \
+    [], [], [], [], [], [], [], [], [], [], []
+
+    # Loop through the json and append the values of each field to the lists
+    for each in request['trainingOutput']['trials']:
+        trial_id.append(each['trialId'])
+        eval_score.append(each['finalMetric']['eval_score'])
+        conv1_filters.append(each['hyperparameters']['conv1_filters'])
+        conv2_filters.append(each['hyperparameters']['conv2_filters'])
+        conv3_filters.append(each['hyperparameters']['conv3_filters'])
+        window_size.append(each['hyperparameters']['window_size'])
+        conv2d_dropout.append(each['hyperparameters']['conv2d_dropout'])
+
+    # Put the lsits into a df, transpose and name the columns
+    df = pd.DataFrame([trial_id, eval_score, conv1_filters, conv2_filters, conv3_filters, window_size, conv2d_dropout]).T
+    df.columns = ['trial_id', 'eval_score', 'conv1_filters', 'conv2_filters', 'conv3_filters', 'window_size', 'conv2d_dropout']
+
+    # Display the df
+    df.head()
+    return df
+
+#List all objects within bucket
+def list_bucket_objects():
+
+    blobs = storage_client.list_blobs(BUCKET_NAME)
+
+    for blob in blobs:
+        print(blob.name)
+
+#Delete specified blob from bucket
+def delete_blob(blob_name):
+
+
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(blob_name)
+    blob.delete()
+
+    print("Blob {} deleted.".format(blob_name))
+
+
+# """View IAM Policy for a bucket"""
+def view_bucket_iam_members():
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(BUCKET_NAME)
+
+    policy = bucket.get_iam_policy(requested_policy_version=3)
+
+    for binding in policy.bindings:
+        print("Role: {}, Members: {}".format(binding["role"], binding["members"]))
 
 #update iam policy of bucket so above functions can work
 def update_bucket_policy(bucket_name):

@@ -9,7 +9,7 @@ Datasets used for training:
 cullpdb+profile_6133.npy.gz - this dataset is dividied into training/testing/validation/test sets.
 cullpdb+profile_6133_filtered.npy.gz - this dataset is filtered to remove redundancies with the CB513 test dataset.
 
-The cullpdf_profile6133 dataset is in numpy format, thus for training and usabilitiy, it is reshaped into a 3-D array of size 6133 x 700 x 57 (Protein x amino acids(peptide chain) x features (for each amino acid)).
+The cullpdf_profile6133 dataset is in numpy format, thus for training and useabilitiy, it is reshaped into a 3-D array of size 6133 x 700 x 57 (Protein x amino acids(peptide chain) x features (for each amino acid)).
 
 In the used dataset the average protein chain consists of 208 amino acids.
 
@@ -33,6 +33,16 @@ http://130.88.97.239/bioactivity/aastructfrm.html
 The last feature of both amino acid residues and secondary structure labels just mark end of the protein sequence.
 [22,31) and [33,35) are hidden during testing.
 
+The 8 different labels for the secondary protein sequence are:
+
+* alpha helix
+* beta strand
+* loop or irregular
+* beta turn
+* bend
+* 310-helix
+* beta bridge
+* pi helix
 
 The dataset division for the first cullpdb+profile_6133.npy.gz dataset is
 [0,5600) training
@@ -57,14 +67,26 @@ https://www.princeton.edu/~jzthree/datasets/ICML2014/
 The CASP10 and CASP11 datasets are available at:
 https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
 
-**Installation:**
-Run pip install requirements.txt to install all the relevant packages/modules required.
-pip3 install requirements.txt or pip3 install -r requirements.txt
-Running model locally:
+## Installation - Python Requirements
+
+The required Python modules/packages are in requirements.txt. Call
+```
+pip3 install -r requirements.txt
+```
+
+## Running model locally with default parameters:
+```
+python main_local.py
+```
 
 **Running model and deploying to GCP:** <br>
-Change current working directory to psp_gcp - cd psp_gcp <br>
-Call bash script ./""
+Change current working directory to psp_gcp
+```
+cd psp_gcp
+```
+To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the gcp_config script in psp_gcp/scripts directory, which contains the relevant commands to execute to configure your GCP account. <br>
+Call bash script ./gcp_training.sh on a command line/terminal. This will call the BLSTM_3xConv_Model on the GCP Ai-Platform with the default settings and parameters.
+
 
 **Running model and deploying to AWS:** <br>
 Change current working directory to psp_aws - cd psp_aws <br>

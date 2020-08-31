@@ -9,23 +9,66 @@ else
   echo "Pip up-to-date"
 fi
 
-# echo "Installing dependancies from requirements.txt"
-# pip install -r requirements.txt
+#finish help function
+helpFunction()
+# https://unix.stackexchange.com/questions/31414/how-can-i-pass-a-command-line-argument-into-a-shell-script
+{
+   echo ""
+   echo "Usage: $0 -epochs epochs -batch_size batch size -alldata alldata"
+   echo -e "\t-epochs Number of epochs to run with model"
+   echo -e "\t-batch_size Batch Size to use with model"
+   echo -e "\t-alldata What proportion of data to use"
+   # exit 1 # Exit script after printing help
+}
+# helpFunction
+
+while getopts "epochs:batch_size:alldata:" opt
+do
+   case "$opt" in
+      epochs ) epochs="$OPTARG" ;;
+      batch_size ) batch_size="$OPTARG" ;;
+      alldata ) alldata="$OPTARG" ;;
+      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
+   esac
+done
+
+# Print helpFunction in case parameters are empty
+if [ -z "$epochs" ] || [ -z "$batch_size" ] || [ -z "$alldata" ]
+then
+   echo ""
+   echo "Some or all of the parameters are empty";
+   echo "Setting parameters to default values"
+   helpFunction
+fi
 
 # export PATH="${PATH}:/root/.local/bin"
 export PYTHONPATH="${PYTHONPATH}:/root/.local/bin"
 
-# export GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
+#set arguments to be passed into model
+BATCH_SIZE=42
+EPOCHS=10
+ALL_DATA=1.0
+# export GOOGLE_APPLICATION_CREDENTIALS="service-account.json" - set GAC env variable
 # echo $GOOGLE_APPLICATION_CREDENTIALS
 
 #set Ai-Platform Job environment variables
-JOB_NAME="blstm_2conv_model_$(date +"%Y%m%d_%H%M")"
-JOB_DIR="gs://keras-python-models"
+JOB_NAME="cnn_3x1Dconv_model_$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
+# JOB_DIR="gs://keras-python-models"
+JOB_DIR="gs://keras-python-models-2"
+
+###change job-dir to"gs://keras-python-models/job_logs" so logs are stored in sperate folder
 PACKAGE_PATH="training/"
-STAGING_BUCKET="gs://keras-python-models"
-CONFIG="training/gcp_training_config.yaml"
+STAGING_BUCKET="gs://keras-python-models-2"
+# CONFIG="training/training_utils/gcp_training_config.yaml"
+
+CONFIG="training/training_utils/temp_gcp_configfile.yaml"
+
 # MODULE="training.psp_blstm_2conv_gcp_model"
-MODULE="training.psp_blstm_2conv_gcp_model_dense"
+# MODULE="training.psp_blstm_2conv_gcp_model_dense"
+# MODULE="training.psp_cnn_gcp_model"
+# MODULE="training.psp_blstm_2conv_gcp_model_dense_new"
+MODULE="training.psp_cnn_gcp_model"
+# MODULE="training.psp_cnn_dnn_gcp_model"
 
 RUNTIME_VERSION="2.1"
 # RUNTIME_VERSION="1.15"  #https://cloud.google.com/ai-platform/training/docs/runtime-version-list
@@ -33,10 +76,7 @@ PYTHON_VERSION="3.7"
 REGION="us-central1"
 CUDA_VISIBLE_DEVICES=""
 
-#set arguments to be passed into model
-BATCH_SIZE=120
-EPOCHS=10
-ALL_DATA=1.0
+
 LOGS_DIR="$JOB_DIR""/logs/tensorboard/$JOB_NAME"
 
 #Function to parse GCP config file
@@ -67,9 +107,8 @@ echo "Logs and models stored in bucket: $JOB_DIR"
 echo ""
 
 echo "GCP Machine Type Parameters..."
-echo "Parsing YAML"
 
-eval $(parse_yaml training/gcp_training_config.yaml)
+eval $(parse_yaml training/training_utils/gcp_training_config.yaml)
 
 echo "Scale Tier: $trainingInput_scaleTier"
 echo "Master Type: $trainingInput_masterType"
@@ -77,8 +116,9 @@ echo "Worker Type: $trainingInput_workerType"
 echo "Parameter Server Type: $trainingInput_parameterServerType"
 echo "Worker Count : $trainingInput_workerCount"
 echo "Parameter Server Count: $trainingInput_parameterServerCount"
+echo ""
 
-
+     #submitting keras training job to Google Cloud
      gcloud ai-platform jobs submit training $JOB_NAME \
          --package-path $PACKAGE_PATH \
          --module-name $MODULE \
@@ -107,6 +147,7 @@ echo "tensorboard --logdir=$LOGS_DIR --port=8080"
 #From Ai-Platform Job Page of successfully trained model, open Google Cloud Shell,
 #execute - tensorboard --logdir=$LOGS_PATH --port=8080 - then click web preview in shell
 
+
 ### Run Model Locally ###
 # echo "Running  model locally..."
 # gcloud config set ml_engine/local_python $(which python3)
@@ -120,7 +161,6 @@ echo "tensorboard --logdir=$LOGS_DIR --port=8080"
 #   --batch_size $BATCH_SIZE \
 #   --alldata $ALL_DATA \
 #   --logs_dir $LOGS_DIR
-
 
 
 ##Common Errors when running gcloud command, see below link:

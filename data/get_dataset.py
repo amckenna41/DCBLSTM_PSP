@@ -55,7 +55,7 @@ def get_cullpdb_filtered():
 def get_cb513():
 
     print('Downloading CB513 dataset...\n')
-    #
+    
     # cwd = os.getcwd()
     # if cwd[len(cwd)-4:len(cwd)] != 'data':
     #     os.chdir('data')
@@ -117,18 +117,3 @@ def get_casp11():
 
     except OSError:
         print('Error downloading and exporting CASP11 dataset\n')
-
-#Tests and assertions 
-def test_dataset_url():
-
-    r = requests.get(TRAIN_URL, allow_redirects = True)
-    assert(r.status_code == 200)
-
-    r = requests.get(TEST_URL, allow_redirects = True)
-    assert(r.status_code == 200)
-
-    r = requests.get(CASP_10_URL, allow_redirects = True)
-    assert(r.status_code == 200)
-
-    r = requests.get(CASP_11_URL, allow_redirects = True)
-    assert(r.status_code == 200)
