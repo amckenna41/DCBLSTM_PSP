@@ -22,4 +22,4 @@ From psp_gcp directory, from a command line, run - ./training/gcp_config
 
 **Google Cloud Platform Architecture**<br>
 
-![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/master/psp_gcp/gcp_architecture.png?raw=true)
+![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/psp_gcp/gcp_architecture.png?raw=true)
