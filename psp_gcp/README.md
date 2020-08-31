@@ -4,11 +4,24 @@
 
 **Setup and configuration to GCP:** <br>
 1.)
-Using a terminal/command line, ensure that the current working directory is psps_gcp - cd psp_gcp  <br>
+Using a terminal/command line, ensure that the current working directory is psp_gcp - cd psp_gcp  <br>
 ##include picture of setup on GCP console
 1.)Execute the gcp_config.sh bash script which installs all the relevant dependancies and libraries required for connection to the GCP from the command line. This script ... <br>
 
-From psp_gcp directory, from a command line, run - ./training/gcp_config
+To call the model with the optimum parameters, from a command line, run:
+```
+./gcp_training
+```
+
+To call the hyperparameter tuning script, from a command line call:
+```
+./gcp_hptuning
+```
+If you want to change any of the default hyperparameters then pass the parameter in when calling the script, e.g:
+```
+./gcp_hptuning -epochs 10 -batch_size 42 -alldata 0.5
+```
+
 <br>
 2.) Execute
 
