@@ -79,7 +79,7 @@ pip3 install -r requirements.txt
 python main_local.py
 ```
 
-**Running model and deploying to GCP:** <br>
+##Running model and deploying to GCP:** <br>
 Change current working directory to psp_gcp
 ```
 cd psp_gcp
