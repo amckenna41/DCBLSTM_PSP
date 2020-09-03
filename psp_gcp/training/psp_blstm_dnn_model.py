@@ -1,4 +1,4 @@
-#PSP model using BLSTM RNN with CNN + DNN
+#PSP model using BLSTM RNN with DNN
 
 #import required modules and dependancies
 import tensorflow as tf
@@ -14,6 +14,12 @@ import os
 import sys
 from datetime import date
 from datetime import datetime
+from training.training_utils.get_dataset import *
+from training.training_utils.plot_model import *
+from training.training_utils.gcp_utils import *
+
+# from io import BytesIO
+# from tensorflow.python.lib.io import file_io
 
 
 #set required parameters and configuration for TensorBoard
@@ -29,6 +35,9 @@ config_proto.graph_options.rewrite_options.arithmetic_optimization = off
 # session = tf.Session(config=config_proto)
 session = tf.compat.v1.Session(config=config_proto)
 set_session(session)
+
+BUCKET_PATH = "gs://keras-python-models-2"
+BUCKET_NAME = "keras-python-models-2"
 
 #building BLSTM_3xConv_Model
 def build_model():
@@ -105,7 +114,7 @@ def main(args):
     print('Job Logs: ', job_dir)
 
     #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
-    if all_data not in range(0,1):
+    if (all_data == 0 or all_data > 1):
         all_data = 0.5
 
     print('Running model using {}%% of data'.format(int(all_data*100)))
@@ -155,9 +164,6 @@ def main(args):
 parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
 parser.add_argument('-b', '--batch_size', type=int, default=42,
                     help='batch size for training data (default: 42)')
-parser.add_argument('-sb','--storage_bucket', type=str, default=BUCKET_PATH,
-                    help='Google Storage Bucket storing data and logs')
-
 parser.add_argument('-e', '--epochs', type=int, default=10,
                     help='The number of epochs to run on the model')
 parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints and export models',required=False,

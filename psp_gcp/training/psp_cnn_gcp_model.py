@@ -18,11 +18,9 @@ import os
 import sys
 from datetime import date
 from datetime import datetime
-from google.cloud import storage
 from training.training_utils.get_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
-from google.oauth2 import service_account
 
 
 #set required parameters and configuration for TensorBoard
@@ -42,9 +40,6 @@ set_session(session)
 #initialise bucket and GCP storage client
 BUCKET_PATH = "gs://keras-python-models-2"
 BUCKET_NAME = "keras-python-models-2"
-storage_client = storage.Client()
-bucket = storage_client.get_bucket(BUCKET_NAME)
-
 
 ###Weight Initializers???
 
@@ -90,6 +85,7 @@ def build_model():
     # ave_pool_3 = AveragePooling1D(2, 1, padding='same')(conv_dropout)
 
     #concatenate convolutional layers
+    # conv_features = Concatenate(axis=-1)([max_pool_1D_1, max_pool_1D_2, max_pool_1D_3])
     conv_features = Concatenate(axis=-1)([max_pool_1D_1, max_pool_1D_2, max_pool_1D_3])
 
     #output node is 1D convolutional layer with 8 filters for the 8 different categories
@@ -124,9 +120,11 @@ def main(args):
     print("Logs Path: ", logs_path)
     print('Job Logs: ', job_dir)
 
+    all_data = 0.1
     #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
-    if all_data not in range(0,1):
+    if (all_data == 0 or all_data > 1):
         all_data = 0.5
+    # if all_data not in range(0,1):
 
     print('Running model using {}%% of data'.format(int(all_data*100)))
     train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted(all_data)
@@ -162,15 +160,15 @@ def main(args):
 
     model_blob_path = 'models/model_3x1Dconv_cnn_'+ str(datetime.date(datetime.now()))
 
-    model_save_path = 'model_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + str(datetime.date(datetime.now())) + \
+    model_save_path = 'model_4x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + str(datetime.date(datetime.now())) + \
         '_' + str((datetime.now().strftime('%H:%M')))+ '_accuracy-'+ str(score[1]) \
         +'_loss-' + str(score[0]) + '.h5'
 
     # model.save(model_save_path)
 
-    upload_history(history,model_save_path,score)
-    upload_model(model, model_blob_path,model_save_path) #model_blob_path
-    plot_history(history.history, model_blob_path,show_histograms=True, show_boxplots=True, show_kde=True)
+    # upload_history(history,model_save_path,score)
+    # upload_model(model, model_blob_path,model_save_path) #model_blob_path
+    plot_history(history.history, model_blob_path,show_histograms=False, show_boxplots=False, show_kde=False)
 
 
 #initialise input arguments to model
@@ -181,7 +179,7 @@ parser.add_argument('-e', '--epochs', type=int, default=10,
                     help='The number of epochs to run on the model')
 parser.add_argument('-jd', '--job-dir', help='GCS location where job logs are stored',required=False,
                     default = (BUCKET_PATH + '/job_logs'))
-parser.add_argument('-alldata', '--alldata', type =float, default=1,
+parser.add_argument('-alldata', '--alldata', type =float, default=1.0,
                     help='Select what proportion of training and test data to use, 1 - All data, 0.5 - 50%% of data etc')
 parser.add_argument('-logs_dir', '--logs_dir', help='Directory on cloud storage for Tensorboard logs',required=False, default = (BUCKET_NAME + "/logs/tensorboard"))
 

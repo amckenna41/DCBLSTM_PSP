@@ -45,29 +45,43 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     precision_fig_filename = 'precision_fig'+ str(datetime.date(datetime.now())) + \
         '_' + str((datetime.now().strftime('%H:%M')))+ '.png'
 
+    # #plot train and validation accuracy on history
+    # plt.figure()
+    # plt.plot(history_accuracy_array)
+    # plt.plot(history_val_accuracy_array)
+    # plt.title('Model Accuracy')
+    # plt.ylabel('Accuracy')
+    # plt.xlabel('epoch')
+    # plt.legend(['trainaccuracy', 'valaccuracy'], loc='upper left')
+    # plt.savefig(accuracy_fig_filename, dpi=200)
+    # plt.show()
+    # plt.close()
+
     #plot train and validation accuracy on history
     plt.figure()
     plt.plot(history_accuracy_array)
     plt.plot(history_val_accuracy_array)
-    plt.title('Model Accuracy')
-    plt.ylabel('Accuracy')
+    plt.plot(history_loss_array)
+    plt.plot(history_val_loss_array)
+    plt.title('Model Loss & Accuracy')
+    plt.ylabel('Loss & Accuracy')
     plt.xlabel('epoch')
-    plt.legend(['trainaccuracy', 'valaccuracy'], loc='upper left')
+    plt.legend(['train_accuracy', 'val_accuracy', 'train_loss', 'val_loss'], loc='upper left')
     plt.savefig(accuracy_fig_filename, dpi=200)
     plt.show()
     plt.close()
 
-    #plot train and validation loss on history
-    plt.figure()
-    plt.plot(history_loss_array)
-    plt.plot(history_val_loss_array)
-    plt.title('Model Loss')
-    plt.ylabel('Loss')
-    plt.xlabel('Epoch')
-    plt.legend(['trainloss', 'valloss'], loc='upper left')
-    plt.savefig(loss_fig_filename, dpi=200)
-    plt.show()
-    plt.close()
+    # #plot train and validation loss on history
+    # plt.figure()
+    # plt.plot(history_loss_array)
+    # plt.plot(history_val_loss_array)
+    # plt.title('Model Loss')
+    # plt.ylabel('Loss')
+    # plt.xlabel('Epoch')
+    # plt.legend(['trainloss', 'valloss'], loc='upper left')
+    # plt.savefig(loss_fig_filename, dpi=200)
+    # plt.show()
+    # plt.close()
 
     #plot train and validation Mean Absolute Error
     plt.figure()

@@ -128,6 +128,8 @@ if __name__ == "__main__":
                         help='batch size for test data (default: 1)')
     parser.add_argument('-logs_dir', '--logs_dir', type=str, default='saved_models/logs',
                         help='Directory for Tensorboard logs to be stored, stored by default in saved_models/logs')
+    parser.add_argument('-model_dir', '--model_dir', type=str, default='saved_models',
+                        help='Directory for saving models logs, default in saved_models')
     parser.add_argument('--data_dir', type=str, default='data',
                         help='Directory for training and test datasets, by default stored in data dir')
     parser.add_argument('-e', '--epochs', type=int, default=10,

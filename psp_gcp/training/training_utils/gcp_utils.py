@@ -14,8 +14,6 @@ from oauth2client.client import GoogleCredentials
 import pandas as pd
 import pickle
 import json
-from training.training_utils.get_dataset import *
-from training.training_utils.plot_model import *
 # storage_client = storage.Client.from_service_account_json("service-account.json")
 
 #initialise bucket name and GCP storage client

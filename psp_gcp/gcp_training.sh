@@ -9,38 +9,6 @@ else
   echo "Pip up-to-date"
 fi
 
-#finish help function
-helpFunction()
-# https://unix.stackexchange.com/questions/31414/how-can-i-pass-a-command-line-argument-into-a-shell-script
-{
-   echo ""
-   echo "Usage: $0 -epochs epochs -batch_size batch size -alldata alldata"
-   echo -e "\t-epochs Number of epochs to run with model"
-   echo -e "\t-batch_size Batch Size to use with model"
-   echo -e "\t-alldata What proportion of data to use"
-   # exit 1 # Exit script after printing help
-}
-# helpFunction
-
-while getopts "epochs:batch_size:alldata:" opt
-do
-   case "$opt" in
-      epochs ) epochs="$OPTARG" ;;
-      batch_size ) batch_size="$OPTARG" ;;
-      alldata ) alldata="$OPTARG" ;;
-      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
-   esac
-done
-
-# Print helpFunction in case parameters are empty
-if [ -z "$epochs" ] || [ -z "$batch_size" ] || [ -z "$alldata" ]
-then
-   echo ""
-   echo "Some or all of the parameters are empty";
-   echo "Setting parameters to default values"
-   helpFunction
-fi
-
 # export PATH="${PATH}:/root/.local/bin"
 export PYTHONPATH="${PYTHONPATH}:/root/.local/bin"
 
@@ -59,15 +27,15 @@ JOB_DIR="gs://keras-python-models-2"
 ###change job-dir to"gs://keras-python-models/job_logs" so logs are stored in sperate folder
 PACKAGE_PATH="training/"
 STAGING_BUCKET="gs://keras-python-models-2"
-# CONFIG="training/training_utils/gcp_training_config.yaml"
+CONFIG="training/training_utils/gcp_training_config.yaml"
 
-CONFIG="training/training_utils/temp_gcp_configfile.yaml"
+# CONFIG="training/training_utils/temp_gcp_configfile.yaml"
 
-# MODULE="training.psp_blstm_2conv_gcp_model"
-# MODULE="training.psp_blstm_2conv_gcp_model_dense"
 # MODULE="training.psp_cnn_gcp_model"
-# MODULE="training.psp_blstm_2conv_gcp_model_dense_new"
-MODULE="training.psp_cnn_gcp_model"
+# MODULE="training.psp_blstm_gcp_model"
+MODULE="training.psp_rnn_gcp_hpconfig"
+
+# MODULE="training.psp_cnn_dnn_gcp_model"
 # MODULE="training.psp_cnn_dnn_gcp_model"
 
 RUNTIME_VERSION="2.1"

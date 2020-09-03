@@ -18,11 +18,9 @@ import os
 import sys
 from datetime import date
 from datetime import datetime
-from google.cloud import storage
-from training.get_dataset import *
-from training.plot_model import *
-from training.gcp_utils import *
-from google.oauth2 import service_account
+from training.training_utils.get_dataset import *
+from training.training_utils.plot_model import *
+from training.training_utils.gcp_utils import *
 
 
 #set required parameters and configuration for TensorBoard
@@ -42,10 +40,6 @@ set_session(session)
 #initialise bucket and GCP storage client
 BUCKET_PATH = "gs://keras-python-models-2"
 BUCKET_NAME = "keras-python-models-2"
-storage_client = storage.Client()
-bucket = storage_client.get_bucket(BUCKET_NAME)
-TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy'
-
 
 #building 3x1D CNN with 4xDense DNN
 def build_model():
@@ -90,21 +84,23 @@ def build_model():
 
     #Dense Fully-Connected DNN layers
     dense_1 = Dense(300, activation='relu')(conv_features)
-    dense_1_dropout = Dropout(dense_dropout)(dense_1)
+    dense_1_dropout = Dropout(0.5)(dense_1)
+    # dense_1_5 = Dense(200, activation='relu')(dense_1_dropout)
+    # dense_1_5_dropout = Dropout(0.5)(dense_1_5)
     dense_2 = Dense(100, activation='relu')(dense_1_dropout)
-    dense_2_dropout = Dropout(dense_dropout)(dense_2)
+    dense_2_dropout = Dropout(0.5)(dense_2)
     dense_3 = Dense(50, activation='relu')(dense_2_dropout)
-    dense_3_dropout = Dropout(dense_dropout)(dense_3)
+    dense_3_dropout = Dropout(0.5)(dense_3)
     dense_4 = Dense(16, activation='relu')(dense_3_dropout)
-    dense_4_dropout = Dropout(dense_dropout)(dense_4)
+    dense_4_dropout = Dropout(0.5)(dense_4)
 
     #Final Dense layer with 8 nodes for the 8 output classifications
-    main_output = Dense(8, activation='softmax', name='main_output')(protein_features_dropout)
+    main_output = Dense(8, activation='softmax', name='main_output')(dense_4_dropout)
 
     #create model from inputs and outputs
     model = Model(inputs=[main_input, auxiliary_input], outputs=[main_output])
     #use Adam optimizer
-    adam = Adam(lr=lr)
+    adam = Adam(lr=0.0003)
 
     #Adam is fast, but tends to over-fit
     #SGD is low but gives great results, sometimes RMSProp works best, SWA can easily improve quality, AdaTune
@@ -134,7 +130,7 @@ def main(args):
     print('Job Logs: ', job_dir)
 
     #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
-    if all_data not in range(0,1):
+    if (all_data == 0 or all_data > 1):
         all_data = 0.5
 
     print('Running model using {}%% of data'.format(int(all_data*100)))
@@ -180,16 +176,15 @@ def main(args):
         '_' + str((datetime.now().strftime('%H:%M')))+ '_accuracy-'+ str(score[1]) \
         +'_loss-' + str(score[0]) + '.h5'
 
-    upload_history(history,model_save_path,score)
-    upload_model(model, args,model_save_path)   #model_blob_path
-    plot_history(history.history, show_histograms=True, show_boxplots=True, show_kde=True)
-
+    # upload_history(history,model_save_path,score)
+    # upload_model(model, args,model_save_path)   #model_blob_path
+    # plot_history(history.history, show_histograms=True, show_boxplots=True, show_kde=True)
+    #
 
 #initialise input arguments to model
 parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
 parser.add_argument('-b', '--batch_size', type=int, default=42,
                     help='batch size for training data (default: 42)')
-
 parser.add_argument('-e', '--epochs', type=int, default=10,
                     help='The number of epochs to run on the model')
 parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints and export models',required=False,

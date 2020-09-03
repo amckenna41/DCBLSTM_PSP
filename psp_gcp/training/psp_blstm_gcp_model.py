@@ -18,11 +18,9 @@ import os
 import sys
 from datetime import date
 from datetime import datetime
-from google.cloud import storage
-from training.get_dataset import *
-from training.plot_model import *
-from training.gcp_utils import *
-from google.oauth2 import service_account
+from training.training_utils.get_dataset import *
+from training.training_utils.plot_model import *
+from training.training_utils.gcp_utils import *
 
 #set required parameters and configuration for TensorBoard
 tf.compat.v1.reset_default_graph()
@@ -41,8 +39,6 @@ set_session(session)
 #initialise bucket and GCP storage client
 BUCKET_PATH = "gs://keras-python-models-2"
 BUCKET_NAME = "keras-python-models-2"
-storage_client = storage.Client()
-bucket = storage_client.get_bucket(BUCKET_NAME)
 
 #building BLSTM_3xConv_Model
 def build_model():
@@ -89,6 +85,7 @@ def build_model():
     #concatenate convolutional layers
     conv_features = Concatenate(axis=-1)([max_pool_1D_1, max_pool_1D_2, max_pool_1D_3])
 
+    #Reshape to 3D
      ######## Recurrent Bi-Directional Long-Short-Term-Memory Layers ########
     lstm_f1 = Bidirectional(LSTM(400,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5))(conv_features)
 
@@ -99,14 +96,14 @@ def build_model():
     concat_features = Dropout(0.4)(concat_features)
 
     #Dense Fully-Connected DNN layers
-    dense_1 = Dense(300, activation='relu')(conv_features)
-    dense_1_dropout = Dropout(dense_dropout)(dense_1)
+    dense_1 = Dense(300, activation='relu')(concat_features)
+    dense_1_dropout = Dropout(0.5)(dense_1)
     dense_2 = Dense(100, activation='relu')(dense_1_dropout)
-    dense_2_dropout = Dropout(dense_dropout)(dense_2)
+    dense_2_dropout = Dropout(0.5)(dense_2)
     dense_3 = Dense(50, activation='relu')(dense_2_dropout)
-    dense_3_dropout = Dropout(dense_dropout)(dense_3)
+    dense_3_dropout = Dropout(0.5)(dense_3)
     dense_4 = Dense(16, activation='relu')(dense_3_dropout)
-    dense_4_dropout = Dropout(dense_dropout)(dense_4)
+    dense_4_dropout = Dropout(0.5)(dense_4)
 
     #Final Dense layer with 8 nodes for the 8 output classifications
     main_output = Dense(8, activation='softmax', name='main_output')(dense_4_dropout)
@@ -142,10 +139,11 @@ def main(args):
 
     print("Logs Path: ", logs_path)
     print('Job Logs: ', job_dir)
-
+    epochs = 1
+    all_data = 0.10
     #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
-    if all_data not in range(0,1):
-        all_data = 1.0
+    if (all_data == 0 or all_data > 1):
+        all_data = 0.5
 
     print('Running model using {}%% of data'.format(int(all_data*100)))
     train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted(all_data)
@@ -185,18 +183,14 @@ def main(args):
         +'_loss-' + str(score[0]) + '.h5'
 
     #create directory in bucket for new model - name it the model name, store model
-    upload_history(history,model_save_path,score)
-    upload_model(model, args,model_save_path, model_blob_path)
-    plot_history(history.history, show_histograms=True, show_boxplots=True, show_kde=True)
-
+    # upload_history(history,model_save_path,score)
+    # upload_model(model, model_blob_path, model_save_path)
+    # plot_history(history.history, show_histograms=True, show_boxplots=True, show_kde=True)
 
 #initialise input arguments to model
 parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
 parser.add_argument('-b', '--batch_size', type=int, default=42,
                     help='batch size for training data (default: 42)')
-parser.add_argument('-sb','--storage_bucket', type=str, default=BUCKET_PATH,
-                    help='Google Storage Bucket storing data and logs')
-
 parser.add_argument('-e', '--epochs', type=int, default=10,
                     help='The number of epochs to run on the model')
 parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints and export models',required=False,

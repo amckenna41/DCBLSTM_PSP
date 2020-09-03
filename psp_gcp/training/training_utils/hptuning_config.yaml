@@ -15,8 +15,8 @@ trainingInput:
   hyperparameters:
     goal: MAXIMIZE            #Hyperparameter Tuning run to maximise accuracy in models
     hyperparameterMetricTag: eval_score
-    maxTrials: 40                       #for CATEGORICAL/Discrete values, maxTrials = # of CATEGORICAL/Discrete variables
-    maxParallelTrials: 10
+    maxTrials: 2                     #for CATEGORICAL/Discrete values, maxTrials = # of CATEGORICAL/Discrete variables
+    maxParallelTrials: 1
     enableTrialEarlyStopping: True
     params:
     - parameterName: recurrent_layer1
@@ -32,13 +32,19 @@ trainingInput:
       minValue: 0.20
       maxValue: 0.70
     - parameterName: after_recurrent_dropout
-      type: discreteValues
+      type: DOUBLE
       minValue: 0.20
       maxValue: 0.70
     - parameterName: recurrent_recurrent_dropout
-      type: discreteValues
+      type: DOUBLE
       minValue: 0.20
       maxValue: 0.70
+    - parameterName: recurrent_weight_initializer
+      type: CATEGORICAL
+      categoricalValues: [
+      random_normal,random_uniform,truncated_normal,zeros,
+      ones,glorot_uniform,glorot_normal
+      ]
     - parameterName: conv1_filters
       type: DISCRETE
       discreteValues:
@@ -69,6 +75,12 @@ trainingInput:
       minValue: 0.25
       maxValue: 0.75
       scaleType: UNIT_LINEAR_SCALE
+    - parameterName: conv_weight_initializer
+      type: CATEGORICAL
+      categoricalValues: [
+      random_normal,random_uniform,truncated_normal,zeros,
+      ones,glorot_uniform,glorot_normal
+      ]
     - parameterName: dense_dropout
       type: DOUBLE
       minValue: 0.2
@@ -100,19 +112,20 @@ trainingInput:
       - 10
       - 16
       - 20
+    - parameterName: dense_weight_initializer
+      type: CATEGORICAL
+      categoricalValues: [
+      random_normal,random_uniform,truncated_normal,zeros,
+      ones,glorot_uniform,glorot_normal
+      ]
     - parameterName: kernel_regularizer
-      type: DISCRETE
-      discreteValues:
-      - l1
-      - l2
+      type: CATEGORICAL
+      categoricalValues: [l1, l2]
     - parameterName: optimizer
       type: CATEGORICAL
-      categoricalValues:
-      - adam
-      - sgd
-      - rms
-      - adagrad
-      - adamax
+      categoricalValues: [
+      adam, sgd, rms, adagrad, adamax
+      ]
     - parameterName: learning_rate
       type: DOUBLE
       minValue: 0.0003
