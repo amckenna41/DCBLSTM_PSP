@@ -2,14 +2,8 @@
 #the GCP application for training
 
 from setuptools import setup, find_packages
-# import os, sys
-# sys.path.append(os.path.abspath(os.path.join('..', 'models')))
 
-# currentdir = os.path.dirname(os.path.realpath(__file__))
-# parentdir = os.path.dirname(currentdir)
-# sys.path.append(parentdir)
-
-setup(name='training',#psp_gcp/training
+setup(name='training',
       version='0.1',
       description='Running Deep CNN on Google Cloud Ai-platform',
       author='Adam McKenna',
@@ -23,6 +17,8 @@ setup(name='training',#psp_gcp/training
           'google.cloud',
           'matplotlib',
           'seaborn',
+          # 'pydot',
+          # 'graphviz',
           'cloudml-hypertune'
       ],
      packages=find_packages(),

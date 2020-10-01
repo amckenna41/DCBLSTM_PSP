@@ -1,4 +1,4 @@
-#PSP model using just a Convolutional Neural Netwokr (CNN)
+#PSP model using ULSTM RNN with CNN + DNN
 
 #import required modules and dependancies
 import tensorflow as tf
@@ -30,8 +30,7 @@ config_proto.graph_options.rewrite_options.arithmetic_optimization = off
 session = tf.compat.v1.Session(config=config_proto)
 set_session(session)
 
-
-#building 3x1D Conv model with the optimally tuned hyperparameters
+#building BLSTM_3xConv_Model
 def build_model():
 
     #main input is the length of the amino acid in the protein sequence (700,)
@@ -50,38 +49,52 @@ def build_model():
     #concatenate 2 input layers
     concat = Concatenate(axis=-1)([embed, auxiliary_input])
 
-    #3x1D Convolutional Hidden Layers with BatchNormalization and MaxPooling
-    conv_layer1 = Conv1D(64, 7, kernel_regularizer = "l2", padding='same')(concat)
+    #3x1D Convolutional Hidden Layers with BatchNormalization, Dropout and MaxPooling
+    conv_layer1 = Conv1D(16, 7, kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer1)
     conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.5)(conv2D_act)
-    # ave_pool_1 = AveragePooling1D(2, 1, padding='same')(conv_dropout)
+    conv_dropout = Dropout(0.2)(conv2D_act)
     max_pool_1D_1 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
-    conv_layer2 = Conv1D(128, 7, padding='same')(concat)
+    conv_layer2 = Conv1D(32, 7, padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer2)
     conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.5)(conv2D_act)
-    # ave_pool_2 = AveragePooling1D(2, 1, padding='same')(conv_dropout)
+    conv_dropout = Dropout(0.2)(conv2D_act)
     max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
-    conv_layer3 = Conv1D(256, 7,kernel_regularizer = "l2", padding='same')(concat)
+    conv_layer3 = Conv1D(64, 7,kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer3)
     conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.5)(conv2D_act)
+    conv_dropout = Dropout(0.2)(conv2D_act)
     max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
     # ave_pool_3 = AveragePooling1D(2, 1, padding='same')(conv_dropout)
 
     #concatenate convolutional layers
     conv_features = Concatenate(axis=-1)([max_pool_1D_1, max_pool_1D_2, max_pool_1D_3])
 
-    #output node is 1D convolutional layer with 8 filters for the 8 different categories
-    main_output = Conv1D(8, 7, padding='same', activation='softmax', name='main_output')(conv_features)
+     ######## Recurrent Unidirectional Long-Short-Term-Memory Layers ########
+    lstm_f1 = LSTM(200,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(conv_features)
+
+    lstm_f2 = LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_f1)
+
+    lstm_f3 = LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_f2)
+
+    #concatenate LSTM with convolutional layers
+    concat_features = Concatenate(axis=-1)([lstm_f1, lstm_f2, lstm_f3, conv_features])
+    concat_features = Dropout(0.4)(concat_features)
+
+    #Dense Fully-Connected DNN layers
+    dense_1 = Dense(600, activation='relu')(conv_features)
+    dense_1_dropout = Dropout(0.3)(dense_1)
+
+    #Final Dense layer with 8 nodes for the 8 output classifications
+    main_output = Dense(8, activation='softmax', name='main_output')(dense_4_dropout)
 
     #create model from inputs and outputs
     model = Model(inputs=[main_input, auxiliary_input], outputs=[main_output])
+
     #use Adam optimizer
-    adam = Adam(lr=0.0003)
+    adam = Adam(lr=0.0015)
 
     #compile model using adam optimizer and the cateogorical crossentropy loss function
     model.compile(optimizer = adam, loss={'main_output': 'categorical_crossentropy'}, metrics=['accuracy', MeanSquaredError(), FalseNegatives(), FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision()])
@@ -89,7 +102,7 @@ def build_model():
 
     #set earlyStopping and checkpoint callback
     earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
-    checkpoint_path = "checkpoints/3xConv_cnn_" + str(datetime.date(datetime.now())) + ".h5"
+    checkpoint_path = "/CDULSTM_" + str(datetime.date(datetime.now())) + ".h5"
     checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
 
     return model

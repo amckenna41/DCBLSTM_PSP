@@ -1,6 +1,6 @@
-###Downloading the training and test datasets and uploading them to a GCP Storage
-#Datasets stored in local psp_gcp directory
-#bucket to be used in the models
+###Downloading the training and test datasets and uploading them to a GCP Storage Bucket
+#Datasets downloaded to local psp_gcp directory as they are required when the GCP job is packaged
+#and sent to GCP Ai-Platform
 
 #importing libraries and dependancies
 import numpy as np
@@ -26,7 +26,6 @@ CASP_10_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLe
 CASP_11_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp11.h5"
 BUCKET_NAME = "gs://keras-python-models-2"
 
-#turn into class and add asertions
 #download and unzip filtered cullpdb training data
 def get_cullpdb_filtered():
 
@@ -40,6 +39,7 @@ def get_cullpdb_filtered():
             dir_path = os.path.dirname(os.path.realpath(TRAIN_PATH))
             source_path = dir_path + '/' + TRAIN_PATH
             destination_path = dir_path + '/' + TRAIN_NPY
+
             print('Exporting Cullpdb 6133 datatset....')
             with gzip.open(TRAIN_PATH, 'rb') as f_in:
                 with open(TRAIN_NPY, 'wb') as f_out:
@@ -63,7 +63,6 @@ def get_cb513():
 
     try:
         if not (os.path.isfile(os.getcwd() + '/' + TEST_PATH)):
-            #os.system(f'wget -O {TEST_PATH} {TEST_URL}')
             r = requests.get(TEST_URL, allow_redirects = True)
             open(TEST_PATH, 'wb').write(r.content)
             dir_path = os.path.dirname(os.path.realpath(TEST_PATH))
@@ -90,7 +89,6 @@ def get_casp10():
 
     try:
         if not (os.path.isfile(CASP10_PATH)):
-            #os.system(f'wget -O {CASP10_PATH} {CASP_10_URL}')
             #os.system('wget -O {} {}'.format(CASP10_PATH, CASP_10_URL))
             r = requests.get(CASP_10_URL, allow_redirects = True)
             open('casp10.h5', 'wb').write(r.content)
@@ -111,8 +109,6 @@ def get_casp11():
 
     try:
         if not (os.path.isfile(CASP11_PATH)):
-            #os.system(f'wget -O {CASP10_PATH} {CASP_10_URL}') #errors using wget so using requests
-            #os.system('wget -O {} {}'.format(CASP10_PATH, CASP_10_URL))
             r = requests.get(CASP_11_URL, allow_redirects = True)
             open('casp11.h5', 'wb').write(r.content)
             print('CASP11 dataset downloaded\n')
@@ -132,15 +128,9 @@ def load_cul6133_filted(all_data = 1):
 
     print("Loading training dataset (Cullpdb_filtered)...\n")
 
-    #Below code allows for function to be called from data dir or top-level dir
-    # cwd = os.getcwd()
-    # if cwd[len(cwd)-4:len(cwd)] != 'data':
-    #     os.chdir('data')
-    #     new_cwd = os.getcwd() #now in the data dir
-    #     #TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
-
     TRAIN_PATH_ = os.getcwd() + '/' + TRAIN_PATH
 
+    #if dataset not in directory then call get function
     if not (os.path.isfile(TRAIN_PATH_)):
         print('Getting dataset')
         get_cullpdb_filtered()
@@ -175,22 +165,10 @@ def load_cul6133_filted(all_data = 1):
     trainlabel = labels[seq_index[:data_index]]
     trainpssm = datapssm[seq_index[:data_index]]
 
-    print('Trainign shapes')
-    print(trainhot.shape)
-    print(trainlabel.shape)
-    print(trainpssm.shape)
-
-
     #get validation data
     vallabel = labels[seq_index[data_index:val_data_upper]] #8
     valpssm = datapssm[seq_index[data_index:val_data_upper]] # 21
     valhot = datahot[seq_index[data_index:val_data_upper]] #21
-
-    print('Val shapes')
-
-    print(vallabel.shape)
-    print(valpssm.shape)
-    print(valhot.shape)
 
     train_hot = np.ones((trainhot.shape[0], trainhot.shape[1]))
     for i in range(trainhot.shape[0]):
@@ -213,28 +191,17 @@ def load_cb513(all_data = 1):
 
     print("Loading test dataset (CB513)...\n")
 
-    #Below code allows for function to be called from data dir or top-level dir
-    # cwd = os.getcwd()
-    # if cwd[len(cwd)-4:len(cwd)] != 'data':
-    #     os.chdir('data')
-    #     new_cwd = os.getcwd() #now in the data dir
-        #TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
-    TEST_PATH = 'cb513+profile_split1.npy.gz'
-
     TEST_PATH_ = os.getcwd() + '/' + TEST_PATH
 
+    #if dataset not in directory then call get function
     if not (os.path.isfile(TEST_PATH_)):
         print('Getting dataset')
         get_cb513()
 
+    #load test dataset
     CB513 = np.load(TEST_PATH_)
 
-    #download dataset if not already in current directory
-    # if not (os.path.isfile(TEST_PATH)):
-    #     get_dataset.get_cb513()
-
-    #load test dataset
-    #CB513= np.load(TEST_PATH)
+    #reshape dataset
     CB513= np.reshape(CB513,(-1,700,57))
 
     #sequence feature
@@ -250,7 +217,6 @@ def load_cb513(all_data = 1):
     testpssm = testpssm[:test_data_index]
     testlabel = testlabel[:test_data_index]
 
-
     test_hot = np.ones((testhot.shape[0], testhot.shape[1]))
     for i in range(testhot.shape[0]):
         for j in range(testhot.shape[1]):
@@ -264,15 +230,9 @@ def load_casp10():
 
     print("Loading CASP10 dataset...\n")
 
-    #Below code allows for function to be called from data dir or top-level dir
-    # cwd = os.getcwd()
-    # if cwd[len(cwd)-4:len(cwd)] != 'data':
-    #     os.chdir('data')
-    #     new_cwd = os.getcwd() #now in the data dir
-        #TRAIN_PATH_ = new_cwd + '/' + TRAIN_PATH
-
     CASP10_PATH_ = os.getcwd() + '/' + CASP10_PATH
 
+    #if dataset not in directory then call get function
     if not (os.path.isfile(CASP10_PATH_)):
         print('Getting dataset')
         get_casp10()
@@ -302,12 +262,14 @@ def load_casp11():
 
     print("Loading CASP11 dataset...\n")
 
-    #download dataset if not already in current directory
-    if not (os.path.isfile(CASP11_PATH)):
+    CASP11_PATH_ = os.getcwd() + '/' + CASP11_PATH
+
+    #if dataset not in directory then call get function
+    if not (os.path.isfile(CASP11_PATH_)):
         get_casp11()
 
     #load casp11 dataset
-    casp11_data = h5py.File(CASP11_PATH)
+    casp11_data = h5py.File(CASP11_PATH_)
 
     #load protein sequence and profile feature data
     casp11_data_hot = casp11_data['features'][:,:,0:21]
@@ -326,13 +288,13 @@ def load_casp11():
 
     return casp11_data_test_hot, casp11_data_test_hot, test_labels
 
-#download all datasets used in PSP
-def download_all_data():
-
-    load_cul6133_filted()
-    load_cb513()
-    load_casp10()
-    load_casp11()
-
-if __name__ == "main":
-    download_all_data()
+# #download and load all datasets used in PSP
+# def download_all_data():
+#
+#     load_cul6133_filted()
+#     load_cb513()
+#     load_casp10()
+#     load_casp11()
+#
+# if __name__ == "main":
+#     download_all_data()

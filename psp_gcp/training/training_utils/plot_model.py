@@ -27,23 +27,13 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     #initialise all global variables used in plotting
     initialise_vars(history, model_folder_path)
 
-    # history = history_filepath
-
-    # f = BytesIO(file_io.read_file_to_string('gs://keras-python-models/cullpdb+profile_6133_filtered.npy', binary_mode=True))
-
     #initialise figure filenames
-    accuracy_fig_filename = 'accuracy_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_fig_filename = 'loss_fig'+ str(datetime.date(datetime.now()))+ \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_fig_filename = 'mae _fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_fig_filename = 'mse_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M')))+ '.png'
-    recall_fig_filename = 'recall_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    precision_fig_filename = 'precision_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M')))+ '.png'
+    accuracy_fig_filename = 'accuracy_fig'+ current_datetime + '.png'
+    loss_fig_filename = 'loss_fig'+ current_datetime + '.png'
+    mae_fig_filename = 'mae _fig'+ current_datetime + '.png'
+    mse_fig_filename = 'mse_fig'+ current_datetime + '.png'
+    recall_fig_filename = 'recall_fig'+ current_datetime + '.png'
+    precision_fig_filename = 'precision_fig'+ current_datetime + '.png'
 
     # #plot train and validation accuracy on history
     # plt.figure()
@@ -132,36 +122,22 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.close()
 
     #Upload all metric figures to GCP Storage
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_fig_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
-    # blob_path = 'plots/plots_' + str(datetime.date(datetime.now())) + '/accuracy_fig_'+ \
-    #     str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_fig_'+ current_datetime + '.png'
     utils.upload_file(blob_path, accuracy_fig_filename)
 
-    # blob_path = 'plots/plots_' + str(datetime.date(datetime.now())) + '/loss_fig_'+ \
-    #     str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_fig'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_fig_'+ current_datetime + '.png'
     utils.upload_file(blob_path, loss_fig_filename)
 
-    # blob_path = 'plots/plots_' + str(datetime.date(datetime.now())) + '/mae_fig_'+ \
-    #     str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_fig_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_fig_'+ current_datetime + '.png'
     utils.upload_file(blob_path, mae_fig_filename)
 
-    # blob_path = 'plots/plots_' + str(datetime.date(datetime.now())) + '/mse_fig_'+ \
-    #     str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_fig'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_fig'+ current_datetime + '.png'
     utils.upload_file(blob_path, mse_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/recall_fig'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/recall_fig'+ current_datetime + '.png'
     utils.upload_file(blob_path, recall_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/precision_fig'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/precision_fig'+ current_datetime + '.png'
     utils.upload_file(blob_path, precision_fig_filename)
 
     #Plot histograms of metrics
@@ -178,16 +154,14 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
 
 #Plot Boxplots of history
 def plot_boxplots(history):
+    current_datetime = str(datetime.date(datetime.now())) + \
+        '_' + str((datetime.now().strftime('%H:%M')))
 
     #initialise filenames for boxplots
-    accuracy_box_filename = 'accuracy_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_box_filename = 'loss_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_box_filename = 'mae_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_box_filename = 'mse_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
+    accuracy_box_filename = 'accuracy_boxplot_'+ current_datetime + '.png'
+    loss_box_filename = 'loss_boxplot_'+ current_datetime + '.png'
+    mae_box_filename = 'mae_boxplot_'+ current_datetime + '.png'
+    mse_box_filename = 'mse_boxplot_'+ current_datetime + '.png'
 
     #filter outliers
     filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
@@ -202,8 +176,7 @@ def plot_boxplots(history):
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_boxplot_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_boxplot_'+ current_datetime + '.png'
     utils.upload_file(blob_path, accuracy_box_filename)
 
     #filter outliers
@@ -219,8 +192,7 @@ def plot_boxplots(history):
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_boxplot_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_boxplot_'+ current_datetime + '.png'
     utils.upload_file(blob_path, loss_box_filename)
 
     #filter outliers
@@ -236,8 +208,7 @@ def plot_boxplots(history):
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_boxplot_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_boxplot_'+ current_datetime + '.png'
     utils.upload_file(blob_path, mse_box_filename)
 
     #filter outliers
@@ -253,8 +224,7 @@ def plot_boxplots(history):
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_boxplot_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_boxplot_'+ current_datetime + '.png'
     utils.upload_file(blob_path, mae_box_filename)
 
     #sns.pairplot
@@ -263,20 +233,15 @@ def plot_boxplots(history):
 def plot_histograms(history):
 
     #initialise histogram figure names
-    accuracy_hist_filename = 'accuracy_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_hist_filename = 'loss_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_hist_filename = 'mae_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_hist_filename = 'mse_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
+    accuracy_hist_filename = 'accuracy_hist'+ current_datetime + '.png'
+    loss_hist_filename = 'loss_hist'+ current_datetime + '.png'
+    mae_hist_filename = 'mae_hist'+ current_datetime + '.png'
+    mse_hist_filename = 'mse_hist'+ current_datetime + '.png'
 
     #filter accuracy histograms for outliers
     filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
     val_filtered = history_val_accuracy_array[~is_outlier(history_val_accuracy_array)]
 
-    #Add stddev
     #Training and validation accuracy histograms
     plt.figure(figsize=[10,8])
     plt.hist(history_accuracy_array, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
@@ -293,8 +258,7 @@ def plot_histograms(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_hist_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_hist_'+ current_datetime + '.png'
     utils.upload_file(blob_path, accuracy_hist_filename)
 
     #filter loss histograms for outliers
@@ -317,8 +281,7 @@ def plot_histograms(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_hist_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_hist_'+ current_datetime + '.png'
     utils.upload_file(blob_path, loss_hist_filename)
 
     #filter MAE histograms for outliers
@@ -341,8 +304,7 @@ def plot_histograms(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_hist_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_hist_'+ current_datetime + '.png'
     utils.upload_file(blob_path, mae_hist_filename)
 
     #filter MSE histograms for outliers
@@ -365,22 +327,17 @@ def plot_histograms(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_hist_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_hist_'+ current_datetime + '.png'
     utils.upload_file(blob_path, mse_hist_filename)
 
 #Plot Kernel Density estimates of metrics from model
 def plot_kde(history):
 
     #initialise KDE figure names
-    accuracy_kde_filename = 'accuracy_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_kde_filename = 'loss_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_kde_filename = 'mae_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_kde_filename = 'mse_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
+    accuracy_kde_filename = 'accuracy_kde_'+ current_datetime + '.png'
+    loss_kde_filename = 'loss_kde_'+ current_datetime + '.png'
+    mae_kde_filename = 'mae_kde_'+ current_datetime + '.png'
+    mse_kde_filename = 'mse_kde_'+ current_datetime + '.png'
 
     #Accuracy KDE
     plt.figure(figsize=(10,8), dpi= 200)
@@ -393,8 +350,7 @@ def plot_kde(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_kde_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_kde_'+ current_datetime + '.png'
     utils.upload_file(blob_path, accuracy_kde_filename)
 
     #Loss KDE
@@ -408,8 +364,7 @@ def plot_kde(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_kde_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_kde_'+ current_datetime + '.png'
     utils.upload_file(blob_path, loss_kde_filename)
 
     #Mean Absolute Error KDE
@@ -423,8 +378,7 @@ def plot_kde(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_kde_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_kde_'+ current_datetime+ '.png'
     utils.upload_file(blob_path, mae_kde_filename)
 
     #Mean Squared Error KDE
@@ -438,8 +392,7 @@ def plot_kde(history):
     plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_kde_'+ \
-        str(datetime.date(datetime.now())) + '_'+ str((datetime.now().strftime('%H:%M'))) + '.png'
+    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_kde_'+ current_datetime + '.png'
     utils.upload_file(blob_path, mse_kde_filename)
 
 
@@ -468,9 +421,14 @@ def initialise_vars(history,model_folder_path):
     global plots_path
     plots_path = model_folder_path + '/plots/plots_'
 
+    global current_datetime
+    current_datetime = str(datetime.date(datetime.now())) + \
+        '_' + str((datetime.now().strftime('%H:%M')))
+
+    #converting history into dataframe
     history_df = pd.DataFrame(history.items(), columns =['Metrics','Score'], index = history.keys())
     del history_df['Metrics']
-    history_df_trans = history_df.T
+    history_df_trans = history_df.T     #transpose dataframe
 
     global history_accuracy_array
     history_accuracy_array = np.array(history_df_trans['accuracy'][0])

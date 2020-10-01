@@ -55,7 +55,7 @@ def get_cullpdb_filtered():
 def get_cb513():
 
     print('Downloading CB513 dataset...\n')
-    
+
     # cwd = os.getcwd()
     # if cwd[len(cwd)-4:len(cwd)] != 'data':
     #     os.chdir('data')
@@ -64,7 +64,6 @@ def get_cb513():
     #unzip and save data into data dir
     try:
         if not (os.path.isfile(os.getcwd() + '/' + TEST_PATH)):
-            #os.system(f'wget -O {TEST_PATH} {TEST_URL}')
             r = requests.get(TEST_URL, allow_redirects = True)
             open(TEST_PATH, 'wb').write(r.content)
             dir_path = os.path.dirname(os.path.realpath(TEST_PATH))
@@ -88,8 +87,6 @@ def get_casp10():
     #get casp10 dataset from URL using requests library
     try:
         if not (os.path.isfile(CASP10_PATH)):
-            #os.system(f'wget -O {CASP10_PATH} {CASP_10_URL}')
-            #os.system('wget -O {} {}'.format(CASP10_PATH, CASP_10_URL))
             r = requests.get(CASP_10_URL, allow_redirects = True)
             open('casp10.h5', 'wb').write(r.content)
             print('CASP10 dataset downloaded\n')
@@ -117,3 +114,11 @@ def get_casp11():
 
     except OSError:
         print('Error downloading and exporting CASP11 dataset\n')
+
+#download all required datasets to data dir 
+def get_all_data():
+
+    get_cullpdb_filtered()
+    get_cb513()
+    get_casp10()
+    get_casp11()

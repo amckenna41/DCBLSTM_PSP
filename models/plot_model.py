@@ -22,18 +22,12 @@ def plot_history(history_filepath, model_folder_path = 'saved_models',show_histo
     initialise_vars(history_filepath, model_folder_path)
 
     #initialise figure filenames
-    accuracy_fig_filename = 'accuracy_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_fig_filename = 'loss_fig'+ str(datetime.date(datetime.now()))+ \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_fig_filename = 'mae_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_fig_filename = 'mse_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M')))+ '.png'
-    recall_fig_filename = 'recall_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M')))+ '.png'
-    precision_fig_filename = 'precision_fig'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M')))+ '.png'
+    accuracy_fig_filename = 'accuracy_fig'+ current_datetime + '.png'
+    loss_fig_filename = 'loss_fig'+ current_datetime + '.png'
+    mae_fig_filename = 'mae _fig'+ current_datetime + '.png'
+    mse_fig_filename = 'mse_fig'+ current_datetime + '.png'
+    recall_fig_filename = 'recall_fig'+ current_datetime + '.png'
+    precision_fig_filename = 'precision_fig'+ current_datetime + '.png'
 
     #plot train and validation accuracy on history
     plt.figure()
@@ -126,14 +120,10 @@ def plot_history(history_filepath, model_folder_path = 'saved_models',show_histo
 def plot_boxplots(history, save=True):
 
     #initialise filenames for boxplots
-    accuracy_box_filename = 'accuracy_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_box_filename = 'loss_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_box_filename = 'mae_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_box_filename = 'mse_boxplot_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
+    accuracy_box_filename = 'accuracy_boxplot_'+ current_datetime + '.png'
+    loss_box_filename = 'loss_boxplot_'+ current_datetime + '.png'
+    mae_box_filename = 'mae_boxplot_'+ current_datetime + '.png'
+    mse_box_filename = 'mse_boxplot_'+ current_datetime + '.png'
 
     #filter outliers
     filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
@@ -191,20 +181,15 @@ def plot_boxplots(history, save=True):
 def plot_histograms(history, save):
 
     #initialise histogram figure names
-    accuracy_hist_filename = 'accuracy_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_hist_filename = 'loss_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_hist_filename = 'mae_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_hist_filename = 'mse_hist'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
+    accuracy_hist_filename = 'accuracy_hist'+ current_datetime + '.png'
+    loss_hist_filename = 'loss_hist'+ current_datetime + '.png'
+    mae_hist_filename = 'mae_hist'+ current_datetime + '.png'
+    mse_hist_filename = 'mse_hist'+ current_datetime + '.png'
 
     #filter accuracy histograms for outliers
     filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
     val_filtered = history_val_accuracy_array[~is_outlier(history_val_accuracy_array)]
 
-    #Add stddev
     #Training and validation accuracy histograms
     plt.figure(figsize=[10,8])
     plt.hist(history_accuracy_array, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
@@ -285,34 +270,14 @@ def plot_histograms(history, save):
     plt.show()
     plt.close()
 
-    #
-    # plt.figure(figsize=[20,20])
-    # f,a = plt.subplots(2,2)
-    # a = a.ravel()
-    # for idx,ax in enumerate(a):
-    #
-    #     ax.hist(history_df_trans.iloc[:,idx][0], color='#0504aa',alpha=0.5, rwidth=0.85, bins = 5, orientation='vertical')
-    #     ax.set_title(history_df_trans.columns[idx])
-    #     ax.set_xlabel('Accuracy')
-    #     ax.set_ylabel('Frequency')
-    #     temp_hist_array = np.array(history_df_trans.iloc[:,idx][0])
-    #     ax.axvline(temp_hist_array.mean(), color='red', linestyle='dashed',linewidth=2)
-    # plt.tight_layout()
-    # plt.savefig('accuracy_hist.png', dpi = 200)
-    # plt.close()
-
 #Plot Kernel Density estimates of metrics from model
 def plot_kde(history, save):
 
     #initialise KDE figure names
-    accuracy_kde_filename = 'accuracy_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    loss_kde_filename = 'loss_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mae_kde_filename = 'mae_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
-    mse_kde_filename = 'mse_kde_'+ str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M'))) + '.png'
+    accuracy_kde_filename = 'accuracy_kde_'+ current_datetime + '.png'
+    loss_kde_filename = 'loss_kde_'+ current_datetime + '.png'
+    mae_kde_filename = 'mae_kde_'+ current_datetime + '.png'
+    mse_kde_filename = 'mse_kde_'+ current_datetime + '.png'
 
     #Accuracy KDE
     plt.figure(figsize=(10,8), dpi= 200)
@@ -338,7 +303,6 @@ def plot_kde(history, save):
     plt.show()
     plt.close()
 
-
     #Mean Absolute Error KDE
     plt.figure(figsize=(10,8), dpi= 200)
     sns.kdeplot(history_mae_array, shade=True, color="b", label="loss", alpha=.5)
@@ -350,7 +314,6 @@ def plot_kde(history, save):
         plt.savefig((plots_path + mae_kde_filename), dpi = 200)
     plt.show()
     plt.close()
-
 
     #Mean Squared Error KDE
     plt.figure(figsize=(10,8), dpi= 200)
@@ -389,9 +352,14 @@ def initialise_vars(history,model_folder_path):
     if not os.path.exists(plots_path):
         os.makedirs(plots_path)
 
+    #convert history into a dataframe
     history_df = pd.DataFrame(history.items(), columns =['Metrics','Score'], index = history.keys())
     del history_df['Metrics']
-    history_df_trans = history_df.T
+    history_df_trans = history_df.T     #transpose dataframe
+
+    global current_datetime
+    current_datetime = str(datetime.date(datetime.now())) + \
+        '_' + str((datetime.now().strftime('%H:%M')))
 
     global history_accuracy_array
     history_accuracy_array = np.array(history_df_trans['accuracy'][0])
@@ -440,7 +408,6 @@ if __name__ == '__main__':
                         help='Select whether to save the plots after showing, default is False')
 
     args = parser.parse_args()
-
     history_path = args.history_path
     model_folder_path = args.model_folder
     show_hist = args.show_hist
@@ -448,9 +415,23 @@ if __name__ == '__main__':
     show_kde = args.show_kde
     save = args.save
 
+    if not (os.path.isdir(model_folder_path):
+        print('Model Folder path of model to plot does not exist')
+        return
+
     #open pickle of history
-    f = open(history_path, 'rb')
-    history = pickle.load(f)
+    try:
+        f = open(history_path, 'rb')
+        history = pickle.load(f)
+    except IOError:
+        print('Error opening file')
+    except pickle.UnpicklingError as e:
+        print(traceback.format_exc(e))
+    except (AttributeError,  EOFError, ImportError, IndexError) as e:
+        print(traceback.format_exc(e))
+    except Exception as e:
+        print(traceback.format_exc(e))
+        return
     f.close()
 
     plot_history(history, model_folder_path, show_hist, show_box, show_kde, save)

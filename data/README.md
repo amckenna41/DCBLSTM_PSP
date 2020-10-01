@@ -1,12 +1,3 @@
-Data directory stores the datasets required to train the models locally.<br> <br>
-**get_dataset.py:**
-Downloads training and test datasets used in the models and stores them in data dir.<br> <br>
-**load_dataset.py:**
-Unzips, formats and reshapes training and test datasets, which is required prior to creation of the neural network models.  
-<br> <br>
-From a terminal or command prompt, calling the load_dataset.py will download the training and all the test datasets used in this project. Call: python load_dataset from /data directory
-or python -m data.load_dataset from root of project.
-<br <br>
 
 **Datsets used in project** <br>
 Training Dataset: Cullpdb profile filtered  <br>
@@ -17,16 +8,42 @@ The dataset was split into training and validation datasets, with a split of 527
 Available from:
 http://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_6133_filtered.npy.gz
 
-Primary Test Dataset: CB513 <br>
+CullPDB dimensions:
+5278, 700, 21
+
+
+**Primary Test Dataset: CB513** <br>
+
+CB513 is made up of ...
 
 Available from:
 http://www.princeton.edu/~jzthree/datasets/ICML2014/cb513+profile_split1.npy.gz
 
+CB513 dimensions:
+514, 700, 21
 
-Other Test Datsets: CASP10, CASP11 <br>
 
-These 2 auxillary test datasets were taken from the 10th and 11th iteration of the CASP ( ) competition
+**Other Test Datsets: CASP10, CASP11** <br>
+
+These 2 auxillary test datasets were taken from the 10th and 11th iteration of the CASP (Critical Assessment of Structure Prediction) competition.
+
 Available from:
 
 https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp10.h5
 https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp11.h5
+
+CASP10 dimensions:
+123, 700, 21
+
+CASP11 dimensions:
+105, 700, 21
+
+To download and load data locally into data directory, from data dir and a terminal, call:
+```
+python load_dataset.py
+```
+
+Or from the root of the project, from a terinal, call:
+```
+python -m data.load_dataset
+```

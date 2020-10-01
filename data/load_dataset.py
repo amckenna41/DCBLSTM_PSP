@@ -11,9 +11,6 @@ except:
     from data.get_dataset import *
 
 
-#Do some pathing/directory changes to make script callable from root dir
-
-
 #File paths for train and test datasets in data dir
 TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy'
 TEST_PATH = 'cb513+profile_split1.npy'
@@ -28,13 +25,11 @@ def load_cul6133_filted(all_data=1):
 
     #download dataset if not already in current directory
     if not (os.path.isfile(TRAIN_PATH)):
-        #if training data not present then download to current working dir
-        # get_dataset.get_cullpdb_filtered()
         get_cullpdb_filtered()
 
     #load dataset
     data = np.load(TRAIN_PATH)
-
+    #reshape dataset
     data = np.reshape(data, (-1, 700, 57))
     #sequence feature
     datahot = data[:, :, 0:21]
@@ -93,8 +88,8 @@ def load_cb513(all_data = 1):
 
     #load test dataset
     CB513= np.load(TEST_PATH)
+    #reshape dataset
     CB513= np.reshape(CB513,(-1,700,57))
-
     #sequence feature
     testhot=CB513[:, :, 0:21]
     #profile feature
@@ -109,7 +104,7 @@ def load_cb513(all_data = 1):
     testpssm = testpssm[:test_data_index]
     testlabel = testlabel[:test_data_index]
 
-
+    #convert to one-hot array
     test_hot = np.ones((testhot.shape[0], testhot.shape[1]))
     for i in range(testhot.shape[0]):
         for j in range(testhot.shape[1]):
@@ -126,12 +121,14 @@ def load_casp10():
     #download dataset if not already in current directory
     if not (os.path.isfile(CASP10_PATH)):
         get_casp10()
+
     #load casp10 dataset
     casp10_data = h5py.File(CASP10_PATH, 'r')
 
     #load protein sequence and profile feature data
     casp10_data_hot = casp10_data['features'][:, :, 0:21]
     casp10_data_pssm = casp10_data['features'][:, :, 21:42]
+
     #load protein label data
     test_labels = casp10_data['labels'][:, :, 0:8]
 
@@ -173,9 +170,8 @@ def load_casp11():
 
     print('CASP11 dataset loaded...\n')
 
-    return casp11_data_test_hot, casp11_data_test_hot, test_labels
+    return casp11_data_test_hot, casp11_data_test_pssm, test_labels
 
-#load datasets unit tests
 #download all datasets used in PSP
 def download_all_data():
 

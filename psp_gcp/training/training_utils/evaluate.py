@@ -27,3 +27,14 @@
 #
 # print("\n\nQ8 accuracy on CB513: " + str(model.Q8_accuracy(CB513_Y, predictions)) + "\n\n")
 # © 2020 GitHub, Inc.
+# 
+# import numpy as np
+# from . import backend as K
+# from .utils.generic_utils import get_from_module
+#
+#
+# def binary_accuracy(y_true, y_pred):
+#     '''Calculates the mean accuracy rate across all predictions for binary
+#     classification problems.
+#     '''
+#     return K.mean(K.equal(y_true, K.round(y_pred)))

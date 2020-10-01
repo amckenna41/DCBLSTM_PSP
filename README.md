@@ -4,6 +4,16 @@ Secondary Protein Structure Prediction using Neural Networks and Deep Learning.
 **status**
 > Development Stage
 
+**Protein Structure Prediction**
+
+What is it, ??
+
+##About my model ##
+ULSTM vs BLSTM
+
+##Conclusions##
+
+The paper is available at...
 
 Datasets used for training:
 cullpdb+profile_6133.npy.gz - this dataset is dividied into training/testing/validation/test sets.
@@ -74,10 +84,27 @@ The required Python modules/packages are in requirements.txt. Call
 pip3 install -r requirements.txt
 ```
 
+
+
+## Implementation
+
+This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the Tensorflow machine learning framework.
+Four main approaches were explored and tested. Firstly, a standalone CNN network, a CNN plus a fully-connected DNN, a recurrent neural network consisting of LSTM layers followed by a DNN and finally a combination of all three of the mentioned components which formed the final model architecture - a CNN followed by a RNN followed by a DNN. More information about the network topologies can be seen below. <br>
+
+1) PSP using CNN
+
+2) PSP using CNN + DNN
+
+3) PSP using RNN + DNN
+
+4) PSP using CNN + RNN + DNN
+
 ## Running model locally with default parameters:
 ```
 python main_local.py
 ```
+
+With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset. Thus, a Cloud implementation to run the model successfully was created using the Google Clodu Platform.
 
 ##Running model and deploying to GCP:** <br>
 Change current working directory to psp_gcp
@@ -88,10 +115,10 @@ To be able to run the model on the cloud you must have an existing GCP account a
 Call bash script ./gcp_training.sh on a command line/terminal. This will call the BLSTM_3xConv_Model on the GCP Ai-Platform with the default settings and parameters.
 
 
-**Running model and deploying to AWS:** <br>
-Change current working directory to psp_aws - cd psp_aws <br>
-
 **References**
-
+[1]: https://www.princeton.edu/~jzthree/datasets/ICML2014/
+[2]: https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2940-0
+[3]: https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2280-5
+[4]:
 **status**
 > Development Stage
