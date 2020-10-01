@@ -11,7 +11,7 @@
 # curl https://sdk.cloud.google.com > install.sh
 # bash install.sh --disable-prompts
 
-#2. Authenticate with user account
+#2. Authenticate with user account - You must create a GCP account & project prior to this step
 #authenticate GCP SDK, credentials will be automatically stored in config file
 #where the SDK looks for the relevant credentials when using sdk tools
 # gcloud auth login
@@ -93,3 +93,15 @@ gcloud version
 # }
 #
 # download "$@"
+
+
+##Windows GCP Configuration ##
+https://cloud.google.com/sdk/docs/install#windows
+
+#From windows Powershell, to download and launch SDK installation:
+
+# (New-Object Net.WebClient).DownloadFile("https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe", "$env:Temp\GoogleCloudSDKInstaller.exe")
+#
+# & $env:Temp\GoogleCloudSDKInstaller.exe
+
+#Install WSL - Install Linux Distro for Windows 

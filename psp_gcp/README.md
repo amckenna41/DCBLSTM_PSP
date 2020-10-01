@@ -44,3 +44,17 @@ https://cloud.google.com/compute/docs/machine-types
 The cloud architecture used within the GCP for this project can be seen below were several services were taken advantage of including: Ai-Platform, Compute Engine GCS, Logging, Monitoring and IAM.
 
 ![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/gcp_architecture.png?raw=true)
+
+
+**Running on Windows**
+1.) Download and install Google Cloud SDK, following the steps from the guide: https://cloud.google.com/sdk/docs/install#windows
+2.) SDK Installation should take you through the authentication process, if not then call - gcloud auth login - from terminal to authenticate account.
+3.) From Windows Powershell or terminal call the script gcp_resources.sh to create all the neccessary cloud resources required for the project.
+4.) From a Windows Powershell or terminal, call the scripts ./gcp_training.sh to build and deploy default best CDBLSTM model with its optimal parameters. Or call the script ./gcp_hptuning.sh to do hyperparameter tuning.
+
+**Running on Mac/Linux**
+
+1.) Download and install Google Cloud SDK, following the steps from the guide: https://cloud.google.com/sdk/docs/install
+2.) SDK Installation should take you through the authentication process, if not then call - gcloud auth login - from terminal to authenticate account.
+3.) From terminal call the script gcp_resources.sh to create all the neccessary cloud resources required for the project.
+4.) From a terminal, call the scripts ./gcp_training.sh to build and deploy default best CDBLSTM model with its optimal parameters. Or call the script ./gcp_hptuning.sh to do hyperparameter tuning.

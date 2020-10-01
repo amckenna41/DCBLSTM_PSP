@@ -23,7 +23,7 @@ ALL_DATA=1.0
 
 #set Ai-Platform Job environment variables
 BUCKET_NAME="gs://keras-python-models-2"
-JOB_NAME="CDBLSTM_+model$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
+JOB_NAME="CDBLSTM_model$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
 JOB_DIR="$BUCKET_NAME/job_logs"      # - where to store job logs
 PACKAGE_PATH="training/"             # - path of folder to be packaged
 CONFIG="training/training_utils/gcp_training_config.yaml"   # - job config file
