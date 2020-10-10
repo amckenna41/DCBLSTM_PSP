@@ -10,7 +10,7 @@ setup(name='training',
       author_email='amckenna41@qub.ac.uk',
       license='',
       install_requires=[
-          'tensorflow==2.1',
+          'tensorflow>=2.1.2',
           # 'tensorflow-gpu==1.15',
           'h5py',
           'keras',
