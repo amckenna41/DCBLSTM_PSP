@@ -29,6 +29,7 @@ psp_venv/
 *.gz
 *.h5
 *.csv
+*.pkl
 
 #ignore local folder used to store models
 /saved_models

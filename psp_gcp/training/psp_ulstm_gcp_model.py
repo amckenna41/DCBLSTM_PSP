@@ -43,17 +43,18 @@ BUCKET_NAME = "keras-python-models-2"
 current_datetime = str(datetime.date(datetime.now())) + \
     '_' + str((datetime.now().strftime('%H:%M')))
 
-#building BLSTM_3xConv_Model
+#building BUSTM_3xConv_Model
 def build_model():
 
     #main input is the length of the amino acid in the protein sequence (700,)
     main_input = Input(shape=(700,), dtype='float32', name='main_input')
 
     #Embedding Layer used as input to the neural network
-    embed = Embedding(output_dim=21, input_dim=21, input_length=700)(main_input)
+    embed = Embedding(output_dim=21, input_dim=21, input_length=700, name="embedding")(main_input)
 
     #secondary input is the protein profile features
     auxiliary_input = Input(shape=(700,21), name='aux_input')
+    #auxiliary_input = Masking(mask_value=0)(auxiliary_input)
 
     #get shape of input layers
     print ("Protein Sequence shape: ", main_input.get_shape())
@@ -62,51 +63,51 @@ def build_model():
     #concatenate 2 input layers
     concat = Concatenate(axis=-1)([embed, auxiliary_input])
 
-    #3x1D Convolutional Hidden Layers with BatchNormalization and MaxPooling
-    conv_layer1 = Conv1D(64, 11, kernel_regularizer = "l2", padding='same')(concat)
+    #3x1D Convolutional Hidden Layers with BatchNormalization, Dropout and MaxPooling
+    conv_layer1 = Conv1D(16, 7, padding='same', name ="Conv1D_1")(concat)
     batch_norm = BatchNormalization()(conv_layer1)
     conv_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.5)(conv_act)
+    conv_dropout = Dropout(0.2)(conv_act)
     # ave_pool_1 = AveragePooling1D(2, 1, padding='same')(conv_dropout)
-    max_pool_1D_1 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
+    max_pool_1D_1 = MaxPooling1D(pool_size=2, strides=1, padding='same', name="MaxPool_1")(conv_dropout)
 
-    conv_layer2 = Conv1D(128, 11, padding='same')(concat)
+    conv_layer2 = Conv1D(32, 7, padding='same', name="Conv1D_2")(concat)
     batch_norm = BatchNormalization()(conv_layer2)
     conv_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.5)(conv_act)
-    # ave_pool_2 = AveragePooling1D(2, 1, padding='same')(conv_dropout)
-    max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
+    conv_dropout = Dropout(0.2)(conv_act)
+    max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same',  name="MaxPool_2")(conv_dropout)
 
-    conv_layer3 = Conv1D(256, 11,kernel_regularizer = "l2", padding='same')(concat)
+    conv_layer3 = Conv1D(64, 7, padding='same', name="Conv1D_3")(concat)
     batch_norm = BatchNormalization()(conv_layer3)
     conv_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.5)(conv_act)
-    max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
-    # ave_pool_3 = AveragePooling1D(2, 1, padding='same')(conv_dropout)
+    conv_dropout = Dropout(0.2)(conv_act)
+    max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same',  name="MaxPool_3")(conv_dropout)
 
     #concatenate convolutional layers
     conv_features = Concatenate(axis=-1)([max_pool_1D_1, max_pool_1D_2, max_pool_1D_3])
     print("Shape of convolutional output: ", conv_features.get_shape())
 
-    lstm_dense = Dense(600, activation='relu')(conv_features)
+    lstm_dense = Dense(600, activation='relu', name="after_cnn_dense")(conv_features)
 
      ######## Recurrent Bi-Directional Long-Short-Term-Memory Layers ########
-    lstm_f1 = LSTM(300,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.4,recurrent_dropout=0.4)(lstm_dense)
+    lstm_f1 = LSTM(200,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5, name="BLSTM_1")(lstm_dense)
 
-    lstm_f2 = LSTM(300, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.4,recurrent_dropout=0.4)(lstm_f1)
+    lstm_f2 = LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5, name="BLSTM_2")(lstm_f1)
 
-    lstm_f3 = LSTM(300, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.4,recurrent_dropout=0.4)(lstm_f2)
+    lstm_f3 = LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5, name="BLSTM_2")(lstm_f2)
 
     #concatenate LSTM with convolutional layers
-    concat_features = Concatenate(axis=2)([lstm_f1, lstm_f2, lstm_f3, lstm_dense])
+    # concat_features = Concatenate(axis=2)([lstm_f1, lstm_f2, lstm_f3, lstm_dense])
+    concat_features = Concatenate(axis=2)([lstm_f1, lstm_f2, lstm_dense])
+
     concat_features = Dropout(0.4)(concat_features)
 
     #Dense Fully-Connected DNN layers
-    dense_1 = Dense(600, activation='relu')(concat_features)
-    dense_1_dropout = Dropout(0.5)(dense_1)
+    dense_1 = Dense(600, activation='relu', name="after_rnn_dense")(concat_features)
+    dense_1_dropout = Dropout(0.3)(dense_1)
 
     #Final Dense layer with 8 nodes for the 8 output classifications
-    main_output = (Dense(8, activation='softmax', name='main_output'))(dense_3_dropout)
+    main_output = (Dense(8, activation='softmax', name='main_output'))(dense_1_dropout)
 
     #create model from inputs and outputs
     model = Model(inputs=[main_input, auxiliary_input], outputs=[main_output])
@@ -120,10 +121,11 @@ def build_model():
 
     #set earlyStopping and checkpoint callback
     earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
-    checkpoint_path = "checkpoints/CDULSTM_" + str(datetime.date(datetime.now())) + ".h5"
+    checkpoint_path = "checkpoints/CDULSTM_" + current_datetime + ".h5"
     checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
 
     return model
+
 
 #main function to train and evaluate CDULSTM model
 def main(args):

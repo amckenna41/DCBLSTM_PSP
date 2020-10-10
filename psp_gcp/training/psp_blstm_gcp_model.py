@@ -134,10 +134,10 @@ def main(args):
 
     print("Logs Path: ", logs_path)
     print('Job Logs: ', job_dir)
-
-    epochs = 1
-    all_data = 0.1
-    batch_size = 150
+    # 
+    # epochs = 1
+    # all_data = 0.1
+    # batch_size = 150
     #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
     if (all_data == 0 or all_data > 1):
         all_data = 0.5
@@ -202,7 +202,7 @@ parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints 
 
 parser.add_argument('-alldata', '--alldata', type =float, default=1,
                     help='Select what proportion of training and test data to use, 1 - All data, 0.5 - 50%% of data etc')
-                    
+
 parser.add_argument('-logs_dir', '--logs_dir', help='Directory on cloud storage for Tensorboard logs',required=False, default = (BUCKET_NAME + "/logs/tensorboard"))
 args = parser.parse_args()
 
