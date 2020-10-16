@@ -5,13 +5,7 @@ Secondary Protein Structure Prediction using Neural Networks and Deep Learning.
 > Development Stage
 
 **Protein Structure Prediction**
-
-What is it, ??
-
-<br> bit of info about proteins and their struture...
-![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/protein_structure.jpeg?raw=true)
-
-The 8 different labels for the secondary protein sequence are:
+Protein Structure Prediction (PSP) is the determination of a protein's structure from its initial primary amino acid sequence. Here we focus on secondary protein structure prediction (SPSP) which acts as an intermediate between the primary and tertiary. PSP is one of the most important goals in the field of bioinformatics and remains highly important in the field of medicine and biotechnology, e.g in drug design.[1] The secondary structure is commonly broken down into 8 categories:
 
 * alpha helix ('H')
 * beta strand ('E')
@@ -22,13 +16,23 @@ The 8 different labels for the secondary protein sequence are:
 * beta bridge ('B')
 * 5-helix (pi helix) ('I')
 
+<br> bit of info about proteins and their struture...
+![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/protein_structure.jpeg?raw=true)
 
-##About my model ##
-ULSTM vs BLSTM
+**Approach**
 
-##Conclusions##
+Many different approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc. There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. <br>
+
+My model focused on LSTM's, specifically bidirectional LSTM's which allow for the LSTM unit to consider the protein sequence in the forward and backward direction. Additionally, to map local dependancies and context between adjacent residues, a CNN preceded the recurrent component of the model where 1-Dimensional convolutional layers were used.
+Optimisation and regularisation techniques were applied to the model to maximise performance and effiency.
+
+##Conclusions and Results##
+
+#insert graphs and tables here ....
 
 The paper is available at...
+
+**Datasets**
 
 Datasets used for training:
 cullpdb+profile_6133.npy.gz - this dataset is dividied into training/testing/validation/test sets.
@@ -51,12 +55,10 @@ http://130.88.97.239/bioactivity/aastructfrm.html
 
 The dataset division for the first cullpdb+profile_6133.npy.gz dataset is
 [0,5600) training
-[5605,5877) test 
+[5605,5877) test
 [5877,6133) validation
 
  For the filtered dataset cullpdb+profile_6133_filtered.npy.gz, all proteins can be used for training and test on CB513 dataset.
-
-###
 
 These datasets are available at:
 https://www.princeton.edu/~jzthree/datasets/ICML2014/
@@ -72,27 +74,19 @@ https://www.princeton.edu/~jzthree/datasets/ICML2014/
 The CASP10 and CASP11 datasets are available at:
 https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
 
-## Installation - Python Requirements
+**Installation - Python Requirements**
 
 The required Python modules/packages are in requirements.txt. Call
 ```
 pip3 install -r requirements.txt
 ```
 
+**Implementation**
 
+This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the Tensorflow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-## Implementation
+![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/model_design.jpeg?raw=true)
 
-This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the Tensorflow machine learning framework.
-Four main approaches were explored and tested. Firstly, a standalone CNN network, a CNN plus a fully-connected DNN, a recurrent neural network consisting of LSTM layers followed by a DNN and finally a combination of all three of the mentioned components which formed the final model architecture - a CNN followed by a RNN followed by a DNN. More information about the network topologies can be seen below. <br>
-
-1) PSP using CNN
-
-2) PSP using CNN + DNN
-
-3) PSP using RNN + DNN
-
-4) PSP using CNN + RNN + DNN
 
 ## Running model locally with default parameters:
 ```
@@ -106,7 +100,7 @@ Change current working directory to psp_gcp
 ```
 cd psp_gcp
 ```
-To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the gcp_config script in psp_gcp/scripts directory, which contains the relevant commands to execute to configure your GCP account. <br>
+To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the README.md and gcp_config script in psp_gcp directory, which contains the relevant commands and steps to execute to configure your GCP account. <br>
 Call bash script ./gcp_training.sh on a command line/terminal. This will call the BLSTM_3xConv_Model on the GCP Ai-Platform with the default settings and parameters.
 
 

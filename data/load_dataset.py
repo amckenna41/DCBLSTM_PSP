@@ -170,7 +170,7 @@ def load_casp11():
 
     print('CASP11 dataset loaded...\n')
 
-    return casp11_data_test_hot, casp11_data_test_pssm, test_labels
+    return casp11_data_test_hot, casp11_data_pssm, test_labels
 
 #download all datasets used in PSP
 def download_all_data():

@@ -47,3 +47,9 @@ Or from the root of the project, from a terinal, call:
 ```
 python -m data.load_dataset
 ```
+
+##Run Tests:** <br>
+
+```
+python3 test_dataset 
+```

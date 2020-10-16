@@ -8,6 +8,7 @@ from os.path import isfile, join
 import argparse
 import subprocess
 import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, CSVLogger
 import subprocess
 from datetime import date
 from datetime import datetime
@@ -37,6 +38,9 @@ def main(args):
     logs_path = str(args.logs_dir)
     data_dir = str(args.data_dir)
     show_plots = args.show_plots
+    cuda = args.cuda
+    test_dataset = str(args.test_dataset)
+
 
     #load training dataset
     # train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted(all_data)
@@ -57,13 +61,24 @@ def main(args):
     if not os.path.exists(logs_path):
         os.makedirs(logs_path)
 
-    #initialise TensorBoard callback
+    #initialise keras callbacks
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
+    checkpoint_path = "/CDBLSTM_" + str(datetime.date(datetime.now())) + ".h5"
+    checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
+    csv_path = "model_logs_" +  str(datetime.date(datetime.now()))
+    csv_logger  = CSVLogger(csv_path)
 
+    # https://towardsdatascience.com/how-to-traine-tensorflow-models-79426dabd304
     #fit model
-    # print('Fitting model...')
-    # history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
-    #     epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard],shuffle=True)
+    if cuda:
+        # print('Fitting model...')
+        # history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
+        # epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard, EarlyStopping, ModelCheckpoint, CSVLogger],shuffle=True)
+    else:
+        # print('Fitting model...')
+        # history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
+        # epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard, EarlyStopping, ModelCheckpoint, CSVLogger],shuffle=True)
 
     # #save model locally and to google cloud bucket
     print('Saving model')
@@ -136,8 +151,14 @@ if __name__ == "__main__":
     parser.add_argument('-alldata', '--alldata', type =int, default=1,
                         help='Select what proportion of training and test data to use, 1 - All data, 0.5 - 50%% of data etc')
 
+    parser.add_argument('-test_dataset', '--test_dataset',
+                        help='Select what test dataset to use for evaluation, default is CB513',required=False, default = "CB513""))
+
     parser.add_argument('-show_plots', '--show_plots', type =bool, default=True,
                         help='Select whether you want plots of the model history to show')
+
+    parser.add_argument('-cuda', '--cuda',
+                       help='Enable CUDA to train using GPU; default is CPU',required=False, default = False)
 
     args = parser.parse_args()
 

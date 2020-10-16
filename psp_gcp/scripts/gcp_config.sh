@@ -3,6 +3,11 @@
 #Script for configuring connection to the Google Cloud to be able to train and evaluate
 #model in GCP
 
+# export PROJECT_ID="project_id"
+# export REGION_NAME="region_name"
+export SERVICE_ACCOUNT_KEY_PATH="service_account_key_path"
+export SERVICE_ACCOUNT_NAME="service_account_name"
+
 #1: Install Google Cloud SDK
 #install SDK in interactive mode
 # curl https://sdk.cloud.google.com | bash
@@ -45,10 +50,10 @@ gcloud info
 gcloud info --run-diagnostics
 
 #set project property in configuration
-gcloud config set project [PROJECT_NAME]
+gcloud config set project PROJECT_ID
 
 #set region in configuration
-gcloud config set compute/zone [REGION_NAME]
+gcloud config set compute/zone REGION_NAME
 #view properties of current active configuration
 gcloud config list
 
@@ -96,7 +101,7 @@ gcloud version
 
 
 ##Windows GCP Configuration ##
-https://cloud.google.com/sdk/docs/install#windows
+# https://cloud.google.com/sdk/docs/install#windows
 
 #From windows Powershell, to download and launch SDK installation:
 
@@ -104,4 +109,6 @@ https://cloud.google.com/sdk/docs/install#windows
 #
 # & $env:Temp\GoogleCloudSDKInstaller.exe
 
-#Install WSL - Install Linux Distro for Windows 
+#Install WSL - Install Linux Distro for Windows
+
+# https://cloud.google.com/solutions/running-distributed-tensorflow-on-compute-engine

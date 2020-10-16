@@ -1,6 +1,7 @@
 from get_dataset import *
 from load_dataset import *
 import os
+import requests
 import numpy as np
 
 #File paths for train and test datasets
@@ -151,3 +152,22 @@ def test_load_casp11():
 
     assert(test_labels.shape == (105, 700, 8))
     assert(type(test_labels).__module__ == (np.__name__))
+
+
+if __name__ == "__main__":
+
+    test_dataset_url()
+    print("URL tests passed")
+
+    test_get_datasets()
+    print("Get dataset tests passed")
+
+    test_load_cb513()
+    print("Load CB513 test passed")
+
+    test_load_casp10()
+    print("Load CASP10 test passed")
+
+    test_load_casp11()
+    print("Load CASP11 test passed\n")
+    print("Everything passed")

@@ -47,7 +47,7 @@ The cloud architecture used within the GCP for this project can be seen below we
 
 
 **Running on Windows**
-1.) Download and install Google Cloud SDK, following the steps from the guide: https://cloud.google.com/sdk/docs/install#windows
+1.) Download and install Google Cloud SDK, following the steps from the guide: https://cloud.google.com/sdk/docs/install#windows <br>
 2.) SDK Installation should take you through the authentication process, if not then call - gcloud auth login - from terminal to authenticate account.
 3.) From Windows Powershell or terminal call the script gcp_resources.sh to create all the neccessary cloud resources required for the project.
 4.) From a Windows Powershell or terminal, call the scripts ./gcp_training.sh to build and deploy default best CDBLSTM model with its optimal parameters. Or call the script ./gcp_hptuning.sh to do hyperparameter tuning.

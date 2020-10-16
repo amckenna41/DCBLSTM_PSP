@@ -22,6 +22,7 @@ from datetime import datetime
 from training.training_utils.get_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
+from training.evaluate import *
 
 #set required parameters and configuration for TensorBoard
 tf.compat.v1.reset_default_graph()
@@ -131,13 +132,14 @@ def main(args):
     batch_size = int(args.batch_size)
     epochs = int(args.epochs)
     logs_path = str(args.logs_dir)
+    test_dataset = str(args.test_dataset)
 
     print("Logs Path: ", logs_path)
     print('Job Logs: ', job_dir)
-    # 
-    # epochs = 1
-    # all_data = 0.1
-    # batch_size = 150
+    #
+    epochs = 1
+    all_data = 0.1
+    batch_size = 150
     #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
     if (all_data == 0 or all_data > 1):
         all_data = 0.5
@@ -159,30 +161,26 @@ def main(args):
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
     checkpoint =  tf.keras.callbacks.ModelCheckpoint(filepath="blstm_3conv_checkpoint/", verbose=1,save_best_only=True, monitor='val_acc', mode='max')
 
-    # with tf.device('/gpu:0'): #use for training with GPU on TF
+# with tf.device('/gpu:0'): #use for training with GPU on TF
     print('Fitting model...')
     history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
         epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[tensorboard, checkpoint],shuffle=True)
 
-
-    print('Evaluating model')
-    score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,batch_size=1)
-    # eval_score = score[1]
-
-    #initialise TensorBoard summary variables
-    loss_summary = tf.summary.scalar(name='Loss Summary', data=score[0])
-    accuracy_summary = tf.summary.scalar(name='Accuracy Summary', data=score[1])
-
     print("Training Accuracy: ", max(history.history['accuracy']))
     print("Training Loss: ", min(history.history['loss']))
 
-    print('Evaluation Loss : ', score[0])
-    print('Evaluation Accuracy : ', score[1])
+    #evaluating model
+    evaluate_model(model, test_dataset="all")
+
+    #initialise TensorBoard summary variables
+    # loss_summary = tf.summary.scalar(name='Loss Summary', data=score[0])
+    # accuracy_summary = tf.summary.scalar(name='Accuracy Summary', data=score[1])
+
 
     model_blob_path = 'models/model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime
 
-    model_save_path = 'model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime + \
-        '_accuracy-'+ str(score[1]) +'_loss-' + str(score[0]) + '.h5'
+    # model_save_path = 'model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime + \
+    #     '_accuracy-'+ str(score[1]) +'_loss-' + str(score[0]) + '.h5'
 
     #create directory in bucket for new model - name it the model name, store model
     # upload_history(history,score,model_save_path)
@@ -203,7 +201,12 @@ parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints 
 parser.add_argument('-alldata', '--alldata', type =float, default=1,
                     help='Select what proportion of training and test data to use, 1 - All data, 0.5 - 50%% of data etc')
 
-parser.add_argument('-logs_dir', '--logs_dir', help='Directory on cloud storage for Tensorboard logs',required=False, default = (BUCKET_NAME + "/logs/tensorboard"))
+parser.add_argument('-logs_dir', '--logs_dir',
+                    help='Directory on cloud storage for Tensorboard logs',required=False, default = (BUCKET_NAME + "/logs/tensorboard"))
+
+parser.add_argument('-test_dataset', '--test_dataset',
+                    help='Select what test dataset to use for evaluation, default is CB513',required=False, default = "CB513")
+
 args = parser.parse_args()
 
 

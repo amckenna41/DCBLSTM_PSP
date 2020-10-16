@@ -9,6 +9,7 @@ import h5py
 import os
 import requests
 import shutil
+import argparse
 import training.training_utils.gcp_utils as utils
 
 #File names for train and test datasets
@@ -286,15 +287,27 @@ def load_casp11():
 
     print('CASP11 dataset loaded...\n')
 
-    return casp11_data_test_hot, casp11_data_test_hot, test_labels
+
+    return casp11_data_test_hot, casp11_data_pssm, test_labels
+
 
 # #download and load all datasets used in PSP
-# def download_all_data():
-#
-#     load_cul6133_filted()
-#     load_cb513()
-#     load_casp10()
-#     load_casp11()
-#
-# if __name__ == "main":
-#     download_all_data()
+def download_all_data():
+
+    load_cul6133_filted()
+    load_cb513()
+    load_casp10()
+    load_casp11()
+
+
+if __name__ == "main":
+
+    #initialise input arguments
+    parser = argparse.ArgumentParser(description='Loading training and test datasets')
+
+    parser.add_argument('-all_data', '--all_data', required = False, default = 1.0,
+                    help='Determine what proportion of dataset to load')
+
+    #parse arguments
+    args = parser.parse_args()
+#   download_all_data()

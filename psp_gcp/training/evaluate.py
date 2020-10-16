@@ -1,9 +1,11 @@
 import numpy as np
 from keras import backend as K
 import tensorflow as tf
+import argparse
 from sklearn.metrics import classification_report, confusion_matrix
-from data.get_dataset import *
+from training.training_utils.get_dataset import *
 
+#maybe create tf summary
 
 '''
 Evaluate model using test datasets
@@ -26,28 +28,33 @@ Evaluate model using CB513 test dataset
 '''
 def evaluate_cb513(model):
 
+    #load test dataset
     test_hot, testpssm, testlabel = load_cb513()
 
     print('Evaluating model using CB513 dataset')
     score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,batch_size=10)
-    # eval_score = score[1]
-    print('predicting CB513')
-    # pred_casp = model.predict([testpssm, test_hot], verbose=1,batch_size=10)
-    pred_casp = model.predict({'main_input': test_hot, 'aux_input': testpssm}, verbose=1,batch_size=10)
-    print('predicting CB513 successful')
+    print('Evaluation Loss : ', score[0])
+    print('Evaluation Accuracy : ', score[1])
 
+    # pred_casp = model.predict([testpssm, test_hot], verbose=1,batch_size=10)
+    pred_cb = model.predict({'main_input': test_hot, 'aux_input': testpssm}, verbose=1,batch_size=10)
+
+    #convert label and prediction array to float32
     testlabel = testlabel.astype(np.float32)
-    pred_casp = pred_casp.astype(np.float32)
-    mse_casp = mean_squared_error(testlabel, pred_casp)
-    print('MSE CASP, {} '.format(mse_casp))
-    mae_casp = mean_absolute_error(testlabel, pred_casp)
-    print('MAE CASP, {} '.format(mae_casp))
-    recall_casp = recall(testlabel, pred_casp)
-    print('Recall, {} '.format(recall_casp))
-    precision_casp = precision(testlabel, pred_casp)
-    print('precision_casp, {} '.format(precision_casp))
-    f1_score_casp = fbeta_score(testlabel, pred_casp)
-    print('f1_score_casp, {} '.format(f1_score_casp))
+    pred_cb = pred_cb.astype(np.float32)
+
+    cat_acc_casp = categorical_accuracy(testlabel, pred_cb)
+    print('Categorical Accuracy: {}'.format(cat_acc_casp))
+    mse_cb = mean_squared_error(testlabel, pred_cb)
+    print('Mean Sqared Error: {} '.format(mse_cb))
+    mae_cb = mean_absolute_error(testlabel, pred_cb)
+    print('Mean Absolute Error: {} '.format(mae_cb))
+    recall_cb = recall(testlabel, pred_cb)
+    print('Recall: {} '.format(recall_cb))
+    precision_cb = precision(testlabel, pred_cb)
+    print('Precision: {} '.format(precision_cb))
+    f1_score_cb = fbeta_score(testlabel, pred_cb)
+    print('F1 Score: {} '.format(f1_score_cb))
 
     # print(classification_report(testlabel, pred_casp, target_names=class_names))
     # print(confusion_matrix(testlabel, pred_casp))
@@ -58,6 +65,7 @@ Evaluate model using CASP10 test dataset
 '''
 def evaluate_casp10(model):
 
+    #load test dataset
     casp10_data_test_hot, casp10_data_pssm, test_labels = load_casp10()
 
     print('Evaluating model using CB513 dataset')
@@ -66,6 +74,7 @@ def evaluate_casp10(model):
     print('Prediction using CASP10')
     pred_casp = model.predict({'main_input': casp10_data_test_hot, 'aux_input': casp10_data_pssm}, verbose=1,batch_size=1)
 
+    #convert label and prediction array to float32
     test_labels = test_labels.astype(np.float32)
     pred_casp = pred_casp.astype(np.float32)
 
@@ -88,6 +97,7 @@ Evaluate model using CASP11 test dataset
 '''
 def evaluate_casp11(model):
 
+    #load test dataset
     casp11_data_test_hot, casp11_data_test_pssm, test_labels = load_casp11()
 
     print('Evaluating model using CASP11 dataset')
@@ -96,6 +106,7 @@ def evaluate_casp11(model):
     print('Prediction using CASP11')
     pred_casp = model.predict({'main_input': casp11_data_test_hot, 'aux_input': casp11_data_test_pssm}, verbose=1,batch_size=1)
 
+    #convert label and prediction array to float32
     test_labels = test_labels.astype(np.float32)
     pred_casp = pred_casp.astype(np.float32)
 
@@ -231,4 +242,3 @@ if __name__ == "__main__":
         evaluate_model(model, test_dataset)
     else:
         print('Model does not exist...')
-        return

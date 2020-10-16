@@ -41,3 +41,11 @@ def test_model_layer_types():
 
     assert(model.get_layer('after_cnn_dense').__class__.__name__ == "Dense")
     assert(model.get_layer('after_rnn_dense').__class__.__name__ == "Dense")
+
+if __name__ == "__main__":
+
+    test_model_layer_shapes()
+    print("Model layer shape tests passed")
+
+    test_model_layer_types()
+    print("Model layer shape types passed")
