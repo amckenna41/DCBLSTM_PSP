@@ -3,28 +3,6 @@
 Secondary Protein Structure Prediction using Neural Networks and Deep Learning.
 ========================================
 
-|ProjectStatus|_ |Version|_ |BuildStatus|_ |Coverage|_ |License|_ |PythonVersions|_ |Publication|_
-
-.. |ProjectStatus| image:: https://www.repostatus.org/badges/latest/active.svg
-.. _ProjectStatus: https://www.repostatus.org/#active
-
-.. |Version| image:: https://img.shields.io/pypi/v/neurodsp.svg
-.. _Version: https://pypi.python.org/pypi/neurodsp/
-
-.. |BuildStatus| image:: https://travis-ci.com/neurodsp-tools/neurodsp.svg
-.. _BuildStatus: https://travis-ci.com/github/neurodsp-tools/neurodsp
-
-.. |Coverage| image:: https://codecov.io/gh/neurodsp-tools/neurodsp/branch/master/graph/badge.svg
-.. _Coverage: https://codecov.io/gh/neurodsp-tools/neurodsp
-
-.. |License| image:: https://img.shields.io/pypi/l/neurodsp.svg
-.. _License: https://opensource.org/licenses/Apache-2.0
-
-.. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/neurodsp.svg
-.. _PythonVersions: https://pypi.python.org/pypi/neurodsp/
-
-.. |Publication| image:: https://joss.theoj.org/papers/10.21105/joss.01272/status.svg
-.. _Publication: https://doi.org/10.21105/joss.01272
 
 
 
