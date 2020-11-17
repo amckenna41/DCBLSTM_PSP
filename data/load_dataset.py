@@ -74,6 +74,9 @@ def load_cul6133_filted(all_data=1):
             if np.sum(valhot[i,j,:]) != 0:
                 val_hot[i,j] = np.argmax(valhot[i,j,:])
 
+    #delete training data from ram
+    del data
+
     return train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel
 
 
@@ -111,6 +114,8 @@ def load_cb513(all_data = 1):
             if np.sum(testhot[i,j,:]) != 0:
                 test_hot[i,j] = np.argmax(testhot[i,j,:])
 
+    #delete test data from ram
+    del CB513
     return test_hot, testpssm, testlabel
 
 #load CASP10 test dataset from cwd
@@ -141,6 +146,9 @@ def load_casp10():
 
     print('CASP10 dataset loaded...\n')
 
+    #delete test data from ram
+    del casp10_data
+
     return casp10_data_test_hot, casp10_data_pssm, test_labels
 
 #load CASP11 test dataset from cwd
@@ -169,6 +177,9 @@ def load_casp11():
                 casp11_data_test_hot[x,y] = np.argmax(casp11_data_hot[x,y,:])
 
     print('CASP11 dataset loaded...\n')
+
+    #delete test data from ram
+    del casp11_data
 
     return casp11_data_test_hot, casp11_data_pssm, test_labels
 

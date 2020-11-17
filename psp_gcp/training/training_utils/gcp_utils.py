@@ -9,28 +9,16 @@ from datetime import datetime
 from google.cloud import storage, exceptions
 from googleapiclient import errors
 from googleapiclient import discovery
+from google.cloud import logging
+from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from oauth2client.client import GoogleCredentials
+from training.training_utils.global_vars import *
 import pickle
 import json
-# storage_client = storage.Client.from_service_account_json("service-account.json")
-
-#initialise bucket name and GCP storage client
-global BUCKET_NAME
-BUCKET_NAME = "keras-python-models-2"
-global current_datetime
-current_datetime = str(datetime.date(datetime.now())) + \
-    '_' + str((datetime.now().strftime('%H:%M')))
-
-storage_client = storage.Client()
-bucket = storage_client.get_bucket(BUCKET_NAME)
-#credentials = GoogleCredentials.get_application_default()
 
 #save and upload model history to bucket
-def upload_history(history, score, model_blob_path):
-
-    #Saving pickle of history so that it can later be used for visualisation of the model
-    history_filepath = 'history_' + current_datetime +'.pckl'
+def upload_history(history, model_blob_path):
 
     #open history
     try:
@@ -46,7 +34,6 @@ def upload_history(history, score, model_blob_path):
         print(traceback.format_exc(e))
         print('Error creating history pickle')
 
-
     blob_path = str(model_blob_path) + 'history/history_'+ current_datetime +'.pckl'
 
     #upload history to bucket
@@ -57,72 +44,79 @@ def upload_history(history, score, model_blob_path):
     ## Set MetaData of history blob to store results from history ##
 
     #set metrics to 4 dp except for False Positives metric which is set to 1dp
-    history_meta = {}
-    for key, value in (history.history.items()):
-        if 'val_false' in key or 'false' in key:
-            history_meta[key] = ([ '%.1f' % elem for elem in history.history[key]])
-
-        else:
-            history_meta[key] = ([ '%.4f' % elem for elem in history.history[key]])
-
-    time.sleep(2)
-
-    #set metadata tags in bucket blob to the values from history
-    metadata = history_meta
-    metadata['best_accuracy'] = max(history_meta['accuracy'])
-    metadata['best_val_accuracy'] = max(history_meta['val_accuracy'])
-    metadata['best_loss'] = min(history_meta['loss'])
-    metadata['best_val_loss'] = min(history_meta['val_loss'])
-    metadata['best_mean_squared_error'] = min(history_meta['mean_squared_error'])
-    metadata['best_val_mean_squared_error'] = min(history_meta['val_mean_squared_error'])
-    metadata['best_false_negatives'] = min(history_meta['false_negatives'])
-    metadata['best_false_positives'] = min(history_meta['false_positives'])
-    metadata['best_val_false_negatives'] = min(history_meta['val_false_negatives'])
-    metadata['best_val_false_positives'] = min(history_meta['val_false_positives'])
-    metadata['best_mean_absolute_error'] = min(history_meta['mean_absolute_error'])
-    metadata['best_val_mean_absolute_error'] = min(history_meta['val_mean_absolute_error'])
-    metadata['Evaluation_Loss'] = str(score[0])
-    metadata['Evaluation_Accuracy'] = str(score[1])
-    metadata['Model_Name'] = model_blob_path
-
-    #create json
-    blob.metadata = metadata
-    try:
-        blob.patch()
-    # except exceptions.NotFound:,   except google.api_core.exceptions.Forbidden:
-    except exceptions.Forbidden:
-        raise ValueError("Error: Access to GCP Storage bucket forbidden, check IAM policy, 403 Error")
-    except exceptions.NotFound:
-        raise ValueError("Error: GCP Storage bucket not found 404 Error")
-    except exceptions.PermissionDenied:
-        raise ValueError("Error: Access to GCP Storage bucket denied, check IAM policy")
-    except exceptions.TooManyRequests:
-        raise ValueError("Error: Too many access requests to GCP Storage bucket")
+    # history_meta = {}
+    # for key, value in (history.history.items()):
+    #     if 'val_false' in key or 'false' in key:
+    #         history_meta[key] = ([ '%.1f' % elem for elem in history.history[key]])
+    #
+    #     else:
+    #         history_meta[key] = ([ '%.4f' % elem for elem in history.history[key]])
+    #
+    # time.sleep(2)
+    #
+    # #set metadata tags in bucket blob to the values from history
+    # metadata = history_meta
+    # metadata['best_accuracy'] = max(history_meta['accuracy'])
+    # metadata['best_val_accuracy'] = max(history_meta['val_accuracy'])
+    # metadata['best_loss'] = min(history_meta['loss'])
+    # metadata['best_val_loss'] = min(history_meta['val_loss'])
+    # metadata['best_mean_squared_error'] = min(history_meta['mean_squared_error'])
+    # metadata['best_val_mean_squared_error'] = min(history_meta['val_mean_squared_error'])
+    # metadata['best_false_negatives'] = min(history_meta['false_negatives'])
+    # metadata['best_false_positives'] = min(history_meta['false_positives'])
+    # metadata['best_val_false_negatives'] = min(history_meta['val_false_negatives'])
+    # metadata['best_val_false_positives'] = min(history_meta['val_false_positives'])
+    # metadata['best_mean_absolute_error'] = min(history_meta['mean_absolute_error'])
+    # metadata['best_val_mean_absolute_error'] = min(history_meta['val_mean_absolute_error'])
+    # # metadata['Evaluation_Loss'] = str(score[0])
+    # # metadata['Evaluation_Accuracy'] = str(score[1])
+    # metadata['Model_Name'] = model_blob_path
+    #
+    # #create json
+    # blob.metadata = metadata
+    # try:
+    #     blob.patch()
+    # # except exceptions.NotFound:,   except google.api_core.exceptions.Forbidden:
+    # except exceptions.Forbidden:
+    #     raise ValueError("Error: Access to GCP Storage bucket forbidden, check IAM policy, 403 Error")
+    # except exceptions.NotFound:
+    #     raise ValueError("Error: GCP Storage bucket not found 404 Error")
+    # except exceptions.PermissionDenied:
+    #     raise ValueError("Error: Access to GCP Storage bucket denied, check IAM policy")
+    # except exceptions.TooManyRequests:
+    #     raise ValueError("Error: Too many access requests to GCP Storage bucket")
     #https://googleapis.dev/python/google-api-core/latest/exceptions.html
     # call get_iam_policy and change_iam_policy func to view and change IAM policy to get rid of error
     #cloudstorage.Error, cloudstorage.AuthorizationError, cloudstorage.ForbiddenError, cloudstorage.NotFoundError, cloudstorage.TimeoutError
 
-#save and upload model to bucket
-def upload_model(model, model_blob_path,model_save_path):
-
-    print('Saving model')
-
-    model.save(model_save_path)
-    upload_file(model_blob_path, model_save_path)
+# #save and upload model to bucket
+# def upload_model(model, model_blob_path,model_save_path):
+#
+#     print('Saving model')
+#
+#     model.save(model_save_path)
+#     upload_file(model_blob_path, model_save_path)
 
 #upload blob to bucket
 def upload_file(blob_path, filepath):
 
     print('Uploading blob to GCP Storage')
     blob = bucket.blob(blob_path)
-    blob.upload_from_filename(filepath)
+    try:
+        blob.upload_from_filename(filepath)
+    except Exception as e:
+        print("Error uploading blob {} to storage bucket {} ".format(blob_path, e.message))
 
 #download blob from bucket to local dir
 def download_file(blob_path, filepath):
 
-    print('Downloading file...')
     blob = bucket.blob(blob_path)
-    blob.download_to_filename(filepath)
+    try:
+        blob.download_to_filename(filepath)
+        print('Blob {} downloaded to {}.'.format(blob_path, filepath))
+    except  Exception as e:
+        print("Error downloading blob {} from storage bucket {} ".format(blob_path, e.message))
+
 
 #output hyperparameter tuning results to csv
 def get_job_hyperparmeters(project_id, job_name):
@@ -200,27 +194,141 @@ def get_job_hyperparmeters(project_id, job_name):
 #List all objects within bucket
 def list_bucket_objects():
 
-    blobs = storage_client.list_blobs(BUCKET_NAME)
+    try:
+        blobs = storage_client.list_blobs(BUCKET_NAME)
+    except Exception as e:
+        print("Error listing blobs from {} bucket: {}".format(BUCKET_NAME, e.message))
 
     for blob in blobs:
         print(blob.name)
+
+#
+# class Logging:
+#
+#     def __init__(self, project_id, job_id, topic_id, sink_id, subscription_id):
+#         self.project_id = project_id
+#         self.job_id = job_id
+#         self.topic_id = topic_id
+#         self.sink_id = sink_id
+#
+#     def list_sinks():
+#         pass
+      # def create_sinks():
+      #     pass
+#
+#     def update_sink(self, sink_id, filter_):
+#         pass
+#
+#     def create_topic():
+#         pass
+#
+#     def list_topics():
+#         pass
+#
+#     def delete_topic():
+#         pass
+#
+#     def create_subscription():
+#         pass
+#
+#     def delete_subscription():
+#         pass
+#
+#     def list_subscriptions_in_topic():
+#         pass
+#
+#     def receive_messages(project_id, subscription_id, timeout=None):
+#         pass
+#
+#
+#
+# def create_sink(sink_name, destination_bucket, filter_, project_id, topic_id):
+#     logging_client = logging.Client()
+#
+#
+#     destination = "pubsub.googleapis.com/projects/ninth-optics-286313/topics/ai-platform-status-test"
+#
+#     #  bucket=destination_bucket)
+#
+#     sink = logging_client.sink(
+#         sink_name,
+#         filter_,
+#         destination)
+#
+#     if sink.exists():
+#         print('Sink {} already exists.'.format(sink.name))
+#         return
+#
+#     sink.create()
+#     print('Created sink {}'.format(sink.name))
+# # [END logging_create_sink]
+#
+#
+#     pass
+#
+# #https://googleapis.dev/python/logging/latest/gapic/v2/api.html
+# def check_job_status(project_id, job_id):
+#
+#     #get job status info
+#     # resource.type = "ml_job"
+#     # resource.labels.task_name = "service" - get basic service info
+#     # resource.labels.job_id = "JOB_ID"
+#     #textPayload = "Job completed successfully."
+#
+#     #get other job outputs from model training
+#     # resource.type = "ml_job"
+#     # resource.labels.task_name="master-replica-0"
+#     # jsonPayload.message:"Precision -" OR jsonPayload.message:"Recall -" OR
+#
+#     #1. Create Topic
+#     #2. Create subscription to topic
+#     #3. Create sink (destination is topic)
+#     #create log sink
+#
+#     #update sink filter
+#     #resource.labels.job_id = job_id
+#     # textPayload = "Job failed."/ "Job cancelled."/ "Job completed successfully."
+#
+#     pass
+
+def get_model_output():
+
+    model_output_csv = "model_output_csv_" + current_datetime +'.csv'
+    model_output_csv_blob = 'models/model_output_csv_' +  current_datetime +'.csv'
+
+    #converting model_output dictionary to pandas Dataframe
+    model_output_df = pd.DataFrame(model_output, index=[0])
+    #transposing model_output Dataframe
+    model_output_df_t = model_output_df.transpose()
+    model_output_df_t.columns = ['Values']
+
+    #exporting Dataframe to CSV
+    model_output_df_t.to_csv(model_output_csv,columns=['Values'])
+
+    #add additonal column that multiples values * 100, except for loss/MAE/MSE etc
+    #uploading blob to cloud storage
+    upload_file(model_output_csv_blob, model_output_csv)
+    #
+    # #downloading model_output to local directory
+    # download_file(model_output_csv_blob, model_output_csv_blob)
+    #
 
 #Delete specified blob from bucket
 def delete_blob(blob_name):
 
     bucket = storage_client.bucket(BUCKET_NAME)
     blob = bucket.blob(blob_name)
-    blob.delete()
+    try:
+        blob.delete()
+        print("Blob {} deleted from {} bucket".format(blob_name, BUCKET_NAME))
+    except Exception as e:
+        print("Error deleting blob {} from {} bucket: {}".format(blob_name, BUCKET_NAME, e.message))
 
-    print("Blob {} deleted.".format(blob_name))
-
-#get IAM policy for bucket
-def view_bucket_iam_members():
-
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(BUCKET_NAME)
-
-    policy = bucket.get_iam_policy(requested_policy_version=3)
-
-    for binding in policy.bindings:
-        print("Role: {}, Members: {}".format(binding["role"], binding["members"]))
+# class IAM():
+    # #get IAM policy for bucket
+    # def view_bucket_iam_members():
+    #
+    #     policy = bucket.get_iam_policy(requested_policy_version=3)
+    #
+    #     for binding in policy.bindings:
+    #         print("Role: {}, Members: {}".format(binding["role"], binding["members"]))

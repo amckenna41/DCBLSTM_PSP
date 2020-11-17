@@ -11,7 +11,7 @@ trainingInput:
 
 
 
-####Training Using GPU's####
+#### Training Using GPU's ####
       # trainingInput:
       #   scaleTier: BASIC_GPU    # n1-standard-8 with one k80 GPU - OOM
       #   runtimeVersion: '2.1'
@@ -38,7 +38,7 @@ trainingInput:
       #   workerType: cloud_tpu
       #   workerCount: 4
 
-####Training Using TPU's####
+#### Training Using TPU's ####
       #https://cloud.google.com/ai-platform/training/docs/using-tpus#configuring_a_custom_tpu_machine
 
       # trainingInput:
@@ -55,25 +55,25 @@ trainingInput:
       #       type: TPU_V2
       #       count: 8
 
-####Basic Training Configuration - Used for quickly testing things####
+#### Basic Training Configuration - Used for quickly testing things ####
       # trainingInput:
       #   scaleTier: BASIC
 
-####Training Using 50% of dataset####
+#### Training Using 50% of dataset ####
       # trainingInput:
       #   scaleTier: CUSTOM
       #   masterType: n1-highmem-8
       #   runtimeVersion: '2.1'
       #   pythonVersion: '3.7'
 
-####Training Using 25% of dataset####
+#### Training Using 25% of dataset ####
       # trainingInput:
       #   scaleTier: CUSTOM
       #   masterType: n1-highmem-4
       #   runtimeVersion: '2.1'
       #   pythonVersion: '3.7'
 
-####High Memory Throughput####
+#### High Memory Throughput ####
       # trainingInput:
       #   scaleTier: CUSTOM
       #   masterType: n1-highmem-16

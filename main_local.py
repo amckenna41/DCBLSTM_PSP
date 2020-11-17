@@ -70,15 +70,28 @@ def main(args):
     csv_logger  = CSVLogger(csv_path)
 
     # https://towardsdatascience.com/how-to-traine-tensorflow-models-79426dabd304
+    start = time.time()
     #fit model
     if cuda:
         # print('Fitting model...')
         # history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
         # epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard, EarlyStopping, ModelCheckpoint, CSVLogger],shuffle=True)
+        # elapsed = (time.time() - start)
     else:
         # print('Fitting model...')
         # history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
         # epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard, EarlyStopping, ModelCheckpoint, CSVLogger],shuffle=True)
+
+    elapsed = (time.time() - start)
+    print('Elapsed Training Time: {}'.format(elapsed))
+
+    start = time.time()
+# with tf.device('/gpu:0'): #use for training with GPU on TF
+    print('Fitting model...')
+    history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
+        epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[tensorboard, checkpoint],shuffle=True)
+
+    elapsed = (time.time() - start)
 
     # #save model locally and to google cloud bucket
     print('Saving model')

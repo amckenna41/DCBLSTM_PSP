@@ -1,5 +1,32 @@
 # protein_structure_prediction_DeepLearning
+========================================
 Secondary Protein Structure Prediction using Neural Networks and Deep Learning.
+========================================
+
+|ProjectStatus|_ |Version|_ |BuildStatus|_ |Coverage|_ |License|_ |PythonVersions|_ |Publication|_
+
+.. |ProjectStatus| image:: https://www.repostatus.org/badges/latest/active.svg
+.. _ProjectStatus: https://www.repostatus.org/#active
+
+.. |Version| image:: https://img.shields.io/pypi/v/neurodsp.svg
+.. _Version: https://pypi.python.org/pypi/neurodsp/
+
+.. |BuildStatus| image:: https://travis-ci.com/neurodsp-tools/neurodsp.svg
+.. _BuildStatus: https://travis-ci.com/github/neurodsp-tools/neurodsp
+
+.. |Coverage| image:: https://codecov.io/gh/neurodsp-tools/neurodsp/branch/master/graph/badge.svg
+.. _Coverage: https://codecov.io/gh/neurodsp-tools/neurodsp
+
+.. |License| image:: https://img.shields.io/pypi/l/neurodsp.svg
+.. _License: https://opensource.org/licenses/Apache-2.0
+
+.. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/neurodsp.svg
+.. _PythonVersions: https://pypi.python.org/pypi/neurodsp/
+
+.. |Publication| image:: https://joss.theoj.org/papers/10.21105/joss.01272/status.svg
+.. _Publication: https://doi.org/10.21105/joss.01272
+
+
 
 **status**
 > Development Stage
@@ -15,6 +42,8 @@ Protein Structure Prediction (PSP) is the determination of a protein's structure
 * 3-helix (3-10 helix) ('G')
 * beta bridge ('B')
 * 5-helix (pi helix) ('I')
+
+Most proteins fall into the category of 4 structures. The primary structure is the , the seondary structure is, tertiary structure is and the quaternary structure is...  ... A visualisation of these structures can be seen below in Figure 1.
 
 <br> bit of info about proteins and their struture...
 ![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/protein_structure.jpeg?raw=true)
@@ -85,7 +114,7 @@ pip3 install -r requirements.txt
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the Tensorflow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/model_design.jpeg?raw=true)
+![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/model_design.png?raw=true)
 
 
 ## Running model locally with default parameters:
@@ -104,6 +133,15 @@ To be able to run the model on the cloud you must have an existing GCP account a
 Call bash script ./gcp_training.sh on a command line/terminal. This will call the BLSTM_3xConv_Model on the GCP Ai-Platform with the default settings and parameters.
 
 
+#user inputs protein sequence, BLAST run on sequence through BLAST API to convert to PSSM? - main input
+#protein sequence from fasta is converted into one-hot encoded vector per AA
+
+I am a newcomer to ncbi-blast-2.2.29+. Previously, I had been using blastpgp to gain PSSM. In blastpgp, to gain a PSSM of a protein fasta, I ran command as follows:
+
+blastpgp -a $BLAST_NUM_CPUS -t 1 -i $file -j2 -o $id$chain.nr.blast -d NR -v10000 -b10000 -K1000 -h0.0009 -e0.0009 -C $id$chain.nr.chk -Q $id$chain.nr.pssm.
+https://www.biostars.org/p/14253/
+https://www.biostars.org/p/2997/
+
 **References**
 [1]: https://www.princeton.edu/~jzthree/datasets/ICML2014/
 [2]: https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2940-0
@@ -111,3 +149,6 @@ Call bash script ./gcp_training.sh on a command line/terminal. This will call th
 [4]:
 **status**
 > Development Stage
+
+
+**add draw.io to images folder

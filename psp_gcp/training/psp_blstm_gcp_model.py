@@ -1,4 +1,4 @@
-#PSP model using BLSTM RNN with CNN + DNN
+### PSP model using BLSTM RNN with CNN + DNN
 
 #import required modules and dependancies
 import numpy as np
@@ -13,15 +13,15 @@ from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, Fals
 from tensorflow.keras import activations
 # from tensorflow.keras.utils import plot_model
 import pandas as pd
-# from io import BytesIO
-# from tensorflow.python.lib.io import file_io
 import os
 import sys
 from datetime import date
 from datetime import datetime
+#import required package modules
 from training.training_utils.get_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
+from training.training_utils.global_vars import *
 from training.evaluate import *
 
 #set required parameters and configuration for TensorBoard
@@ -38,11 +38,6 @@ config_proto.graph_options.rewrite_options.arithmetic_optimization = off
 session = tf.compat.v1.Session(config=config_proto)
 set_session(session)
 
-#initialise bucket and GCP storage client
-BUCKET_PATH = "gs://keras-python-models-2"
-BUCKET_NAME = "keras-python-models-2"
-current_datetime = str(datetime.date(datetime.now())) + \
-    '_' + str((datetime.now().strftime('%H:%M')))
 
 #building BLSTM_3xConv_Model
 def build_model():
@@ -50,6 +45,10 @@ def build_model():
     #main input is the length of the amino acid in the protein sequence (700,)
     main_input = Input(shape=(700,), dtype='float32', name='main_input')
 
+  # pssm_input = Input(shape=(700, 21,), name='pssm_input')
+  # seq_input = Input(shape=(700, 22,), name='seq_input')
+  #
+  # main_input = concatenate([seq_input, pssm_input])
     #Embedding Layer used as input to the neural network
     embed = Embedding(output_dim=21, input_dim=21, input_length=700, name="embedding")(main_input)
 
@@ -116,11 +115,6 @@ def build_model():
     model.compile(optimizer = adam, loss={'main_output': 'categorical_crossentropy'}, metrics=['accuracy', MeanSquaredError(), FalseNegatives(), FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision()])
     model.summary()
 
-    #set earlyStopping and checkpoint callback
-    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
-    checkpoint_path = "checkpoints/CDBLSTM_" + current_datetime + ".h5"
-    checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
-
     return model
 
 #main function to train and evaluate CNN + RNN + DNN model
@@ -128,6 +122,7 @@ def main(args):
 
     #setting parsed input arguments
     job_dir = str(args.job_dir)
+    job_name = str(args.job_name)
     all_data = float(args.alldata)
     batch_size = int(args.batch_size)
     epochs = int(args.epochs)
@@ -137,17 +132,14 @@ def main(args):
     print("Logs Path: ", logs_path)
     print('Job Logs: ', job_dir)
     #
-    epochs = 1
-    all_data = 0.1
-    batch_size = 150
+    # batch_size = 120
     #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
     if (all_data == 0 or all_data > 1):
-        all_data = 0.5
+        all_data = 1.0
 
     print('Running model using {}%% of data'.format(int(all_data*100)))
     train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted(all_data)
-    test_hot, testpssm, testlabel = load_cb513(all_data)
-
+    test_hot, testpssm, testlabel = load_cb513()
 
     #build model
     print('Building 3x1Dconv BLSTM model')
@@ -159,33 +151,61 @@ def main(args):
 
     #initialise model callbacks
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
-    checkpoint =  tf.keras.callbacks.ModelCheckpoint(filepath="blstm_3conv_checkpoint/", verbose=1,save_best_only=True, monitor='val_acc', mode='max')
+    #set earlyStopping and checkpoint callback
 
+    checkpoint_path = "checkpoints_CDBLSTM_" + current_datetime + ".h5"
+    checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
+
+    start = time.time()
 # with tf.device('/gpu:0'): #use for training with GPU on TF
+# with tf.device('/cpu:0'): #use for training with CPU on TF - Default
+
     print('Fitting model...')
     history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
-        epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[tensorboard, checkpoint],shuffle=True)
+        epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[tensorboard, checkpointer,earlyStopping],shuffle=True)
+
+    elapsed = (time.time() - start)
+    print('Elapsed Training Time: {}\n'.format(elapsed))
 
     print("Training Accuracy: ", max(history.history['accuracy']))
     print("Training Loss: ", min(history.history['loss']))
-
-    #evaluating model
-    evaluate_model(model, test_dataset="all")
+    # print("Training Recall: ", history.history[])
+    # print("Training Precision: ", )
+    # print("Training MSE: ", )
+    # print("Training MAE: ", )
+    model_output['Job Name'] = job_name
+    model_output['Job Directory'] = job_dir
+    model_output['Batch Size'] = batch_size
+    model_output['Epochs'] = epochs
+    # model_output['Logs Path'] = logs_path
+    model_output['Training Accuracy'] = max(history.history['accuracy'])
+    model_output['Training Loss'] = max(history.history['loss'])
+    model_output['Training MSE'] = max(history.history['mean_squared_error'])
+    model_output['Training MAE'] = max(history.history['mean_absolute_error'])
+    model_output['Training Recall'] = max(history.history['recall'])
+    model_output['Training Precision'] = max(history.history['precision'])
 
     #initialise TensorBoard summary variables
     # loss_summary = tf.summary.scalar(name='Loss Summary', data=score[0])
     # accuracy_summary = tf.summary.scalar(name='Accuracy Summary', data=score[1])
+    #models/+job_name + epochs + batch_size
+    model_blob_path = 'models/model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime +'.h5'
 
+    model_save_path = 'model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime + '.h5'
 
-    model_blob_path = 'models/model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime
-
-    # model_save_path = 'model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime + \
-    #     '_accuracy-'+ str(score[1]) +'_loss-' + str(score[0]) + '.h5'
+    model.save(model_save_path)
 
     #create directory in bucket for new model - name it the model name, store model
-    # upload_history(history,score,model_save_path)
+    #evaluating model
+    evaluate_model(model, test_dataset=test_dataset)
+    get_model_output()
+    upload_history(history,model_save_path)
     # upload_model(model, model_blob_path, model_save_path)
-    # plot_history(history.history, model_blob_path,show_histograms=False, show_boxplots=False, show_kde=False)
+    upload_file(model_blob_path, model_save_path)
+    plot_history(history.history, model_blob_path,show_histograms=True, show_boxplots=True, show_kde=True)
+
+
 
 #initialise input arguments to model
 parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
@@ -198,6 +218,9 @@ parser.add_argument('-e', '--epochs', type=int, default=10,
 parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints and export models',required=False,
                     default = BUCKET_PATH)
 
+parser.add_argument('-j', '--job_name', help='Name of GCS Job',required=False,
+                    default = "default_job_name")
+
 parser.add_argument('-alldata', '--alldata', type =float, default=1,
                     help='Select what proportion of training and test data to use, 1 - All data, 0.5 - 50%% of data etc')
 
@@ -205,7 +228,7 @@ parser.add_argument('-logs_dir', '--logs_dir',
                     help='Directory on cloud storage for Tensorboard logs',required=False, default = (BUCKET_NAME + "/logs/tensorboard"))
 
 parser.add_argument('-test_dataset', '--test_dataset',
-                    help='Select what test dataset to use for evaluation, default is CB513',required=False, default = "CB513")
+                    help='Select what test dataset to use for evaluation, default is CB513',required=False, default = "all")
 
 args = parser.parse_args()
 

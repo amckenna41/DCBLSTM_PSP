@@ -40,12 +40,12 @@ CASP10 dimensions:
 CASP11 dimensions:
 105, 700, 21
 
-To download and load data locally into data directory, from data dir and a terminal, call:
+**To download and load data locally into data directory, from data dir and a terminal, call:**
 ```
 python load_dataset.py
 ```
 
-Or from the root of the project, from a terminal, call:
+**Or from the root of the project, from a terminal, call:**
 ```
 python -m data.load_dataset
 ```

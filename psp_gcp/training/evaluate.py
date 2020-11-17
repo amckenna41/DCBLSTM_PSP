@@ -4,6 +4,8 @@ import tensorflow as tf
 import argparse
 from sklearn.metrics import classification_report, confusion_matrix
 from training.training_utils.get_dataset import *
+from training.training_utils.plot_model import *
+from training.training_utils.global_vars import *
 
 #maybe create tf summary
 
@@ -32,29 +34,41 @@ def evaluate_cb513(model):
     test_hot, testpssm, testlabel = load_cb513()
 
     print('Evaluating model using CB513 dataset')
-    score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,batch_size=10)
-    print('Evaluation Loss : ', score[0])
-    print('Evaluation Accuracy : ', score[1])
+    score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,batch_size=1)
+    print('CB513 Evaluation Loss : ', score[0])
+    print('CB513 Evaluation Accuracy : ', score[1])
 
     # pred_casp = model.predict([testpssm, test_hot], verbose=1,batch_size=10)
-    pred_cb = model.predict({'main_input': test_hot, 'aux_input': testpssm}, verbose=1,batch_size=10)
+    print('Prediction using CB513')
+    pred_cb = model.predict({'main_input': test_hot, 'aux_input': testpssm}, verbose=1,batch_size=1)
 
     #convert label and prediction array to float32
     testlabel = testlabel.astype(np.float32)
     pred_cb = pred_cb.astype(np.float32)
 
-    cat_acc_casp = categorical_accuracy(testlabel, pred_cb)
-    print('Categorical Accuracy: {}'.format(cat_acc_casp))
+    # cat_acc_cb = categorical_accuracy(testlabel, pred_cb)
+    # print('CB513 Categorical Accuracy: {}'.format(cat_acc_cb))
     mse_cb = mean_squared_error(testlabel, pred_cb)
-    print('Mean Sqared Error: {} '.format(mse_cb))
+    print('CB513 Mean Squared Error: {} '.format(mse_cb))
     mae_cb = mean_absolute_error(testlabel, pred_cb)
-    print('Mean Absolute Error: {} '.format(mae_cb))
+    print('CB513 Mean Absolute Error: {} '.format(mae_cb))
     recall_cb = recall(testlabel, pred_cb)
-    print('Recall: {} '.format(recall_cb))
+    print('CB513 Recall: {} '.format(recall_cb))
     precision_cb = precision(testlabel, pred_cb)
-    print('Precision: {} '.format(precision_cb))
+    print('CB513 Precision: {} '.format(precision_cb))
     f1_score_cb = fbeta_score(testlabel, pred_cb)
-    print('F1 Score: {} '.format(f1_score_cb))
+    print('CB513 F1 Score: {} '.format(f1_score_cb))
+
+    model_output['CB513 Evaluation Accuracy'] = score[1]
+    model_output['CB513 Evaluation Loss'] = score[0]
+    # model_output['CB513 Categorical Accuracy'] = cat_acc_cb
+    model_output['CB513 Mean Squared Error'] = float(mse_cb.numpy())
+    model_output['CB513 Mean Absolute Error'] = float(mae_cb.numpy())
+    model_output['CB513 Recall'] = float(recall_cb.numpy())
+    model_output['CB513 Precision'] = float(precision_cb.numpy())
+    model_output['CB513 F1 Score'] = float(f1_score_cb.numpy())
+
+    get_label_predictions(pred_cb, "CB513")
 
     # print(classification_report(testlabel, pred_casp, target_names=class_names))
     # print(confusion_matrix(testlabel, pred_casp))
@@ -68,8 +82,10 @@ def evaluate_casp10(model):
     #load test dataset
     casp10_data_test_hot, casp10_data_pssm, test_labels = load_casp10()
 
-    print('Evaluating model using CB513 dataset')
+    print('Evaluating model using CASP10 dataset')
     score = model.evaluate({'main_input': casp10_data_test_hot, 'aux_input': casp10_data_pssm},{'main_output': test_labels},verbose=1,batch_size=1)
+    print('CASP10 Evaluation Loss: ', score[0])
+    print('CASP10 Evaluation Accuracy: ', score[1])
 
     print('Prediction using CASP10')
     pred_casp = model.predict({'main_input': casp10_data_test_hot, 'aux_input': casp10_data_pssm}, verbose=1,batch_size=1)
@@ -79,15 +95,25 @@ def evaluate_casp10(model):
     pred_casp = pred_casp.astype(np.float32)
 
     mse_casp = mean_squared_error(test_labels, pred_casp)
-    print('Mean Squared Error - {} '.format(mse_casp))
+    print('CASP10 Mean Squared Error: {} '.format(mse_casp))
     mae_casp = mean_absolute_error(test_labels, pred_casp)
-    print('Mean Absolute Error - {} '.format(mae_casp))
+    print('CASP10 Mean Absolute Error: {} '.format(mae_casp))
     recall_casp = recall(test_labels, pred_casp)
-    print('Recall - {} '.format(recall_casp))
+    print('CASP10 Recall: {} '.format(recall_casp))
     precision_casp = precision(test_labels, pred_casp)
-    print('Precision - {} '.format(precision_casp))
+    print('CASP10 Precision: {} '.format(precision_casp))
     f1_score_casp = fbeta_score(test_labels, pred_casp)
-    print('F1 Score - , {} '.format(f1_score_casp))
+    print('CASP10 F1 Score: {} '.format(f1_score_casp))
+
+    model_output['CASP10 Evaluation Accuracy'] = score[1]
+    model_output['CASP10 Evaluation Loss'] = score[0]
+    model_output['CASP10 Mean Squared Error'] = float(mse_casp.numpy())
+    model_output['CASP10 Mean Absolute Error'] = float(mae_casp.numpy())
+    model_output['CASP10 Recall'] = float(recall_casp.numpy())
+    model_output['CASP10 Precision'] = float(precision_casp.numpy())
+    model_output['CASP10 F1 Score'] = float(f1_score_casp.numpy())
+
+    get_label_predictions(pred_casp, "CASP10")
 
     # print(classification_report(testlabel, pred_casp, target_names=class_names))
     # print(confusion_matrix(testlabel, pred_casp))
@@ -102,6 +128,8 @@ def evaluate_casp11(model):
 
     print('Evaluating model using CASP11 dataset')
     score = model.evaluate({'main_input': casp11_data_test_hot, 'aux_input': casp11_data_test_pssm},{'main_output': test_labels},verbose=1,batch_size=1)
+    print('CASP11 Evaluation Loss: ', score[0])
+    print('CASP11 Evaluation Accuracy: ', score[1])
 
     print('Prediction using CASP11')
     pred_casp = model.predict({'main_input': casp11_data_test_hot, 'aux_input': casp11_data_test_pssm}, verbose=1,batch_size=1)
@@ -111,18 +139,52 @@ def evaluate_casp11(model):
     pred_casp = pred_casp.astype(np.float32)
 
     mse_casp = mean_squared_error(test_labels, pred_casp)
-    print('Mean Squared Error - {} '.format(mse_casp))
+    print('CASP11 Mean Squared Error: {} '.format(mse_casp))
     mae_casp = mean_absolute_error(test_labels, pred_casp)
-    print('Mean Absolute Error - {} '.format(mae_casp))
+    print('CASP11 Mean Absolute Error: {} '.format(mae_casp))
     recall_casp = recall(test_labels, pred_casp)
-    print('Recall - {} '.format(recall_casp))
+    print('CASP11 Recall: {} '.format(recall_casp))
     precision_casp = precision(test_labels, pred_casp)
-    print('Precision - {} '.format(precision_casp))
+    print('CASP11 Precision: {} '.format(precision_casp))
     f1_score_casp = fbeta_score(test_labels, pred_casp)
-    print('F1 Score - , {} '.format(f1_score_casp))
+    print('CASP11 F1 Score: {} '.format(f1_score_casp))
 
+    model_output['CASP11 Evaluation Accuracy'] = score[1]
+    model_output['CASP11 Evaluation Loss'] = score[0]
+    model_output['CASP11 Mean Squared Error'] = float(mse_casp.numpy())
+    model_output['CASP11 Mean Absolute Error'] = float(mae_casp.numpy())
+    model_output['CASP11 Recall'] = float(recall_casp.numpy())
+    model_output['CASP11 Precision'] = float(precision_casp.numpy())
+    model_output['CASP11 F1 Score'] = float(f1_score_casp.numpy())
+
+    get_label_predictions(pred_casp, "CASP11")
     # print(classification_report(testlabel, pred_casp, target_names=class_names))
     # print(confusion_matrix(testlabel, pred_casp))
+
+'''
+Getting predicted proportion of each secondary structure label
+'''
+def get_label_predictions(y_pred, calling_test_dataset):
+
+    pred_labels = y_pred[0,0,:]
+    print('Model prediction for each secondary structure type using {} dataset:\n'.format(calling_test_dataset))
+    # print('{} - Alpha Helix (H): {}'.format(calling_test_dataset, pred_labels[5]))
+    # print('{} - Beta Strand (E): {}'.format(calling_test_dataset, pred_labels[2]))
+    # print('{} - Loop (L): {}'.format(calling_test_dataset, pred_labels[0]))
+    # print('{} - Beta Turn (T): {}'.format(calling_test_dataset, pred_labels[7]))
+    # print('{} - Bend (S): {}'.format(calling_test_dataset, pred_labels[6]))
+    # print('{} - 3-Helix (G): {}'.format(calling_test_dataset, pred_labels[3]))
+    # print('{} - Beta Bridge (B): {}'.format(calling_test_dataset, pred_labels[1]))
+    # print('{} - Pi Helix (I): {}'.format(calling_test_dataset, pred_labels[4]))
+
+    model_output[calling_test_dataset + ': '+ 'Alpha Helix (H)'] = pred_labels[5]
+    model_output[calling_test_dataset + ': '+ 'Beta Strand (E)'] = pred_labels[2]
+    model_output[calling_test_dataset + ': '+ 'Loop (L)'] = pred_labels[0]
+    model_output[calling_test_dataset + ': '+ 'Beta Turn (T)'] = pred_labels[7]
+    model_output[calling_test_dataset + ': '+ 'Bend (S)'] = pred_labels[6]
+    model_output[calling_test_dataset + ': '+ '3-Helix (G)'] = pred_labels[3]
+    model_output[calling_test_dataset + ': '+ 'Beta Bridge (B)'] = pred_labels[1]
+    model_output[calling_test_dataset + ': '+ 'Pi Helix (I)'] = pred_labels[4]
 
 
 def categorical_accuracy(y_true, y_pred):
@@ -134,7 +196,7 @@ def categorical_accuracy(y_true, y_pred):
 
 def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
-                  K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
+              K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
 
 def sparse_categorical_accuracy(y_true, y_pred):
     '''Same as categorical_accuracy, but useful when the predictions are for
@@ -150,12 +212,12 @@ def top_k_categorical_accuracy(y_true, y_pred, k=5):
     '''
     return K.mean(K.in_top_k(y_pred, K.argmax(y_true, axis=-1), k))
 
-
-def mean_squared_error(y_true, y_pred):
-
-    '''Calculates the mean squared error (mse) rate
+'''
+    Calculates the mean squared error (mse) rate
     between predicted and target values.
-    '''
+
+'''
+def mean_squared_error(y_true, y_pred):
 
     return K.mean(K.square(y_pred - y_true))
 

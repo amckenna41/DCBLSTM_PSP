@@ -231,9 +231,14 @@ def main(args):
 
     # batch_size = 120
     print('Fitting model...')
+    start = time.time()
     # with tf.device('/device:GPU:0'): - if using GPU
     history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
         epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard],shuffle=True)
+
+    elapsed = (time.time() - start)
+    print('Elapsed Training Time: {}'.format(elapsed))
+
 
     print('Evaluating model')
     score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,

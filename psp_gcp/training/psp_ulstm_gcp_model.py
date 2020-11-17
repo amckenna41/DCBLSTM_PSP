@@ -158,10 +158,14 @@ def main(args):
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
     checkpoint =  tf.keras.callbacks.ModelCheckpoint(filepath="CDUSLTM_checkpoint/", verbose=1,save_best_only=True, monitor='val_acc', mode='max')
 
-    # with tf.device('/gpu:0'): #use for training with GPU on TF
     print('Fitting model...')
+    start = time.time()
+    # with tf.device('/device:GPU:0'): - if using GPU
     history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
-        epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[tensorboard, checkpoint],shuffle=True)
+        epochs=epochs, batch_size=batch_size, verbose=2, callbacks=[tensorboard],shuffle=True)
+
+    elapsed = (time.time() - start)
+    print('Elapsed Training Time: {}'.format(elapsed))
 
     print('Evaluating model')
     score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,batch_size=1)
@@ -176,10 +180,10 @@ def main(args):
     print('Evaluation Loss : ', score[0])
     print('Evaluation Accuracy : ', score[1])
 
-    model_blob_path = 'models/model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime
 
-    model_save_path = 'model_blstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime + \
-        '_accuracy-'+ str(score[1]) +'_loss-' + str(score[0]) + '.h5'
+    model_blob_path = 'models/model_ulstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime + '.h5'
+
+    model_save_path = 'model_ulstm_3x1Dconv_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime + '.h5'
 
     # upload_history(history,model_save_path,score)
     # upload_model(model, model_blob_path, model_save_path)

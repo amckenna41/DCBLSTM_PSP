@@ -1,38 +1,94 @@
 #!/bin/bash
 
-#check current version of pip and update if neccessry
-if !(pip --version == '20.2.2')
-then
-  echo "Updating pip to latest version"
-  sudo -H pip3 install --upgrade pip
-else
-  echo "Pip up-to-date"
-fi
+### check current version of pip and update, if neccessry ###
+# if !(pip --version == '20.2.2')
+# then
+#   echo "Updating pip to latest version"
+#   sudo -H pip3 install --upgrade pip
+# else
+#   echo "Pip up-to-date"
+# fi
 
 #update Python Path
 # export PATH="${PATH}:/root/.local/bin"
-export PYTHONPATH="${PYTHONPATH}:/root/.local/bin"
+# export PYTHONPATH="${PYTHONPATH}:/root/.local/bin"
 
 # export GOOGLE_APPLICATION_CREDENTIALS="service-account.json" - set GAC env variable
 # echo $GOOGLE_APPLICATION_CREDENTIALS
 
+#### Parse positonal arguments ###
+#https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -b|--batch_size)
+    BATCH_SIZE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -e|--epochs)
+    EPOCHS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ad|--all_data)
+    ALL_DATA="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -td|--test_dataset)
+    TEST_DATASET="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -m|--module)
+    MODULE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --default)
+    DEFAULT=YES
+    shift # past argument
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ $# -eq 0 ]
+  then
+    BATCH_SIZE=120
+    EPOCHS=5
+    ALL_DATA=1.0
+    TEST_DATASET="All"
+    MODULE="training.psp_blstm_gcp_model"
+fi
+
 #set arguments to be passed into model
-BATCH_SIZE=120
-EPOCHS=5
-ALL_DATA=1.0
+# BATCH_SIZE=250
+# EPOCHS=1
+# ALL_DATA=0.01
 
 #set Ai-Platform Job environment variables
 BUCKET_NAME="gs://keras-python-models-2"
-JOB_NAME="CDBLSTM_model$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
+JOB_NAME="CDBLSTM_model_$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
 JOB_DIR="$BUCKET_NAME/job_logs"      # - where to store job logs
 PACKAGE_PATH="training/"             # - path of folder to be packaged
 CONFIG="training/training_utils/gcp_training_config.yaml"   # - job config file
-MODULE="training.psp_blstm_gcp_model"       # - main calling module
 RUNTIME_VERSION="2.1"   # - https://cloud.google.com/ai-platform/training/docs/runtime-version-list
 PYTHON_VERSION="3.7"
 REGION="us-central1"    # - cloud region to run job
-CUDA_VISIBLE_DEVICES=""   # - initialise CUDA env var
+export CUDA_VISIBLE_DEVICES=0   # - initialise CUDA env var
+# CUDA_VISIBLE_DEVICES=1 - If using 1 CUDA enabled GPU
+
 LOGS_DIR="$JOB_DIR""/logs/tensorboard/$JOB_NAME"   # - TensorBoard logs
+
 
 #Function to parse GCP config file
 function parse_yaml {
@@ -51,18 +107,24 @@ function parse_yaml {
       }
    }'
 }
+#evaluate parsed gcp config file
 eval $(parse_yaml training/training_utils/gcp_training_config.yaml)
 
-echo "Running LSTM model on Google Cloud..."
+echo "Running model on Google Cloud Platform"
+echo ""
 echo "Job Details..."
 echo "Job Name: $JOB_NAME"
 echo "Cloud Runtime Version: $RUNTIME_VERSION"
 echo "Python Version: $PYTHON_VERSION"
 echo "Region: $REGION"
 echo "Logs and models stored in bucket: $JOB_DIR"
+echo "Batch Size: $BATCH_SIZE"
+echo "Epochs: $EPOCHS"
+echo "Test Dataset: $TEST_DATASET"
+echo "Using $ALL_DATA % of data"
 echo ""
-echo "GCP Machine Type Parameters..."
 
+echo "GCP Machine Type Parameters..."
 echo "Scale Tier: $trainingInput_scaleTier"
 echo "Master Type: $trainingInput_masterType"
 echo "Worker Type: $trainingInput_workerType"
@@ -71,7 +133,7 @@ echo "Worker Count : $trainingInput_workerCount"
 echo "Parameter Server Count: $trainingInput_parameterServerCount"
 echo ""
 
-     #submitting keras training job to Google Cloud
+     #submitting Tensorflow training job to Google Cloud
      gcloud ai-platform jobs submit training $JOB_NAME \
          --package-path $PACKAGE_PATH \
          --module-name $MODULE \
@@ -85,18 +147,18 @@ echo ""
          --epochs $EPOCHS \
          --batch_size $BATCH_SIZE \
          --alldata $ALL_DATA \
-         --logs_dir $LOGS_DIR
-         # --job_name $JOB_NAME   ****
+         --logs_dir $LOGS_DIR \
+         --test_dataset $TEST_DATASET \
+         --job_name $JOB_NAME
 
+echo ""
 echo "To view model progress through tensorboard in Google Cloud shell or terminal execute..."
 echo "tensorboard --logdir=$LOGS_DIR --port=8080"
 echo "If in cloud shell, then click on the web preview option "
 
-###Visualise model results on TensorBoard###
-# tensorboard --logdir [LOGS_PATH] - path declared in Tensorboard callback:
-#tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
 
-
+### Visualise model results on TensorBoard ###
+     #tensorboard --logdir [LOGS_PATH] - path declared in Tensorboard callback:
 
 ### Common Errors when running gcloud command, see below link ###
       #https://stackoverflow.com/questions/31037279/gcloud-command-not-found-while-installing-google-cloud-sdk
