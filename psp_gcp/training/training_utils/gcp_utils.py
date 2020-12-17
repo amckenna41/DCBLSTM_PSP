@@ -13,7 +13,7 @@ from google.cloud import logging
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from oauth2client.client import GoogleCredentials
-from training.training_utils.global_vars import *
+from training.training_utils.globals import *
 import pickle
 import json
 
@@ -40,62 +40,6 @@ def upload_history(history, model_blob_path):
     blob = bucket.blob(blob_path)
     upload_file(blob_path,history_filepath)
     time.sleep(2)
-
-    ## Set MetaData of history blob to store results from history ##
-
-    #set metrics to 4 dp except for False Positives metric which is set to 1dp
-    # history_meta = {}
-    # for key, value in (history.history.items()):
-    #     if 'val_false' in key or 'false' in key:
-    #         history_meta[key] = ([ '%.1f' % elem for elem in history.history[key]])
-    #
-    #     else:
-    #         history_meta[key] = ([ '%.4f' % elem for elem in history.history[key]])
-    #
-    # time.sleep(2)
-    #
-    # #set metadata tags in bucket blob to the values from history
-    # metadata = history_meta
-    # metadata['best_accuracy'] = max(history_meta['accuracy'])
-    # metadata['best_val_accuracy'] = max(history_meta['val_accuracy'])
-    # metadata['best_loss'] = min(history_meta['loss'])
-    # metadata['best_val_loss'] = min(history_meta['val_loss'])
-    # metadata['best_mean_squared_error'] = min(history_meta['mean_squared_error'])
-    # metadata['best_val_mean_squared_error'] = min(history_meta['val_mean_squared_error'])
-    # metadata['best_false_negatives'] = min(history_meta['false_negatives'])
-    # metadata['best_false_positives'] = min(history_meta['false_positives'])
-    # metadata['best_val_false_negatives'] = min(history_meta['val_false_negatives'])
-    # metadata['best_val_false_positives'] = min(history_meta['val_false_positives'])
-    # metadata['best_mean_absolute_error'] = min(history_meta['mean_absolute_error'])
-    # metadata['best_val_mean_absolute_error'] = min(history_meta['val_mean_absolute_error'])
-    # # metadata['Evaluation_Loss'] = str(score[0])
-    # # metadata['Evaluation_Accuracy'] = str(score[1])
-    # metadata['Model_Name'] = model_blob_path
-    #
-    # #create json
-    # blob.metadata = metadata
-    # try:
-    #     blob.patch()
-    # # except exceptions.NotFound:,   except google.api_core.exceptions.Forbidden:
-    # except exceptions.Forbidden:
-    #     raise ValueError("Error: Access to GCP Storage bucket forbidden, check IAM policy, 403 Error")
-    # except exceptions.NotFound:
-    #     raise ValueError("Error: GCP Storage bucket not found 404 Error")
-    # except exceptions.PermissionDenied:
-    #     raise ValueError("Error: Access to GCP Storage bucket denied, check IAM policy")
-    # except exceptions.TooManyRequests:
-    #     raise ValueError("Error: Too many access requests to GCP Storage bucket")
-    #https://googleapis.dev/python/google-api-core/latest/exceptions.html
-    # call get_iam_policy and change_iam_policy func to view and change IAM policy to get rid of error
-    #cloudstorage.Error, cloudstorage.AuthorizationError, cloudstorage.ForbiddenError, cloudstorage.NotFoundError, cloudstorage.TimeoutError
-
-# #save and upload model to bucket
-# def upload_model(model, model_blob_path,model_save_path):
-#
-#     print('Saving model')
-#
-#     model.save(model_save_path)
-#     upload_file(model_blob_path, model_save_path)
 
 #upload blob to bucket
 def upload_file(blob_path, filepath):
@@ -311,9 +255,12 @@ def get_model_output():
     #
     # #downloading model_output to local directory
     # download_file(model_output_csv_blob, model_output_csv_blob)
-    #
 
-#Delete specified blob from bucket
+
+"""
+Delete blob from GCP bucket
+blob_name: name of blob to delete from bucket
+"""
 def delete_blob(blob_name):
 
     bucket = storage_client.bucket(BUCKET_NAME)

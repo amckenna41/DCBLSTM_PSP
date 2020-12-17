@@ -88,6 +88,7 @@ The required Python modules/packages are in requirements.txt. Call
 pip3 install -r requirements.txt
 ```
 
+System Requirements : Python3
 **Implementation**
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the Tensorflow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
@@ -97,8 +98,14 @@ This PSP project was implemented using the Keras API which is a deep learning AP
 
 ## Running model locally with default parameters:
 ```
+python3 -m venv psp_venv
+source psp_venv/bin/activate
+pip install requirements.txt
+
 python main_local.py
 ```
+
+## Dependancies
 
 With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset. Thus, a Cloud implementation to run the model successfully was created using the Google Clodu Platform.
 
@@ -128,5 +135,17 @@ https://www.biostars.org/p/2997/
 **status**
 > Development Stage
 
+Config::
+Training:
 
-**add draw.io to images folder
+Testing:
+
+Predicting::
+
+**Data folders**:
+
+* `/data` -
+* `/temp` -
+* `/temp/raw_files` -
+* `/temp/parsed_tables` -
+* `/temp/preformated_tables` -

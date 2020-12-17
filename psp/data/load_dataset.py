@@ -1,19 +1,29 @@
-###Downloading the training and test datasets and uploading them to a GCP Storage Bucket
-#Datasets downloaded to local psp_gcp directory as they are required when the GCP job is packaged
-#and sent to GCP Ai-Platform
+##########################################
+### Loading training and test datasets ###
+##########################################
 
 #importing libraries and dependancies
 import numpy as np
 import gzip
 import h5py
-import os
+import os, sys
+from globals import *
 import requests
 import shutil
-import argparse
-import training.training_utils.gcp_utils as utils
-from training.training_utils.globals import *
 
 class CulPDB6133(object):
+
+    """
+        Description:
+            CulPDB6133 class creates instance of the training dataset.
+
+        Args:
+            all_data (float): The proportion of the training data to use, must be in range 0.5 to 1.0, default: 1.0
+            filtered (bool): What PDB training dataset to use, filtered or unfiltered, default = True.
+
+        Returns:
+            CulPDB6133 training dataset object
+    """
 
     def __init__(self, all_data =1, filtered = True):
 
@@ -93,9 +103,7 @@ class CulPDB6133(object):
         self.vallabel = vallabel
 
     def get_cullpdb(self, filtered):
-
-        if not (os.path.isdir('data')):
-            os.makedirs('data')
+        """ Download Cullpdb dataset from Princeton URL and store locally in data directory """
 
         if (filtered):
             train_path = TRAIN_PATH_FILTERED
@@ -132,25 +140,39 @@ class CulPDB6133(object):
 
     #get length of CullPDB training dataset
     def __len__(self):
+        """ Get number of proteins in CullPDB dataset - length of the 1st dimension """
         return (self.train_hot[:,0].shape[0])
 
     def __str__(self):
+        """ Print string representation of CullPDB object """
         return ('CullPDB6133 Training datatset - filtered: {}'.format(self.filtered))
 
     def is_filtered(self):
+        """ Is current CullPDB class object using the filtered or unfiltered dataset """
         return self.filtered
 
     def shape(self):
+        """ Output shape of CullPDB object """
         return self.train_hot.shape
 
     def get_data_labels(self, protein_index):
-
+        """ Get data labels in CullPDB dataset specified by protein index argument """
         labels = self.trainlabel[protein_index,:,:]
-
         return labels
 
 
 class CB513(object):
+
+    """
+        Description:
+            CB513 class creates instance of the CB513 test dataset.
+
+        Args:
+            None
+
+        Returns:
+            CB513 test dataset object
+    """
 
     def __init__(self):
 
@@ -192,9 +214,7 @@ class CB513(object):
         self.testlabel = testlabel
 
     def get_cb513(self):
-
-        if not (os.path.isdir('data')):
-            os.makedirs('data')
+        """ Download CASP11 dataset from Princeton URL and store locally in data directory """
 
         try:
             if not (os.path.isfile(os.path.join(os.getcwd(), 'data', CB513_PATH))):
@@ -223,23 +243,35 @@ class CB513(object):
             print('Error downloading and exporting dataset\n')
 
     def __len__(self):
+        """ Get number of proteins in CB513 dataset - length of the 1st dimension """
         return (self.test_hot[:,0].shape[0])
 
     def __str__(self):
+        """ Print string representation of CB513 object """
         return ('CB513 Test datatset')
 
     def shape(self):
+        """ Output shape of CB513 object """
         return self.test_hot.shape
 
     def get_data_labels(self, protein_index):
-
+        """ Get data labels in CB513 dataset specified by protein index argument """
         labels = self.testlabel[protein_index,:,:]
-
         return labels
 
 
 class CASP10(object):
 
+    """
+        Description:
+            CASP10 class creates instance of the CASP10 test dataset.
+
+        Args:
+            None
+
+        Returns:
+            CASP10 test dataset object
+    """
 
     def __init__(self):
 
@@ -279,9 +311,7 @@ class CASP10(object):
 
 
     def get_casp10(self):
-
-        if not (os.path.isdir('data')):
-            os.makedirs('data')
+        """ Download CASP10 dataset from repository and store locally in data directory """
 
         try:
             if not (os.path.isfile(os.path.join(os.getcwd(), 'data', CASP10_PATH))):
@@ -309,26 +339,36 @@ class CASP10(object):
 
 
     def __len__(self):
+        """ Get number of proteins in CASP10 dataset - length of the 1st dimension """
         return (self.casp10_data_test_hot[:,0].shape[0])
 
     def __str__(self):
+        """ Print string representation of CASP10 object """
         return ('CASP10 Test datatset')
 
     def shape(self):
+        """ Output shape of CASP10 object """
         return self.casp10_data_test_hot.shape
 
     def get_data_labels(self, protein_index):
-
+        """ Get data labels in CASP10 dataset specified by protein index argument """
         labels = self.test_labels[protein_index,:,:]
-
         return labels
 
 
-'''
-CASP11 Test Dataset class 
-'''
+
 class CASP11(object):
 
+    """
+        Description:
+            CASP11 class creates instance of the CASP11 test dataset.
+
+        Args:
+            None
+
+        Returns:
+            CASP11 test dataset object
+    """
 
     def __init__(self):
 
@@ -367,9 +407,7 @@ class CASP11(object):
         self.test_labels = test_labels
 
     def get_casp11(self):
-
-        if not (os.path.isdir('data')):
-            os.makedirs('data')
+        """ Download CASP11 dataset from repository and store locally in data directory """
 
         try:
             if not (os.path.isfile(os.path.join(os.getcwd(), 'data', CASP11_PATH))):
@@ -396,27 +434,37 @@ class CASP11(object):
 
 
     def __len__(self):
+        """ Get number of proteins in CASP11 dataset - length of the 1st dimension """
         return (self.casp11_data_test_hot[:,0].shape[0])
 
     def __str__(self):
+        """ Print string representation of CASP11 object """
         return ('CASP11 Test datatset')
 
     def shape(self):
+        """ Output shape of CASP11 object """
         return self.casp11_data_test_hot.shape
 
     def get_data_labels(self, protein_index):
-
+        """ Get data labels in CASP11 dataset specified by protein index argument """
         labels = self.test_labels[protein_index,:,:]
-
         return labels
 
-if __name__ == "main":
+#download all datasets used in PSP
+def download_all_data():
 
-    #initialise input arguments
-    parser = argparse.ArgumentParser(description='Loading training and test datasets')
 
-    parser.add_argument('-all_data', '--all_data', required = False, default = 1.0,
-                    help='Determine what proportion of dataset to load')
+    """
+        Description:
+            Create instance for each training and test datasets used in project. Calling this function can
+            download all required datasets and store in data directory.
+        Args:
+            None
+        Returns:
+            None
+    """
 
-    #parse arguments
-    args = parser.parse_args()
+    cul6133 = CulPDB6133()
+    cb513 = CB513()
+    casp10 = CASP10()
+    casp11 = CASP11()

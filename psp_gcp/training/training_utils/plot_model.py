@@ -13,7 +13,7 @@ import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 import training.training_utils.gcp_utils as utils
-from training.training_utils.global_vars import *
+from training.training_utils.globals import *
 
 #do docstrings for functions
 

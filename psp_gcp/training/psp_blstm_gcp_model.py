@@ -1,4 +1,6 @@
-### PSP model using BLSTM RNN with CNN + DNN
+#########################################################################
+### CDBLSTM - Convolutional Deep Bidirectional Long short-term memory ###
+#########################################################################
 
 #import required modules and dependancies
 import numpy as np
@@ -11,7 +13,6 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 from tensorflow.keras import activations
-# from tensorflow.keras.utils import plot_model
 import pandas as pd
 import os
 import sys
@@ -21,7 +22,7 @@ from datetime import datetime
 from training.training_utils.get_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
-from training.training_utils.global_vars import *
+from training.training_utils.globals import *
 from training.evaluate import *
 
 #set required parameters and configuration for TensorBoard
@@ -39,8 +40,18 @@ session = tf.compat.v1.Session(config=config_proto)
 set_session(session)
 
 
-#building BLSTM_3xConv_Model
 def build_model():
+
+    """
+    Description:
+        Building CDBLSTM model
+
+    Args:
+        None
+
+    Returns:
+        model (keras model)
+    """
 
     #main input is the length of the amino acid in the protein sequence (700,)
     main_input = Input(shape=(700,), dtype='float32', name='main_input')
@@ -74,28 +85,40 @@ def build_model():
     conv_layer2 = Conv1D(32, 7, padding='same', name="Conv1D_2")(concat)
     batch_norm = BatchNormalization()(conv_layer2)
     conv_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv_act)
-    max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same',  name="MaxPool_2")(conv_dropout)
+    conv_dropout_1 = Dropout(0.2)(conv_act)
+    max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1,  padding='same', name="MaxPool_2")(conv_dropout_1)
+    # max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same',  name="MaxPool_2")(conv_dropout_1)
 
     conv_layer3 = Conv1D(64, 7, padding='same', name="Conv1D_3")(concat)
     batch_norm = BatchNormalization()(conv_layer3)
     conv_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv_act)
-    max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same',  name="MaxPool_3")(conv_dropout)
+    conv_dropout_2 = Dropout(0.2)(conv_act)
+    max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same', name="MaxPool_3")(conv_dropout_2)
+
+    #no padding in max pooling and just reshape
+    #flatten
+    # conv2_features = Reshape((-1,64))(max_pool_1D_3)
+    # conv2_features = Dropout(0.5)(conv2_features)
+    # lstm_dense = Dense(400, activation='relu')(conv2_features)
 
     #concatenate convolutional layers
     conv_features = Concatenate(axis=-1)([max_pool_1D_1, max_pool_1D_2, max_pool_1D_3])
+
     print("Shape of convolutional output: ", conv_features.get_shape())
 
-    lstm_dense = Dense(600, activation='relu', name="after_cnn_dense")(conv_features)
+    lstm_dense = TimeDistributed(Dense(600, activation='relu', name="after_cnn_dense"))(conv_features)
+    print("Shape after dense ", lstm_dense.get_shape())
+
+    # lstm_dense = Dense(600, activation='relu', name="after_cnn_dense")(conv_features)
 
      ######## Recurrent Bi-Directional Long-Short-Term-Memory Layers ########
-    lstm_f1 = Bidirectional(LSTM(200,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5, name="BLSTM_1"))(lstm_dense)
+    lstm_f1 = Bidirectional(LSTM(200,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5, name="BLSTM_1"))(conv_features)
 
     lstm_f2 = Bidirectional(LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5, name="BLSTM_2"))(lstm_f1)
 
     #concatenate LSTM with convolutional layers
     concat_features = Concatenate(axis=2)([lstm_f1, lstm_f2, lstm_dense])
+    # concat_features = Concatenate(axis=2)([lstm_f1, lstm_f2, conv2_features])
     concat_features = Dropout(0.4)(concat_features)
 
     #Dense Fully-Connected DNN layers
@@ -103,13 +126,15 @@ def build_model():
     dense_1_dropout = Dropout(0.3)(dense_1)
 
     #Final Dense layer with 8 nodes for the 8 output classifications
-    main_output = (Dense(8, activation='softmax', name='main_output'))(dense_1_dropout)
+    # main_output = Dense(8, activation='softmax', name='main_output')(dense_1_dropout)
+    main_output = TimeDistributed(Dense(8, activation='softmax'), name='main_output')(dense_1_dropout)
 
     #create model from inputs and outputs
     model = Model(inputs=[main_input, auxiliary_input], outputs=[main_output])
 
     #use Adam optimizer
-    adam = Adam(lr=0.0015)
+    adam = Adam(lr=learning_r)
+    # adam = Adam(lr=0.0015)
 
     #compile model using adam optimizer and the cateogorical crossentropy loss function
     model.compile(optimizer = adam, loss={'main_output': 'categorical_crossentropy'}, metrics=['accuracy', MeanSquaredError(), FalseNegatives(), FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision()])
@@ -138,16 +163,13 @@ def main(args):
         all_data = 1.0
 
     print('Running model using {}%% of data'.format(int(all_data*100)))
-    train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted(all_data)
-    test_hot, testpssm, testlabel = load_cb513()
+    cul6133 = CulPDB6133()
+    # train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted(all_data)
+    # test_hot, testpssm, testlabel = load_cb513()
 
     #build model
     print('Building 3x1Dconv BLSTM model')
     model = build_model()
-
-    # model_plot_name = 'model_plot' + current_datetime + '.png'
-    # plot_model(model, to_file=model_plot_name, show_shapes=True, show_layer_names=True)
-    #https://github.com/XifengGuo/CapsNet-Keras/issues/25
 
     #initialise model callbacks
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
@@ -156,13 +178,16 @@ def main(args):
     checkpoint_path = "checkpoints_CDBLSTM_" + current_datetime + ".h5"
     checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
     earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
+    # lr_decay = callbacks.LearningRateScheduler(StepDecay(initAlpha=0.0005, factor=0.8, dropEvery=40))
 
     start = time.time()
 # with tf.device('/gpu:0'): #use for training with GPU on TF
 # with tf.device('/cpu:0'): #use for training with CPU on TF - Default
 
     print('Fitting model...')
-    history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
+    # history = model.fit({'main_input': train_hot, 'aux_input': trainpssm}, {'main_output': trainlabel},validation_data=({'main_input': val_hot, 'aux_input': valpssm},{'main_output': vallabel}),
+    #     epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[tensorboard, checkpointer,earlyStopping],shuffle=True)
+    history = model.fit({'main_input': cul6133.train_hot, 'aux_input': cul6133.trainpssm}, {'main_output': cul6133.trainlabel},validation_data=({'main_input': cul6133.val_hot, 'aux_input': cul6133.valpssm},{'main_output': cul6133.vallabel}),
         epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[tensorboard, checkpointer,earlyStopping],shuffle=True)
 
     elapsed = (time.time() - start)
@@ -170,15 +195,15 @@ def main(args):
 
     print("Training Accuracy: ", max(history.history['accuracy']))
     print("Training Loss: ", min(history.history['loss']))
-    # print("Training Recall: ", history.history[])
-    # print("Training Precision: ", )
-    # print("Training MSE: ", )
-    # print("Training MAE: ", )
+
+    #adding model output hyperparameters to dataframe
     model_output['Job Name'] = job_name
     model_output['Job Directory'] = job_dir
     model_output['Batch Size'] = batch_size
     model_output['Epochs'] = epochs
+    model_output['Learning Rate'] = learning_r
     # model_output['Logs Path'] = logs_path
+    model_output['Elapsed Training Time'] = elapsed
     model_output['Training Accuracy'] = max(history.history['accuracy'])
     model_output['Training Loss'] = max(history.history['loss'])
     model_output['Training MSE'] = max(history.history['mean_squared_error'])
@@ -200,11 +225,11 @@ def main(args):
     #evaluating model
     evaluate_model(model, test_dataset=test_dataset)
     get_model_output()
-    upload_history(history,model_save_path)
-    # upload_model(model, model_blob_path, model_save_path)
-    upload_file(model_blob_path, model_save_path)
-    plot_history(history.history, model_blob_path,show_histograms=True, show_boxplots=True, show_kde=True)
-
+    # upload_history(history,model_save_path)
+    # # upload_model(model, model_blob_path, model_save_path)
+    # upload_file(model_blob_path, model_save_path)
+    # plot_history(history.history, model_blob_path,show_histograms=True, show_boxplots=True, show_kde=True)
+    #
 
 
 #initialise input arguments to model

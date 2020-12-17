@@ -5,7 +5,7 @@ import argparse
 from sklearn.metrics import classification_report, confusion_matrix
 from training.training_utils.get_dataset import *
 from training.training_utils.plot_model import *
-from training.training_utils.global_vars import *
+from training.training_utils.globals import *
 
 #maybe create tf summary
 
@@ -31,19 +31,23 @@ Evaluate model using CB513 test dataset
 def evaluate_cb513(model):
 
     #load test dataset
-    test_hot, testpssm, testlabel = load_cb513()
+    cb513 = CB513()
+    # test_hot, testpssm, testlabel = load_cb513()
 
     print('Evaluating model using CB513 dataset')
-    score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,batch_size=1)
+    # score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,batch_size=1)
+    score = model.evaluate({'main_input': cb513.test_hot, 'aux_input': cb513.testpssm},{'main_output': cb513.testlabel},verbose=1,batch_size=1)
+
     print('CB513 Evaluation Loss : ', score[0])
     print('CB513 Evaluation Accuracy : ', score[1])
 
     # pred_casp = model.predict([testpssm, test_hot], verbose=1,batch_size=10)
     print('Prediction using CB513')
-    pred_cb = model.predict({'main_input': test_hot, 'aux_input': testpssm}, verbose=1,batch_size=1)
+    # pred_cb = model.predict({'main_input': test_hot, 'aux_input': testpssm}, verbose=1,batch_size=1)
+    pred_cb = model.predict({'main_input': cb513.test_hot, 'aux_input': cb513.testpssm}, verbose=1,batch_size=1)
 
     #convert label and prediction array to float32
-    testlabel = testlabel.astype(np.float32)
+    testlabel = cb513.testlabel.astype(np.float32)
     pred_cb = pred_cb.astype(np.float32)
 
     # cat_acc_cb = categorical_accuracy(testlabel, pred_cb)
@@ -79,19 +83,31 @@ Evaluate model using CASP10 test dataset
 '''
 def evaluate_casp10(model):
 
+    """
+    Description:
+        Evaluate model using CASP10 test dataset
+
+    Args:
+        y_true (np.ndarray):
+        y_pred (np.ndarray):
+
+    Returns:
+        categorical_accuracy (float)
+    """
+
     #load test dataset
-    casp10_data_test_hot, casp10_data_pssm, test_labels = load_casp10()
+    casp10 = CASP10()
 
     print('Evaluating model using CASP10 dataset')
-    score = model.evaluate({'main_input': casp10_data_test_hot, 'aux_input': casp10_data_pssm},{'main_output': test_labels},verbose=1,batch_size=1)
+    score = model.evaluate({'main_input': casp10.casp10_data_test_hot, 'aux_input': casp10.casp10_data_pssm},{'main_output': casp10.test_labels},verbose=1,batch_size=1)
     print('CASP10 Evaluation Loss: ', score[0])
     print('CASP10 Evaluation Accuracy: ', score[1])
 
     print('Prediction using CASP10')
-    pred_casp = model.predict({'main_input': casp10_data_test_hot, 'aux_input': casp10_data_pssm}, verbose=1,batch_size=1)
+    pred_casp = model.predict({'main_input': casp10.casp10_data_test_hot, 'aux_input': casp10.casp10_data_pssm}, verbose=1,batch_size=1)
 
     #convert label and prediction array to float32
-    test_labels = test_labels.astype(np.float32)
+    test_labels = casp10.test_labels.astype(np.float32)
     pred_casp = pred_casp.astype(np.float32)
 
     mse_casp = mean_squared_error(test_labels, pred_casp)
@@ -123,19 +139,31 @@ Evaluate model using CASP11 test dataset
 '''
 def evaluate_casp11(model):
 
+    """
+    Description:
+        Evaluate model using CASP10 test dataset
+
+    Args:
+        y_true (np.ndarray):
+        y_pred (np.ndarray):
+
+    Returns:
+        categorical_accuracy (float)
+    """
+
     #load test dataset
-    casp11_data_test_hot, casp11_data_test_pssm, test_labels = load_casp11()
+    casp11 = CASP11()
 
     print('Evaluating model using CASP11 dataset')
-    score = model.evaluate({'main_input': casp11_data_test_hot, 'aux_input': casp11_data_test_pssm},{'main_output': test_labels},verbose=1,batch_size=1)
+    score = model.evaluate({'main_input': casp11.casp11_data_test_hot, 'aux_input': casp11.casp11_data_pssm},{'main_output': casp11.test_labels},verbose=1,batch_size=1)
     print('CASP11 Evaluation Loss: ', score[0])
     print('CASP11 Evaluation Accuracy: ', score[1])
 
     print('Prediction using CASP11')
-    pred_casp = model.predict({'main_input': casp11_data_test_hot, 'aux_input': casp11_data_test_pssm}, verbose=1,batch_size=1)
+    pred_casp = model.predict({'main_input': casp11.casp11_data_test_hot, 'aux_input': casp11.casp11_data_pssm}, verbose=1,batch_size=1)
 
     #convert label and prediction array to float32
-    test_labels = test_labels.astype(np.float32)
+    test_labels = casp11.test_labels.astype(np.float32)
     pred_casp = pred_casp.astype(np.float32)
 
     mse_casp = mean_squared_error(test_labels, pred_casp)
@@ -166,16 +194,20 @@ Getting predicted proportion of each secondary structure label
 '''
 def get_label_predictions(y_pred, calling_test_dataset):
 
+    """
+    Description:
+        Evaluate model using CASP10 test dataset
+
+    Args:
+        y_true (np.ndarray):
+        y_pred (np.ndarray):
+
+    Returns:
+        categorical_accuracy (float)
+    """
+
     pred_labels = y_pred[0,0,:]
     print('Model prediction for each secondary structure type using {} dataset:\n'.format(calling_test_dataset))
-    # print('{} - Alpha Helix (H): {}'.format(calling_test_dataset, pred_labels[5]))
-    # print('{} - Beta Strand (E): {}'.format(calling_test_dataset, pred_labels[2]))
-    # print('{} - Loop (L): {}'.format(calling_test_dataset, pred_labels[0]))
-    # print('{} - Beta Turn (T): {}'.format(calling_test_dataset, pred_labels[7]))
-    # print('{} - Bend (S): {}'.format(calling_test_dataset, pred_labels[6]))
-    # print('{} - 3-Helix (G): {}'.format(calling_test_dataset, pred_labels[3]))
-    # print('{} - Beta Bridge (B): {}'.format(calling_test_dataset, pred_labels[1]))
-    # print('{} - Pi Helix (I): {}'.format(calling_test_dataset, pred_labels[4]))
 
     model_output[calling_test_dataset + ': '+ 'Alpha Helix (H)'] = pred_labels[5]
     model_output[calling_test_dataset + ': '+ 'Beta Strand (E)'] = pred_labels[2]
@@ -188,6 +220,18 @@ def get_label_predictions(y_pred, calling_test_dataset):
 
 
 def categorical_accuracy(y_true, y_pred):
+    """
+    Description:
+        Evaluate model using CASP10 test dataset
+
+    Args:
+        y_true (np.ndarray):
+        y_pred (np.ndarray):
+
+    Returns:
+        categorical_accuracy (float)
+    """
+
     '''Calculates the mean accuracy rate across all predictions for
     multiclass classification problems.
     '''
@@ -304,3 +348,11 @@ if __name__ == "__main__":
         evaluate_model(model, test_dataset)
     else:
         print('Model does not exist...')
+
+#
+# def conf_matrix(p, t, num_classes):
+#     if p.ndim == 1:
+#         p = one_hot(p, num_classes)
+#     if t.ndim == 1:
+#         t = one_hot(t, num_classes)
+#     return np.dot(p.T, t)

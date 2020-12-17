@@ -18,6 +18,7 @@
 
 #### Parse positonal arguments ###
 #https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+#source ./ arguments.sh
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
@@ -63,8 +64,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [ $# -eq 0 ]
   then
-    BATCH_SIZE=120
-    EPOCHS=5
+    BATCH_SIZE=256
+    EPOCHS=3
     ALL_DATA=1.0
     TEST_DATASET="All"
     MODULE="training.psp_blstm_gcp_model"
@@ -72,8 +73,8 @@ fi
 
 #set arguments to be passed into model
 # BATCH_SIZE=250
-# EPOCHS=1
-# ALL_DATA=0.01
+EPOCHS=1
+ALL_DATA=0.1
 
 #set Ai-Platform Job environment variables
 BUCKET_NAME="gs://keras-python-models-2"
@@ -133,7 +134,7 @@ echo "Worker Count : $trainingInput_workerCount"
 echo "Parameter Server Count: $trainingInput_parameterServerCount"
 echo ""
 
-     #submitting Tensorflow training job to Google Cloud
+     # #submitting Tensorflow training job to Google Cloud
      gcloud ai-platform jobs submit training $JOB_NAME \
          --package-path $PACKAGE_PATH \
          --module-name $MODULE \

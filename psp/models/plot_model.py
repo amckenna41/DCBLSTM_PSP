@@ -1,4 +1,6 @@
-#Module for creating all relevant and useful plots from the metrics saved when training model
+###################################################
+### Plotting and visualsing metrics from models ###
+###################################################
 
 #import required modules and dependancies
 import numpy as np
@@ -13,21 +15,30 @@ from datetime import datetime
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
+import globals
 
-#create figures and plots from values stored in history from training model
-def plot_history(history_filepath, model_folder_path = 'saved_models',show_histograms = False, show_boxplots = False,
+def plot_main(history_filepath, model_folder_path = 'saved_models',show_histograms = False, show_boxplots = False,
                     show_kde = False, save = True):
+
+    """
+    Description:
+        Plotting and visualising basic figure plots from the model history
+        trained on the training and validation datasets. Plotting following
+        metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        model_folder_path (str): path to model folder used to save plots and models to
+        show_histograms (bool): visualise results via histograms, default: False.
+        show_boxplots (bool): visualise results via boxplots, default: False.
+        show_kde (bool): visualise results via kernel density plots, default: False.
+        save (bool): save visualisation in model folder, default: True
+    Returns:
+        None
+
+    """
 
     #initialise all global variables used in plotting
     initialise_vars(history_filepath, model_folder_path)
-
-    #initialise figure filenames
-    accuracy_fig_filename = 'accuracy_fig'+ current_datetime + '.png'
-    loss_fig_filename = 'loss_fig'+ current_datetime + '.png'
-    mae_fig_filename = 'mae _fig'+ current_datetime + '.png'
-    mse_fig_filename = 'mse_fig'+ current_datetime + '.png'
-    recall_fig_filename = 'recall_fig'+ current_datetime + '.png'
-    precision_fig_filename = 'precision_fig'+ current_datetime + '.png'
 
     #plot train and validation accuracy on history
     plt.figure()
@@ -119,11 +130,18 @@ def plot_history(history_filepath, model_folder_path = 'saved_models',show_histo
 #Plot Boxplots of history
 def plot_boxplots(history, save=True):
 
-    #initialise filenames for boxplots
-    accuracy_box_filename = 'accuracy_boxplot_'+ current_datetime + '.png'
-    loss_box_filename = 'loss_boxplot_'+ current_datetime + '.png'
-    mae_box_filename = 'mae_boxplot_'+ current_datetime + '.png'
-    mse_box_filename = 'mse_boxplot_'+ current_datetime + '.png'
+    """
+    Description:
+        Plotting and visualising metrics using boxplots from the model history
+        trained on the training and validation datasets. Boxplots can show the
+        different quartiles, median, min & max values and any outliers. Plotting
+        following metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        save (bool): save visualisation in model folder, default: True
+    Returns:
+
+    """
 
     #filter outliers
     filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
@@ -180,11 +198,17 @@ def plot_boxplots(history, save=True):
 #Plot histograms of metrics from model
 def plot_histograms(history, save):
 
-    #initialise histogram figure names
-    accuracy_hist_filename = 'accuracy_hist'+ current_datetime + '.png'
-    loss_hist_filename = 'loss_hist'+ current_datetime + '.png'
-    mae_hist_filename = 'mae_hist'+ current_datetime + '.png'
-    mse_hist_filename = 'mse_hist'+ current_datetime + '.png'
+    """
+    Description:
+        Plotting and visualising metrics using histograms from the model history
+        trained on the training and validation datasets. Plotting following
+        metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        save (bool): save visualisation in model folder, default: True
+    Returns:
+
+    """
 
     #filter accuracy histograms for outliers
     filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
@@ -273,11 +297,17 @@ def plot_histograms(history, save):
 #Plot Kernel Density estimates of metrics from model
 def plot_kde(history, save):
 
-    #initialise KDE figure names
-    accuracy_kde_filename = 'accuracy_kde_'+ current_datetime + '.png'
-    loss_kde_filename = 'loss_kde_'+ current_datetime + '.png'
-    mae_kde_filename = 'mae_kde_'+ current_datetime + '.png'
-    mse_kde_filename = 'mse_kde_'+ current_datetime + '.png'
+    """
+    Description:
+        Plotting and visualising metrics using kernel density estimates from
+        the model history trained on the training and validation datasets.
+        Plotting following metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        save (bool): save visualisation in model folder, default: True
+    Returns:
+
+    """
 
     #Accuracy KDE
     plt.figure(figsize=(10,8), dpi= 200)
@@ -329,10 +359,18 @@ def plot_kde(history, save):
 
 #Function for calculating and removing outliers from an array of elements
 def is_outlier(points, thresh=3):
+
+    """ Description:
+            Auxillary function for calculting and removing outliers from array of elements
+        Args:
+            points():
+            thread(int): default: 3
+        Returns:
+            modified_z_score > thread (bool): return if element of array is an outlier, if so remove from array
+        Reference:
+            https://stackoverflow.com/questions/11882393/matplotlib-disregard-outliers-when-plotting
     """
-    Reference:
-    https://stackoverflow.com/questions/11882393/matplotlib-disregard-outliers-when-plotting
-    """
+
     if len(points.shape) == 1:
         points = points[:,None]
     median = np.median(points, axis=0)
@@ -347,6 +385,16 @@ def is_outlier(points, thresh=3):
 #initialise global vars used for plotting
 def initialise_vars(history,model_folder_path):
 
+    """
+    Description:
+        Initialise any global vars or global numpy arrays used for storing metrics from model history
+    Args:
+        history (dict):
+        model_folder_path (str):
+    Returns:
+        None
+
+    """
     #create dir for plots: model plots stored in same folder as trained model
     global plots_path = model_folder_path + '/' + 'plots_' + str(datetime.date(datetime.now()))
     if not os.path.exists(plots_path):
@@ -357,10 +405,8 @@ def initialise_vars(history,model_folder_path):
     del history_df['Metrics']
     history_df_trans = history_df.T     #transpose dataframe
 
-    global current_datetime
-    current_datetime = str(datetime.date(datetime.now())) + \
-        '_' + str((datetime.now().strftime('%H:%M')))
-
+    ### initialise global numpy arrays used for storing metrics from model history ###
+    
     global history_accuracy_array
     history_accuracy_array = np.array(history_df_trans['accuracy'][0])
     global history_val_accuracy_array
@@ -393,6 +439,7 @@ def initialise_vars(history,model_folder_path):
 
 if __name__ == '__main__':
 
+    #get input arguments
     parser = argparse.ArgumentParser(description='Plotting visualisations for model')
     parser.add_argument('-model_folder', '--model_folder', type=str.lower, required=True default='../saved_models',
                         help='Name of model folder to plot')
@@ -407,6 +454,7 @@ if __name__ == '__main__':
     parser.add_argument('-save', '--save', type=bool, required = True, default = False,
                         help='Select whether to save the plots after showing, default is False')
 
+    #parse input arguments
     args = parser.parse_args()
     history_path = args.history_path
     model_folder_path = args.model_folder
@@ -415,6 +463,7 @@ if __name__ == '__main__':
     show_kde = args.show_kde
     save = args.save
 
+    #path to model folder must exist
     if not (os.path.isdir(model_folder_path):
         print('Model Folder path of model to plot does not exist')
         return
@@ -434,4 +483,5 @@ if __name__ == '__main__':
         return
     f.close()
 
-    plot_history(history, model_folder_path, show_hist, show_box, show_kde, save)
+    #call main plot function
+    plot_main(history, model_folder_path, show_hist, show_box, show_kde, save)

@@ -1,4 +1,6 @@
-#PSP model using BLSTM RNN with CNN + DNN
+#########################################################################
+### CDULSTM - Convolutional Deep Unidirectional Long short-term memory ###
+#########################################################################
 
 #import required modules and dependancies
 import numpy as np
@@ -22,6 +24,7 @@ from datetime import datetime
 from training.training_utils.get_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
+from training.training_utils.globals import *
 
 #set required parameters and configuration for TensorBoard
 tf.compat.v1.reset_default_graph()
@@ -37,14 +40,19 @@ config_proto.graph_options.rewrite_options.arithmetic_optimization = off
 session = tf.compat.v1.Session(config=config_proto)
 set_session(session)
 
-#initialise bucket and GCP storage client
-BUCKET_PATH = "gs://keras-python-models-2"
-BUCKET_NAME = "keras-python-models-2"
-current_datetime = str(datetime.date(datetime.now())) + \
-    '_' + str((datetime.now().strftime('%H:%M')))
-
 #building BUSTM_3xConv_Model
 def build_model():
+
+    """
+    Description:
+        Building CDULSTM model
+
+    Args:
+        None
+
+    Returns:
+        model (keras model)
+    """
 
     #main input is the length of the amino acid in the protein sequence (700,)
     main_input = Input(shape=(700,), dtype='float32', name='main_input')

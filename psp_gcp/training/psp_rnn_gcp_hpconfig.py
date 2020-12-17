@@ -1,4 +1,6 @@
-#PSP model using the Keras functional API, using CNN + RNN + DNN
+###############################################
+### CDBLSTM/CDULSTM - Hyperparameter Tuning ###
+###############################################
 
 #import required modules and dependancies
 import numpy as np
@@ -22,6 +24,7 @@ import hypertune
 from training.training_utils.get_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
+from training.training_utils.globals import *
 
 #set required parameters and configuration for TensorBoard
 tf.compat.v1.reset_default_graph()
@@ -37,15 +40,20 @@ config_proto.graph_options.rewrite_options.arithmetic_optimization = off
 session = tf.compat.v1.Session(config=config_proto)
 set_session(session)
 
-#initialise bucket and GCP storage client
-BUCKET_PATH = "gs://keras-python-models-2"
-BUCKET_NAME = "keras-python-models-2"
-current_datetime = str(datetime.date(datetime.now())) + \
-    '_' + str((datetime.now().strftime('%H:%M')))
-
 #building neural network with hyperparameters passed in upon execution of the
 #gcp_hptuning script
 def build_model_hpconfig(args):
+
+    """
+    Description:
+        Building models for hyperparameter Tuning
+
+    Args:
+        args: input arguments
+
+    Returns:
+        model (keras model)
+    """
 
     #parsing and assigning hyperparameter variables from argparse
     conv1_filters=int(args.conv1_filters)
@@ -69,6 +77,7 @@ def build_model_hpconfig(args):
     dense_dropout = float(args.dense_dropout)
     dense_1 = int(args.dense_1)
     dense_initializer = args.dense_weight_initializer
+    train_data = str(args.train_input_data)
 
     print('BIDIRECTION:', bidirection)
     print('RECURRENT_LAYER:', recurrent_layer)
@@ -263,10 +272,9 @@ def main(args):
     model_save_path = 'model_hptuning_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime \
         + '_accuracy-'+ str(score[1]) +'_loss-' + str(score[0]) + '.h5'
 
-    # upload_history(history,model_save_path,score)
-    # upload_model(model, args,model_save_path)
-    # plot_history(history.history, show_histograms=True, show_boxplots=True, show_kde=True)
     # get_job_hyperparmeters(project_name, job_name):
+    # get_model_output()
+    # upload_history(history,model_save_path)
 
 #Passing in model hyperparameters
 parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
@@ -286,6 +294,9 @@ parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints 
                     default = BUCKET_PATH)
 
 ### Model Hyperparameters ###
+
+parser.add_argument('-train_data', '--train_input_data', default="both",
+                    help ='What training input data to use - sequence, pssm or both')
 
 parser.add_argument('-recurrent_layer1', '--recurrent_layer1', type=int, default=200,
                     help ='The number of nodes for first recurrent hidden layer')

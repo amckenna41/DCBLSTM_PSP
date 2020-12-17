@@ -1,10 +1,20 @@
+
+##########################
+### Tests for Models ###
+##########################
+
 import unittest
-from psp_blstm_model import *
-from psp_ulstm_model import *
+import models.psp_blstm_model as psp_blstm_model
+import models.psp_ulstm_model as psp_ulstm_model
 
-#testing model's layer shapes
 def test_model_layer_shapes():
+    """
+    Testing Model Layer Shapes
+    Args:
 
+    Returns:
+
+    """
     model = psp_blstm_model.build_model()
 
     #assertions for model layer shapes
@@ -22,8 +32,14 @@ def test_model_layer_shapes():
     assert(model.get_layer("after_cnn_dense").output_shape == (None,700,600))
     assert(model.get_layer("after_rnn_dense").output_shape == (None,700,600))
 
-#testing model layer types
 def test_model_layer_types():
+    """
+    Testing Model Layer Types
+    Args:
+
+    Returns:
+
+    """
 
     model = psp_blstm_model.build_model()
 
@@ -42,7 +58,7 @@ def test_model_layer_types():
     assert(model.get_layer('after_cnn_dense').__class__.__name__ == "Dense")
     assert(model.get_layer('after_rnn_dense').__class__.__name__ == "Dense")
 
-if __name__ == "__main__":
+def run_tests():
 
     test_model_layer_shapes()
     print("Model layer shape tests passed")
