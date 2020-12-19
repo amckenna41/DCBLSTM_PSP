@@ -1,10 +1,6 @@
-# protein_structure_prediction_DeepLearning
-========================================
-Secondary Protein Structure Prediction using Neural Networks and Deep Learning.
-========================================
-
-
-
+===============================================================================
+#Secondary Protein Structure Prediction using Machine learning and Deep Learning
+===============================================================================
 
 **status**
 > Development Stage
@@ -21,17 +17,19 @@ Protein Structure Prediction (PSP) is the determination of a protein's structure
 * beta bridge ('B')
 * 5-helix (pi helix) ('I')
 
-Most proteins fall into the category of 4 structures. The primary structure is the , the seondary structure is, tertiary structure is and the quaternary structure is...  ... A visualisation of these structures can be seen below in Figure 1.
+Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins.[23] Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the seondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures[24], quaternary structure is when a protein consists of more than one polypeptide chain [25]. A visualisation of these structures can be seen below in Figure 1.
 
-<br> bit of info about proteins and their struture...
+<br>
 ![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/protein_structure.jpeg?raw=true)
 
 **Approach**
 
-Many different approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc. There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. <br>
+Many different machine learning approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc. There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. An LSTM cell is made up of 3 gates - input, output and forget. The forget gate decodes what information the should 'forget' or not. The input gate updates the cell state and output gate controls the extent to which a value in the cell is used to compute the output activation of the LSTM. <br>
 
-My model focused on LSTM's, specifically bidirectional LSTM's which allow for the LSTM unit to consider the protein sequence in the forward and backward direction. Additionally, to map local dependancies and context between adjacent residues, a CNN preceded the recurrent component of the model where 1-Dimensional convolutional layers were used.
-Optimisation and regularisation techniques were applied to the model to maximise performance and effiency.
+![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/lstm_cell.jpeg?raw=true)
+
+Bidirectional LSTM's which allow for the LSTM unit to consider the protein sequence in the forward and backward direction. Additionally, to map local dependancies and context between adjacent residues, a CNN preceded the recurrent component of the model where 1-Dimensional convolutional layers were used.
+Optimisation and regularisation techniques were applied to the model to maximise performance and efficiency.
 
 ##Conclusions and Results##
 
