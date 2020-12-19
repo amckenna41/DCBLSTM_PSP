@@ -53,7 +53,7 @@ https://cloud.google.com/compute/docs/machine-types
 **Google Cloud Platform Architecture**<br>
 The cloud architecture used within the GCP for this project can be seen below were several services were taken advantage of including: Ai-Platform, Compute Engine GCS, Logging, Monitoring and IAM.
 
-![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/gcp_architecture.png?raw=true)
+![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/gcp_architecture.png?raw=true)
 
 
 **Running on Windows**

@@ -21,13 +21,13 @@ Protein Structure Prediction (PSP) is the determination of a protein's structure
 Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins.[23] Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the secondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures[24], quaternary structure is when a protein consists of more than one polypeptide chain [25]. A visualisation of these structures can be seen below in Figure 1.
 
 <br>
-![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/protein_structure.jpeg?raw=true)
+![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/protein_structure.jpeg?raw=true)
 
 **Approach**
 
 Many different machine learning approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc. There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. An LSTM cell is made up of 3 gates - input, output and forget. The forget gate decodes what information the should 'forget' or not. The input gate updates the cell state and output gate controls the extent to which a value in the cell is used to compute the output activation of the LSTM. <br>
 
-![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/lstm_cell.jpeg?raw=true)
+![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/lstm_cell.jpeg?raw=true)
 
 Bidirectional LSTM's which allow for the LSTM unit to consider the protein sequence in the forward and backward direction. Additionally, to map local dependancies and context between adjacent residues, a CNN preceded the recurrent component of the model where 1-Dimensional convolutional layers were used.
 Optimisation and regularisation techniques were applied to the model to maximise performance and efficiency.
@@ -92,7 +92,7 @@ System Requirements : Python3
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the Tensorflow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/model_design.png?raw=true)
+![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png?raw=true)
 
 
 ## Running model locally with default parameters:
