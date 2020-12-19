@@ -21,7 +21,7 @@ Protein Structure Prediction (PSP) is the determination of a protein's structure
 Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins.[23] Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the secondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures[24], quaternary structure is when a protein consists of more than one polypeptide chain [25]. A visualisation of these structures can be seen below in Figure 1.
 
 <br>
-![alt text](https://raw.githubusercontent.com/amckenna41/CDBLSTM_PSP/master/images/protein_structure.jpeg)
+![alt text](https://raw.githubusercontent.com/amckenna41/CDBLSTM_PSP/master/images/gcp_architecture.png)
 
 ##Approach
 
