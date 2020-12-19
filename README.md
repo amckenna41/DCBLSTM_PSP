@@ -1,11 +1,11 @@
-===============================================================================
-Secondary Protein Structure Prediction using Machine learning and Deep Learning
-===============================================================================
+===================================================================================
+==Secondary Protein Structure Prediction using Machine learning and Deep Learning==
+===================================================================================
 
-**status**
+## status
 > Development Stage
 
-**Protein Structure Prediction**
+## Protein Structure Prediction
 Protein Structure Prediction (PSP) is the determination of a protein's structure from its initial primary amino acid sequence. Here we focus on secondary protein structure prediction (SPSP) which acts as an intermediate between the primary and tertiary. PSP is one of the most important goals in the field of bioinformatics and remains highly important in the field of medicine and biotechnology, e.g in drug design and environmental stability [1, 2]. The secondary structure is commonly broken down into 8 categories:
 
 * alpha helix ('H')
@@ -77,7 +77,7 @@ The CASP10 and CASP11 datasets are available at:
 https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
 
 
-**Implementation**
+## Implementation
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
@@ -92,25 +92,25 @@ Python3
 
 ## Running model locally with default parameters:
 
-From main repo dir, change to PSP directory:
+**From main repo dir, change to PSP directory:**
 ```
 cd psp
 ```
 
-Create Python virtual environment:
+**Create Python virtual environment:**
 ```
 python3 -m venv psp_venv
 source psp_venv/bin/activate
 
 ```
-The required Python modules/packages can be installed by:
+**The required Python modules/packages can be installed by:**
 ```
 
 pip install -r requirements.txt
 
 ```
 
-Run train function to build and train model:
+**Run train function to build and train model:**
 ```
 
 python main_local.py
@@ -118,18 +118,18 @@ python main_local.py
 
 
 
-**Cloud Distribution**
+## Cloud Distribution
 
 With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset locally due to the computational constraints. Thus, a Cloud implementation to run the model successfully was created using the Google Cloud Platform.
 
-Change current working directory to psp_gcp
+**Change current working directory to psp_gcp:**
 ```
 cd psp_gcp
 ```
 
 To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the README.md and in the psp_gcp directory, which contains the relevant commands and steps to follow to configure your GCP account. <br>
 
-From a cmd line/terminal, to train current CDBLSTM model configuration:
+**From a cmd line/terminal, to train current CDBLSTM model configuration:**
 ```
 ./gcp_training.sh
 
@@ -140,13 +140,13 @@ From a cmd line/terminal, to train current CDBLSTM model configuration:
 
 ```
 
-**Directory folders**:
+## Directory folders:
 
 * `/images` - images used for README
 * `/psp` - main protein structure directory containing all modules and code required for building and training models locally.  
 * `/psp_gcp` - Google Cloud Platform distribution for training and building models for PSP on the cloud
 
-**References**
+## References:
 1. https://www.princeton.edu/~jzthree/datasets/ICML2014/
 2. https://www.sciencedirect.com/science/article/abs/pii/0958166994900264
 3. https://www.ncbi.nlm.nih.gov/books/NBK26911
@@ -161,5 +161,5 @@ From a cmd line/terminal, to train current CDBLSTM model configuration:
 12. https://www.mitpressjournals.org/doi/abs/10.1162/neco.1997.9.8.1735
 13. https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218
 
-**status**
+## status
 > Development Stage
