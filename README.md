@@ -146,24 +146,19 @@ From a cmd line/terminal, to train current CDBLSTM model configuration:
 * `/psp_gcp` - Google Cloud Platform distribution for training and building models for PSP on the cloud
 
 **References**
-[1]: https://www.princeton.edu/~jzthree/datasets/ICML2014/
-[2]: https://www.sciencedirect.com/science/article/abs/pii/0958166994900264
-[3]: https://www.ncbi.nlm.nih.gov/books/NBK26911
-[4]:https://scholar.google.comscholar_lookup?title=Proteins+and+enzymes.+Lane+Medical+Lectures,+Stanford+University+Publications,+University+Series,+Medical+Sciences&author=KU+Linderstr%C3%B8m-Lang&publication_year=1952&
-[5]: https://pubmed.ncbi.nlm.nih.gov/19059267/
-[6]: https://doi.org/10.1038/srep18962
-[7]: http://airccse.org/journal/ijsc/papers/2112ijsc06.pdf
-[8]: https://doi.org/10.1186/s12859-020-3383-3
-[9]: https://www.sciencedirect.com/science/article/abs/pii/S0022283683714646
-[10]: https://doi.org/10.1093/bioinformatics/9.2.141
-[11]: https://doi.org/10.1093/bioinformatics/btx218
-[12]: https://www.mitpressjournals.org/doi/abs/10.1162/neco.1997.9.8.1735
-[13]: https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218
-[14]:
+1. https://www.princeton.edu/~jzthree/datasets/ICML2014/
+2. https://www.sciencedirect.com/science/article/abs/pii/0958166994900264
+3. https://www.ncbi.nlm.nih.gov/books/NBK26911
+4. https://scholar.google.comscholar_lookup?title=Proteins+and+enzymes.+Lane+Medical+Lectures,+Stanford+University+Publications,+University+Series,+Medical+Sciences&author=KU+Linderstr%C3%B8m-Lang&publication_year=1952&
+5. https://pubmed.ncbi.nlm.nih.gov/19059267/
+6. https://doi.org/10.1038/srep18962
+7. http://airccse.org/journal/ijsc/papers/2112ijsc06.pdf
+8. https://doi.org/10.1186/s12859-020-3383-3
+9. https://www.sciencedirect.com/science/article/abs/pii/S0022283683714646
+10. https://doi.org/10.1093/bioinformatics/9.2.141
+11. https://doi.org/10.1093/bioinformatics/btx218
+12. https://www.mitpressjournals.org/doi/abs/10.1162/neco.1997.9.8.1735
+13. https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218
 
-
-[2]: https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2940-0
-[3]: https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2280-5
-[4]:
 **status**
 > Development Stage
