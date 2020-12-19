@@ -81,7 +81,8 @@ https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png?raw=true)
+<img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png" height="24" width="48">
+
 
 
 ## System Requirements:
