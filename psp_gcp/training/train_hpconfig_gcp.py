@@ -1,5 +1,5 @@
 ###############################################
-### CDBLSTM/CDULSTM - Hyperparameter Tuning ###
+###     Hyperparameter Tuning on the GCP    ###
 ###############################################
 
 #import required modules and dependancies
@@ -21,7 +21,7 @@ import sys
 from datetime import date
 from datetime import datetime
 import hypertune
-from training.training_utils.get_dataset import *
+from training.training_utils.load_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
 from training.training_utils.globals import *
@@ -40,8 +40,7 @@ config_proto.graph_options.rewrite_options.arithmetic_optimization = off
 session = tf.compat.v1.Session(config=config_proto)
 set_session(session)
 
-#building neural network with hyperparameters passed in upon execution of the
-#gcp_hptuning script
+
 def build_model_hpconfig(args):
 
     """
@@ -78,9 +77,6 @@ def build_model_hpconfig(args):
     dense_1 = int(args.dense_1)
     dense_initializer = args.dense_weight_initializer
     train_data = str(args.train_input_data)
-
-    print('BIDIRECTION:', bidirection)
-    print('RECURRENT_LAYER:', recurrent_layer)
 
     #main input is the length of the amino acid in the protein sequence (700,)
     main_input = Input(shape=(700,), dtype='float32', name='main_input')
@@ -205,11 +201,6 @@ def build_model_hpconfig(args):
     #get summary of model including its layers and num parameters
     model.summary()
 
-    #set early stopping and checkpoints for model
-    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
-    checkpoint_path = BUCKET_PATH + "/checkpoints/" + 'hp_tuning_' + current_datetime + ".h5"
-    checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
-
     return model
 
 def main(args):
@@ -217,26 +208,27 @@ def main(args):
     job_dir = str(args.job_dir)
     batch_size = int(args.batch_size)
     epochs = int(args.epochs)
-    all_data = float(args.alldata)
     logs_path = str(args.logs_dir)
     project_name = str(args.project_name)
     job_name = str(args.job_name)
 
 
-    # logs_path = job_dir + 'logs/tensorboard/' + 'hp_config_'+str(datetime.date(datetime.now()))
-    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
-    print('TensorBoard logs stored at: ', logs_path)
-
     epochs = 3
-    #if all_data argument not b/w 0 and 1 then its set to default value - 0.5
-    if (all_data == 0 or all_data > 1):
-        all_data = 0.5
 
     #Load data
-    train_hot,trainpssm,trainlabel, val_hot,valpssm,vallabel = load_cul6133_filted(all_data)
-    test_hot, testpssm, testlabel = load_cb513(all_data)
+    cullPDB = CullPDB()
+
+    ##evaluate on cb513 only ###
+
 
     model = build_model_hpconfig(args)
+
+    #initialise model callbacks #new
+    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=logs_path, histogram_freq=0, write_graph=True, write_images=True)
+    checkpoint_path = "checkpoints_" + job_name + '.h5'
+    checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_accuracy', mode='max')
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
+    lr_decay = callbacks.LearningRateScheduler(StepDecay(initAlpha=0.0005, factor=0.8, dropEvery=10))
 
     # batch_size = 120
     print('Fitting model...')
@@ -276,22 +268,31 @@ def main(args):
     # get_model_output()
     # upload_history(history,model_save_path)
 
-#Passing in model hyperparameters
+#############################################################
+###            PSP Hyperparameter Input Arguments         ###
+#############################################################
+
 parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
 
 ### Job Parameters ###
 
-parser.add_argument('-job_name', '--job_name', type=str.lower, default="Job:" + current_datetime,
-                    help='GCP Job Name')
+parser.add_argument('-j', '--job_name', help='Name of GCS Job',required=False,
+                    default = "default_job_name" + current_datetime)
+
+parser.add_argument('-bucket', '--bucket', type=str.lower, default=BUCKET_NAME,
+                    help='GCP Bucket Name')
 
 parser.add_argument('-logs_dir', '--logs_dir',
-                    help='Directory on cloud storage for Tensorboard logs',required=False, default = (BUCKET_NAME + "/logs/tensorboard"))
+                    help='Directory on cloud storage for Tensorboard logs',required=False, default = (BUCKET_NAME + "/logs-tensorboard"))
 
 parser.add_argument('-project_name', '--project_name', type=str.lower, default="ninth-optics-286313",
                     help='Name of GCP Project')
 
 parser.add_argument('-jd', '--job-dir', help='GCS location to write checkpoints and export models',required=False,
-                    default = BUCKET_PATH)
+                    default = "gs://" + BUCKET_NAME)
+
+parser.add_argument('-use_gpu', '--use_gpu',
+                    help='Select whether to use a GPU for training',required=False, default = False)
 
 ### Model Hyperparameters ###
 

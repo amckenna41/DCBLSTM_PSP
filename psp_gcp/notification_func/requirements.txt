@@ -1,0 +1,10 @@
+# Function dependencies, for example:
+numpy>=1.16.4
+pandas>=0.25.3
+requests
+fsspec
+gcsfs
+google-cloud-storage
+google-cloud-logging
+google-cloud-core>=1.3.0
+google-cloud-pubsub>=2.1.0

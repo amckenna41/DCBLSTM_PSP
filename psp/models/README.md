@@ -1,35 +1,35 @@
-Models Directory stores all the Python code for all of the created models.
-Directory used for building, fitting and evaluating models locally.
+# Models used in project
+
 <br>
-The project focused on the evaluation of unidirectional and bidirectional LSTM's (ULSTM/BLSTM).
-Current model hyperparameters are ones that have proved to give the greatest accuracy and loss metrics.
 
 #Model Design
 ![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/model_design.png?raw=true)
 
-**Note!** <br>
-If running locally, ensure to use a small portion of the training dataset as well as large batch_size due to the complexity of the networks. If the full dataset is required to train the models then consider using the GCP cloud implementations in the psp_gcp directory.
+#**Note!** <br>
+If running locally, ensure you have sufficient h/w resources to be able to build and train the model locally. Due to the size of the training dataset and the complexity of the models, it is infeasible to run a model locally on an average laptop device. Alternatively, you could run the models on a smaller portion of the dataset and use a large batch size. It was impractical to run the mentioned models locally, therefore a cloud distribution was created that allowed for the building and training of the models using Google Cloud Platform; this can be seen in the psp_gcp directory.
+<br>
 
-#Bidirectional LSTM model:
-
-```
-psp_blstm_model
-```
-
-#Unidirectional LSTM model:
+## Bidirectional LSTM model:
 
 ```
-psp_ulstm_model
+psp_dcblstm_model
 ```
 
-#Data for plotting model metrics
+## Unidirectional LSTM model:
 
 ```
-plot_model
+psp_dculstm_model
 ```
 
-#Run Tests: <br>
+## Auxillary Models:
 
+These auxiillay models were additionally created for evaluation and testing purposes and assisted in the overall selection of parameters and model configuration for the final DCBLSTM/DCULSTM models.
 ```
-python3 test_model
+psp_dcbgru_model
+psp_dcugru_model
+psp_cnn_model
+psp_dnn_model
+psp_rbm_model
+psp_rnn_model
+
 ```

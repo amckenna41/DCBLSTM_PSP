@@ -4,6 +4,8 @@
 ## Optimal Default values for model hyperparameters ##
 #   Edit script with desired hyperparameters
 
+gcloud components update
+
 #Hyperparameters for CNN component of model
 CONV1_FILTERS=16
 CONV2_FILTERS=32
@@ -34,7 +36,6 @@ OPTIMIZER="adam"
 LEARNING_RATE=0.003
 EPOCHS=3
 BATCH_SIZE=120
-ALL_DATA=1.0
 
 #Job Parameters
 BUCKET_NAME="keras-python-models-2"
@@ -128,7 +129,6 @@ echo ""
             --dense_weight_initializer $DENSE_KERNEL_INITIALIZER \
             --epochs $EPOCHS \
             --batch_size $BATCH_SIZE \
-            --alldata $ALL_DATA \
             --logs_dir $LOGS_DIR \
             --project_name $PROJECT_NAME \
             --job_name $JOB_NAME
@@ -137,42 +137,9 @@ echo ""
 echo "To view model progress through tensorboard in Google Cloud shell or terminal execute..."
 echo "tensorboard --logdir=$LOGS_DIR --port=8080"
 echo "If in cloud shell, then click on the web preview option "
+
 #visualise model results on TensorBoard
 # tensorboard --logdir "gs://BUCKET_NAME/logs/tensorboard"
 
 #Stream logs on command line
 #gcloud ai-platform jobs stream-logs $JOB_NAME
-
-
-
-#finish help function
-# helpFunction()
-# # https://unix.stackexchange.com/questions/31414/how-can-i-pass-a-command-line-argument-into-a-shell-script
-# {
-#    echo ""
-#    echo "Usage: $0 -epochs epochs -batch_size batch size -alldata alldata"
-#    echo -e "\t-epochs Number of epochs to run with model"
-#    echo -e "\t-batch_size Batch Size to use with model"
-#    echo -e "\t-alldata What proportion of data to use"
-#    # exit 1 # Exit script after printing help
-# }
-# helpFunction
-
-# while getopts "epochs:batch_size:alldata:" opt
-# do
-#    case "$opt" in
-#       epochs ) epochs="$OPTARG" ;;
-#       batch_size ) batch_size="$OPTARG" ;;
-#       alldata ) alldata="$OPTARG" ;;
-#       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
-#    esac
-# done
-#
-# # Print helpFunction in case parameters are empty
-# if [ -z "$epochs" ] || [ -z "$batch_size" ] || [ -z "$alldata" ]
-# then
-#    echo ""
-#    echo "Some or all of the parameters are empty";
-#    echo "Setting parameters to default values"
-#    helpFunction
-# fi

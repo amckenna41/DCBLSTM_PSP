@@ -1,14 +1,15 @@
-#Config file setting machine instance types used for training models on GCP
-# https://cloud.google.com/compute/docs/machine-types#predefined_machine_types
+##################################################################################
+## GCP Config file for setting machine instance types used for running models   ##
+## https://cloud.google.com/compute/docs/machine-types#predefined_machine_types ##
+##################################################################################
 
 
 ####Training Using High Memory n1 machine types####
 trainingInput:
   scaleTier: CUSTOM
-  masterType: n1-highmem-8
+  masterType: n1-highmem-2
   runtimeVersion: '2.1'
   pythonVersion: '3.7'
-
 
 
 #### Training Using GPU's ####

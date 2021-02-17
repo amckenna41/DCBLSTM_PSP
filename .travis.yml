@@ -1,0 +1,25 @@
+language: python
+
+python:
+  - 3.6
+
+before_install:
+  - echo "Upgrading pip"
+  - python3 -m pip install --upgrade pip
+  - echo "Python Version"
+  - python3 --version
+install:
+  - echo "Install project dependancies and requirements"
+  - pip3 install codecov
+  - pip3 install -r requirements.txt
+  - pip3 install pytest
+
+script:
+  - echo "Running dataset tests"
+  - python3 -m psp.tests.test_datasets.py
+  - echo "Running model tests"
+  # - python3 -m psp.tests.test_models.py
+
+after_success:
+  - codecov
+  - echo "Build success"

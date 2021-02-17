@@ -15,10 +15,11 @@ from datetime import datetime
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
-import globals
+from globals import *
+from evaluate import *
 
-def plot_main(history_filepath, model_folder_path = 'saved_models',show_histograms = False, show_boxplots = False,
-                    show_kde = False, save = True):
+def plot_history(history, model_folder_path = 'saved_models',show_histograms = False, show_boxplots = False,
+                    show_kde = False, filter_outliers = True, save = True):
 
     """
     Description:
@@ -31,6 +32,7 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
         show_histograms (bool): visualise results via histograms, default: False.
         show_boxplots (bool): visualise results via boxplots, default: False.
         show_kde (bool): visualise results via kernel density plots, default: False.
+        filter_outliers (bool): if True, use is_outlier() function to filter outliers from arrays, default: True
         save (bool): save visualisation in model folder, default: True
     Returns:
         None
@@ -38,7 +40,7 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
     """
 
     #initialise all global variables used in plotting
-    initialise_vars(history_filepath, model_folder_path)
+    initialise_vars(history, model_folder_path)
 
     #plot train and validation accuracy on history
     plt.figure()
@@ -47,10 +49,11 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
     plt.title('Model Accuracy')
     plt.ylabel('Accuracy')
     plt.xlabel('epoch')
-    plt.legend(['trainaccuracy', 'valaccuracy'], loc='upper left')
+    plt.legend(['train_acc', 'val_acc'], loc='upper left')
+    plt.grid()
     if save:
-        plt.savefig((plots_path + accuracy_fig_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, accuracy_fig_filename)), dpi=200)
+        # plt.savefig((plots_path + accuracy_fig_filename), dpi=200)
     plt.close()
 
     #plot train and validation loss on history
@@ -60,10 +63,10 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
     plt.title('Model Loss')
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
-    plt.legend(['trainloss', 'valloss'], loc='upper left')
+    plt.legend(['train_loss', 'val_loss'], loc='upper left')
+    plt.grid()
     if save:
-        plt.savefig((plots_path + loss_fig_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, loss_fig_filename)), dpi=200)
     plt.close()
 
     #plot train and validation Mean Absolute Error
@@ -74,9 +77,9 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
     plt.ylabel('Mean Absolute Error')
     plt.xlabel('Epoch')
     plt.legend(['train_mae', 'val_mae'], loc='upper left')
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mae_fig_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mae_fig_filename)), dpi=200)
     plt.close()
 
     #plot train and validation Mean Squared Error
@@ -87,9 +90,9 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
     plt.ylabel('Mean Squared Error')
     plt.xlabel('Epoch')
     plt.legend(['train_mse', 'val_mse'], loc='upper left')
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mse_fig_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mse_fig_filename)), dpi=200)
     plt.close()
 
     #plot train and validation Recall
@@ -100,9 +103,9 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
     plt.ylabel('Recall')
     plt.xlabel('Epoch')
     plt.legend(['train_recall', 'val_recall'], loc='upper left')
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mse_fig_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, recall_fig_filename)), dpi=200)
     plt.close()
 
     #plot train and validation Precision
@@ -113,22 +116,24 @@ def plot_main(history_filepath, model_folder_path = 'saved_models',show_histogra
     plt.ylabel('Precision')
     plt.xlabel('Epoch')
     plt.legend(['train_precision', 'val_precision'], loc='upper left')
+    plt.grid()
     if save:
-        plt.savefig((plots_path + precision_fig_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, precision_fig_filename)), dpi=200)
     plt.close()
 
     if (show_histograms):
-        plot_histograms(history, save)
+        plot_histograms(history, save, filter_outliers)
 
     if (show_boxplots):
-        plot_boxplots(history, save)
+        plot_boxplots(history, save, filter_outliers)
 
     if (show_kde):
-        plot_kde(history, save)
+        plot_kde(history, save, filter_outliers)
 
-#Plot Boxplots of history
-def plot_boxplots(history, save=True):
+    #plot learning rate during training of model
+    plot_lr(history)
+
+def plot_boxplots(history, save, filter_outliers):
 
     """
     Description:
@@ -139,64 +144,76 @@ def plot_boxplots(history, save=True):
     Args:
         history (dict): dictionary containing training history of keras model with all captured metrics
         save (bool): save visualisation in model folder, default: True
+        filter_outliers (bool): filter out outliers of metric arrays before plotting
     Returns:
-
+        None
     """
 
     #filter outliers
-    filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
+    if filter_outliers:
+        filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
+    else:
+        filtered = history_accuracy_array
 
     #Boxplot of training accuracy
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Accuracy"], fontsize = 15)
     plt.title('Boxplot of training accuracy', fontsize = 20)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + accuracy_box_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, accuracy_box_filename)), dpi=200)
     plt.close()
 
     #filter outliers
-    filtered = history_loss_array[~is_outlier(history_loss_array)]
+    if filter_outliers:
+        filtered = history_loss_array[~is_outlier(history_loss_array)]
+    else:
+        filtered = history_loss_array
 
     #Boxplot of training loss
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Loss"], fontsize = 15)
     plt.title('Boxplot of training loss', fontsize = 20)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + loss_box_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, loss_box_filename)), dpi=200)
     plt.close()
 
     #filter outliers
-    filtered = history_mse_array[~is_outlier(history_mse_array)]
+    if filter_outliers:
+        filtered = history_mse_array[~is_outlier(history_mse_array)]
+    else:
+        filtered = history_mse_array
 
     #Boxplot of training MSE
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Mean Squared Error"], fontsize = 15)
     plt.title('Boxplot of training mean squared error', fontsize = 20)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mse_box_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mse_box_filename)), dpi=200)
     plt.close()
 
     #filter outliers
-    filtered = history_mae_array[~is_outlier(history_mae_array)]
+    if filter_outliers:
+        filtered = history_mae_array[~is_outlier(history_mae_array)]
+    else:
+        filtered = history_mae_array
 
     #Boxplot of training MAE
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Mean Absolute Error"], fontsize = 15)
     plt.title('Boxplot of training mean absolute error', fontsize = 20)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mae_box_filename), dpi=200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mae_box_filename)), dpi=200)
     plt.close()
 
-#Plot histograms of metrics from model
-def plot_histograms(history, save):
+def plot_histograms(history, save, filter_outliers):
 
     """
     Description:
@@ -206,13 +223,18 @@ def plot_histograms(history, save):
     Args:
         history (dict): dictionary containing training history of keras model with all captured metrics
         save (bool): save visualisation in model folder, default: True
+        filter_outliers (bool): filter out outliers of metric arrays before plotting
     Returns:
-
+        None
     """
 
     #filter accuracy histograms for outliers
-    filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
-    val_filtered = history_val_accuracy_array[~is_outlier(history_val_accuracy_array)]
+    if filter_outliers:
+        filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
+        val_filtered = history_val_accuracy_array[~is_outlier(history_val_accuracy_array)]
+    else:
+        filtered = history_accuracy_array
+        val_filtered = history_val_accuracy_array
 
     #Training and validation accuracy histograms
     plt.figure(figsize=[10,8])
@@ -220,20 +242,22 @@ def plot_histograms(history, save):
     plt.hist(history_val_accuracy_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Accuracy', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    accuracy_mean = "Train Accuracy Mean = {:.3f} \n Val Accuracy Mean = {:.3f}".format(history_accuracy_array.mean(), history_val_accuracy_array.mean())
-    plt.text(0.7, 0.9, accuracy_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Accuracy & Validation Accuracy',fontsize=20)
-    plt.legend(['accuracy', 'val_accuracy'], loc='upper left')
+    plt.legend(['train_acc', 'val_acc'], loc='upper left')
     plt.axvline(history_accuracy_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_accuracy_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + accuracy_hist_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, accuracy_hist_filename)), dpi=200)
     plt.close()
 
     #filter loss histograms for outliers
-    filtered = history_loss_array[~is_outlier(history_loss_array)]
-    val_filtered = history_val_loss_array[~is_outlier(history_val_loss_array)]
+    if filter_outliers:
+        filtered = history_loss_array[~is_outlier(history_loss_array)]
+        val_filtered = history_val_loss_array[~is_outlier(history_val_loss_array)]
+    else:
+        filtered = history_loss_array
+        val_filtered = history_val_loss_array
 
     #Training and validation loss histograms
     plt.figure(figsize=[10,8])
@@ -241,20 +265,22 @@ def plot_histograms(history, save):
     plt.hist(history_val_loss_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Loss', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    loss_mean = "Train Loss Mean = {:.3f} \n Val Loss Mean = {:.3f}".format(history_loss_array.mean(), history_val_loss_array.mean())
-    plt.text(0.75, 0.9, loss_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Loss & Validation Loss',fontsize=20)
-    plt.legend(['loss', 'val_loss'], loc='upper left')
+    plt.legend(['train_loss', 'train_loss'], loc='upper left')
     plt.axvline(history_loss_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_loss_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + loss_hist_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, loss_hist_filename)), dpi=200)
     plt.close()
 
     #filter MAE histograms for outliers
-    filtered = history_mae_array[~is_outlier(history_mae_array)]
-    val_filtered = history_val_mae_array[~is_outlier(history_val_mae_array)]
+    if filter_outliers:
+        filtered = history_mae_array[~is_outlier(history_mae_array)]
+        val_filtered = history_val_mae_array[~is_outlier(history_val_mae_array)]
+    else:
+        filtered = history_mae_array
+        val_filtered = history_val_mae_array
 
     #Training and validation Mean Absolute Error histograms
     plt.figure(figsize=[10,8])
@@ -262,20 +288,22 @@ def plot_histograms(history, save):
     plt.hist(history_val_mae_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Mean Absolute Error', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    mae_mean = "Train MAE Mean = {:.3f} \n Val MAE Mean = {:.3f}".format(history_mae_array.mean(), history_val_mae_array.mean())
-    plt.text(0.75, 0.9, mae_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Training & Validation MAE',fontsize=20)
-    plt.legend(['mae', 'val_mae'], loc='upper left')
+    plt.legend(['train_mae', 'val_mae'], loc='upper left')
     plt.axvline(history_mae_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_mae_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mae_hist_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mae_hist_filename)), dpi=200)
     plt.close()
 
     #filter MSE histograms for outliers
-    filtered = history_mse_array[~is_outlier(history_mse_array)]
-    val_filtered = history_val_mse_array[~is_outlier(history_val_mse_array)]
+    if filter_outliers:
+        filtered = history_mse_array[~is_outlier(history_mse_array)]
+        val_filtered = history_val_mse_array[~is_outlier(history_val_mse_array)]
+    else:
+        filtered = history_mse_array
+        val_filtered = history_val_mse_array
 
     #Training and validation Mean Squared Error histograms
     plt.figure(figsize=[10,8])
@@ -283,19 +311,16 @@ def plot_histograms(history, save):
     plt.hist(history_val_mse_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Mean Squared Error', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    mse_mean = "Train MSE Mean = {:.3f} \n Val MSE Mean = {:.3f}".format(history_mse_array.mean(), history_val_mse_array.mean())
-    plt.text(0.75, 0.9, mse_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Training & Validation MSE',fontsize=20)
-    plt.legend(['mse', 'val_mse'], loc='upper left')
+    plt.legend(['train_mse', 'val_mse'], loc='upper left')
     plt.axvline(history_mse_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_mse_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mse_hist_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mse_hist_filename)), dpi=200)
     plt.close()
 
-#Plot Kernel Density estimates of metrics from model
-def plot_kde(history, save):
+def plot_kde(history, save, filter_outliers):
 
     """
     Description:
@@ -305,7 +330,9 @@ def plot_kde(history, save):
     Args:
         history (dict): dictionary containing training history of keras model with all captured metrics
         save (bool): save visualisation in model folder, default: True
+        filter_outliers (bool): filter out outliers of metric arrays before plotting
     Returns:
+        None
 
     """
 
@@ -314,11 +341,12 @@ def plot_kde(history, save):
     sns.kdeplot(history_accuracy_array, shade=True, color="b", label="accuracy", alpha=.5)
     sns.kdeplot(history_val_accuracy_array, shade=True, color="g", label="val_accuracy", alpha=.5)
     plt.title('KDE Plot for Training/Validation Accuracy', fontsize = 20)
+    plt.legend(['train_acc', 'val_acc'], loc='upper right')
     plt.xlabel("Loss", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + accuracy_kde_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, accuracy_kde_filename)), dpi=200)
     plt.close()
 
     #Loss KDE
@@ -326,11 +354,11 @@ def plot_kde(history, save):
     sns.kdeplot(history_loss_array, shade=True, color="b", label="loss", alpha=.5)
     sns.kdeplot(history_val_loss_array, shade=True, color="g", label="val_loss", alpha=.5)
     plt.title('KDE Plot for Training/Validation Loss', fontsize = 20)
+    plt.legend(['train_loss', 'val_loss'], loc='upper right')
     plt.xlabel("Loss", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
     if save:
-        plt.savefig((plots_path + loss_kde_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, loss_kde_filename)), dpi=200)
     plt.close()
 
     #Mean Absolute Error KDE
@@ -338,11 +366,12 @@ def plot_kde(history, save):
     sns.kdeplot(history_mae_array, shade=True, color="b", label="loss", alpha=.5)
     sns.kdeplot(history_val_mae_array, shade=True, color="g", label="val_loss", alpha=.5)
     plt.title('KDE Plot for Training/Validation Mean Absolute Error', fontsize = 17)
+    plt.legend(['train_mae', 'val_mae'], loc='upper right')
     plt.xlabel("Mean Absolute Error", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mae_kde_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mae_kde_filename)), dpi=200)
     plt.close()
 
     #Mean Squared Error KDE
@@ -350,24 +379,77 @@ def plot_kde(history, save):
     sns.kdeplot(history_mse_array, shade=True, color="b", label="loss", alpha=.5)
     sns.kdeplot(history_val_mse_array, shade=True, color="g", label="val_loss", alpha=.5)
     plt.title('KDE Plot for Training/Validation Mean Squared Error', fontsize = 17)
+    plt.legend(['train_mse', 'train_mse'], loc='upper right')
     plt.xlabel("Mean Squared Error", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
+    plt.grid()
     if save:
-        plt.savefig((plots_path + mse_kde_filename), dpi = 200)
-    plt.show()
+        plt.savefig((os.path.join(plots_path, mse_kde_filename)), dpi=200)
     plt.close()
 
-#Function for calculating and removing outliers from an array of elements
+def plot_lr(history):
+
+    """
+    Description:
+        Plotting and visualising the learning rate during training of model.
+    Args:
+        history (dict): model training history
+    Returns:
+        None
+    """
+    learning_rate = history['lr']
+    epochs = range(1, len(learning_rate) + 1)
+    plt.plot(epochs, learning_rate)
+    plt.title('Learning rate')
+    plt.xlabel('Epochs')
+    plt.ylabel('Learning rate')
+    plt.grid()
+    plt.savefig((os.path.join(plots_path, 'lr_epochs.png')), dpi=200)
+    plt.close()
+
+
+def plot_protein_labels(pred_labels, calling_test_dataset):
+
+    """
+    Description:
+        Plotting and visualising the distribution of the protein structure class labels
+        after evaluation on the test datasets.
+    Args:
+        pred_labels (np.array): array of the predicted class labels from the test datasets
+        calling_test_dataset (str): name of the test dataset calling function, used for labelling plots
+    Returns:
+        None
+    """
+    protein_labels_filename = 'protein_labels_' + calling_test_dataset + '.png'
+
+    #converting the array of predicted labels and the values into Pandas Series
+    protein_series = pd.Series([pred_labels[5], pred_labels[2],pred_labels[0], pred_labels[7],
+        pred_labels[6], pred_labels[3], pred_labels[1], pred_labels[4]], ['H','E','L','T','S','G','B','I'])
+
+    #colours for each label
+    plot_colors = ['r', 'g', 'b', 'k', 'y', 'm', 'c','magenta']
+
+    #plot horizontal barplot
+    ax = protein_series.plot(kind='barh',color=plot_colors)
+    plt.title('Protein Structure Labels after evaluation on '+calling_test_dataset, fontsize = 17)
+    plt.xlabel('Label Proportion', fontsize = 15)
+    plt.ylabel('Protein Label', fontsize = 15)
+    plt.grid()
+    plt.savefig((os.path.join(plots_path, protein_labels_filename)), dpi=200)
+    plt.close()
+
 def is_outlier(points, thresh=3):
 
     """ Description:
             Auxillary function for calculting and removing outliers from array of elements
         Args:
-            points():
-            thread(int): default: 3
+            points(): An numobservations by numdimensions array of observations
+            thread(int): The modified z-score to use as a threshold. Observations with
+            a modified z-score (based on the median absolute deviation) greater
+            than this value will be classified as outliers ,default: 3.
         Returns:
-            modified_z_score > thread (bool): return if element of array is an outlier, if so remove from array
-        Reference:
+            mask : A numobservations-length boolean array.
+         Reference:
             https://stackoverflow.com/questions/11882393/matplotlib-disregard-outliers-when-plotting
     """
 
@@ -382,21 +464,22 @@ def is_outlier(points, thresh=3):
 
     return modified_z_score > thresh
 
-#initialise global vars used for plotting
 def initialise_vars(history,model_folder_path):
 
     """
     Description:
         Initialise any global vars or global numpy arrays used for storing metrics from model history
     Args:
-        history (dict):
-        model_folder_path (str):
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        model_folder_path (str): path to model folder used to save plots and models to
     Returns:
         None
 
     """
+
     #create dir for plots: model plots stored in same folder as trained model
-    global plots_path = model_folder_path + '/' + 'plots_' + str(datetime.date(datetime.now()))
+    global plots_path
+    plots_path = os.path.join(model_folder_path, 'plots')
     if not os.path.exists(plots_path):
         os.makedirs(plots_path)
 
@@ -406,7 +489,7 @@ def initialise_vars(history,model_folder_path):
     history_df_trans = history_df.T     #transpose dataframe
 
     ### initialise global numpy arrays used for storing metrics from model history ###
-    
+
     global history_accuracy_array
     history_accuracy_array = np.array(history_df_trans['accuracy'][0])
     global history_val_accuracy_array
@@ -441,7 +524,7 @@ if __name__ == '__main__':
 
     #get input arguments
     parser = argparse.ArgumentParser(description='Plotting visualisations for model')
-    parser.add_argument('-model_folder', '--model_folder', type=str.lower, required=True default='../saved_models',
+    parser.add_argument('-model_folder', '--model_folder', type=str.lower, required=True ,default='../saved_models',
                         help='Name of model folder to plot')
     parser.add_argument('-history_path', '--history_path', type=str.lower, required = True,
                         help='Filepath for history')
@@ -464,9 +547,9 @@ if __name__ == '__main__':
     save = args.save
 
     #path to model folder must exist
-    if not (os.path.isdir(model_folder_path):
+    if not (os.path.isdir(os.path.join(os.path.dirname(os.getcwd()),model_folder_path))):
         print('Model Folder path of model to plot does not exist')
-        return
+        sys.exit(0)
 
     #open pickle of history
     try:
@@ -480,8 +563,5 @@ if __name__ == '__main__':
         print(traceback.format_exc(e))
     except Exception as e:
         print(traceback.format_exc(e))
-        return
+        sys.exit(0)
     f.close()
-
-    #call main plot function
-    plot_main(history, model_folder_path, show_hist, show_box, show_kde, save)

@@ -1,4 +1,7 @@
-#Module for creating all relevant and useful plots from the metrics saved when training model
+
+###################################################
+### Plotting and visualsing metrics from models ###
+###################################################
 
 #import required modules and dependancies
 import numpy as np
@@ -15,14 +18,29 @@ import seaborn as sns
 import training.training_utils.gcp_utils as utils
 from training.training_utils.globals import *
 
-#do docstrings for functions
 
-# plt.grid()
-#plot figures of metrics from history of model
-def plot_history(history, model_folder_path,  show_histograms = False, show_boxplots = False, show_kde = False):
+def plot_history(history, job_name,  show_histograms = False, show_boxplots = False, show_kde = False, filter_outliers = True):
+
+    """
+    Description:
+        Plotting and visualising basic figure plots from the model history
+        trained on the training and validation datasets. Plotting following
+        metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        model_folder_path (str): path to model folder used to save plots and models to
+        show_histograms (bool): visualise results via histograms, default: False.
+        show_boxplots (bool): visualise results via boxplots, default: False.
+        show_kde (bool): visualise results via kernel density plots, default: False.
+        filter_outliers (bool): if True, use is_outlier() function to filter outliers from arrays, default: True
+        save (bool): save visualisation in model folder, default: True
+    Returns:
+        None
+
+    """
 
     #initialise all global variables used in plotting
-    initialise_vars(history, model_folder_path)
+    initialise_vars(history, job_name)
 
     #plot train and validation accuracy on history
     plt.figure()
@@ -34,7 +52,6 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_accuracy', 'val_accuracy'], loc='upper left')
     plt.grid()
     plt.savefig(accuracy_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #plot train and validation loss & accuracy on history
@@ -49,7 +66,6 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_accuracy', 'val_accuracy', 'train_loss', 'val_loss'], loc='upper left')
     plt.grid()
     plt.savefig(accuracy_loss_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #plot train and validation loss on history
@@ -62,7 +78,6 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_loss', 'val_loss'], loc='upper left')
     plt.grid()
     plt.savefig(loss_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #plot train and validation Mean Absolute Error
@@ -75,7 +90,6 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_mae', 'val_mae'], loc='upper left')
     plt.grid()
     plt.savefig(mae_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #plot train and validation Mean Squared Error
@@ -88,7 +102,6 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_mse', 'val_mse'], loc='upper left')
     plt.grid()
     plt.savefig(mse_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #plot train and validation Recall
@@ -101,7 +114,6 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_recall', 'val_recall'], loc='upper left')
     plt.grid()
     plt.savefig(recall_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #plot train and validation Precision
@@ -114,7 +126,6 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_precision', 'val_precision'], loc='upper left')
     plt.grid()
     plt.savefig(precision_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #plot train and validation Recall + Precision
@@ -129,230 +140,284 @@ def plot_history(history, model_folder_path,  show_histograms = False, show_boxp
     plt.legend(['train_precision', 'val_precision', 'train_recall', 'val_recall'], loc='upper left')
     plt.grid()
     plt.savefig(precision_recall_fig_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #Upload all metric figures to GCP Storage
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'accuracy_fig.png')
     utils.upload_file(blob_path, accuracy_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'loss_fig.png')
     utils.upload_file(blob_path, loss_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_loss_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'accuracy_loss_fig.png')
     utils.upload_file(blob_path, accuracy_loss_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'mae_fig.png')
     utils.upload_file(blob_path, mae_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'mse_fig.png')
     utils.upload_file(blob_path, mse_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/recall_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'recall_fig.png')
     utils.upload_file(blob_path, recall_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/precision_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'precision_fig.png')
     utils.upload_file(blob_path, precision_fig_filename)
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/precision_recall_fig_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'precision_recall_fig.png')
     utils.upload_file(blob_path, precision_recall_fig_filename)
 
     #Plot histograms of metrics
     if (show_histograms):
-        plot_histograms(history)
+        plot_histograms(history, filter_outliers)
 
     #Plot boxplots of metrics
     if (show_boxplots):
-        plot_boxplots(history)
+        plot_boxplots(history, filter_outliers)
 
     #Plot KDE of metrics
     if (show_kde):
-        plot_kde(history)
+        plot_kde(history, filter_outliers)
 
-#Plot Boxplots of history
-def plot_boxplots(history):
+
+def plot_boxplots(history, filter_outliers):
+
+    """
+    Description:
+        Plotting and visualising metrics using boxplots from the model history
+        trained on the training and validation datasets. Boxplots can show the
+        different quartiles, median, min & max values and any outliers. Plotting
+        following metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        save (bool): save visualisation in model folder, default: True
+        filter_outliers (bool): filter out outliers of metric arrays before plotting
+    Returns:
+        None
+    """
 
     #filter outliers
-    filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
+    if filter_outliers:
+        filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
+    else:
+        filtered = history_accuracy_array
 
     #Boxplot of training accuracy
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Accuracy"], fontsize = 15)
     plt.title('Boxplot of training accuracy', fontsize = 20)
+    plt.grid()
     plt.savefig(accuracy_box_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_boxplot_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'accuracy_boxplot.png')
     utils.upload_file(blob_path, accuracy_box_filename)
 
     #filter outliers
-    filtered = history_loss_array[~is_outlier(history_loss_array)]
+    if filter_outliers:
+        filtered = history_loss_array[~is_outlier(history_loss_array)]
+    else:
+        filtered = history_loss_array
 
     #Boxplot of training loss
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Loss"], fontsize = 15)
     plt.title('Boxplot of training loss', fontsize = 20)
+    plt.grid()
     plt.savefig(loss_box_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_boxplot_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'loss_boxplot.png')
     utils.upload_file(blob_path, loss_box_filename)
 
     #filter outliers
-    filtered = history_mse_array[~is_outlier(history_mse_array)]
+    if filter_outliers:
+        filtered = history_mse_array[~is_outlier(history_mse_array)]
+    else:
+        filtered = history_mse_array
 
     #Boxplot of training MSE
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Mean Squared Error"], fontsize = 15)
     plt.title('Boxplot of training mean squared error', fontsize = 20)
+    plt.grid()
     plt.savefig(mse_box_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_boxplot_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'mse_boxplot.png')
     utils.upload_file(blob_path, mse_box_filename)
 
     #filter outliers
-    filtered = history_mae_array[~is_outlier(history_mae_array)]
+    if filter_outliers:
+        filtered = history_mae_array[~is_outlier(history_mae_array)]
+    else:
+        filtered = history_mae_array
 
     #Boxplot of training MAE
     plt.figure(figsize=[10,8])
     plt.boxplot(filtered, patch_artist=False)
     plt.xticks([1], ["Mean Absolute Error"], fontsize = 15)
     plt.title('Boxplot of training mean absolute error', fontsize = 20)
+    plt.grid()
     plt.savefig(mae_box_filename, dpi=200)
-    plt.show()
     plt.close()
 
     #Upload boxplot blob
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_boxplot_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'mae_boxplot.png')
     utils.upload_file(blob_path, mae_box_filename)
 
-    #sns.pairplot
 
-#Plot histograms of metrics from model
-def plot_histograms(history):
+def plot_histograms(history, filter_outliers):
+
+    """
+    Description:
+        Plotting and visualising metrics using histograms from the model history
+        trained on the training and validation datasets. Plotting following
+        metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        save (bool): save visualisation in model folder, default: True
+        filter_outliers (bool): filter out outliers of metric arrays before plotting
+    Returns:
+        None
+    """
 
     #filter accuracy histograms for outliers
-    filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
-    val_filtered = history_val_accuracy_array[~is_outlier(history_val_accuracy_array)]
+    if filter_outliers:
+        filtered = history_accuracy_array[~is_outlier(history_accuracy_array)]
+        val_filtered = history_val_accuracy_array[~is_outlier(history_val_accuracy_array)]
+    else:
+        filtered = history_accuracy_array
+        val_filtered = history_val_accuracy_array
 
     #Training and validation accuracy histograms
     plt.figure(figsize=[10,8])
-    plt.hist(filtered, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
-    plt.hist(val_filtered, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_accuracy_array, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_val_accuracy_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Accuracy', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    accuracy_mean = "Train Accuracy Mean = {:.3f} \n Val Accuracy Mean = {:.3f}".format(history_accuracy_array.mean(), history_val_accuracy_array.mean())
-    plt.text(0.7, 0.9, accuracy_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Accuracy & Validation Accuracy',fontsize=20)
-    plt.legend(['accuracy', 'val_accuracy'], loc='upper left')
+    plt.legend(['train_acc', 'val_acc'], loc='upper left')
     plt.axvline(history_accuracy_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_accuracy_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
     plt.grid()
     plt.savefig(accuracy_hist_filename, dpi = 200)
-    plt.show()
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_hist_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'accuracy_hist.png')
     utils.upload_file(blob_path, accuracy_hist_filename)
 
     #filter loss histograms for outliers
-    filtered = history_loss_array[~is_outlier(history_loss_array)]
-    val_filtered = history_val_loss_array[~is_outlier(history_val_loss_array)]
+    if filter_outliers:
+        filtered = history_loss_array[~is_outlier(history_loss_array)]
+        val_filtered = history_val_loss_array[~is_outlier(history_val_loss_array)]
+    else:
+        filtered = history_loss_array
+        val_filtered = history_val_loss_array
 
     #Training and validation loss histograms
     plt.figure(figsize=[10,8])
-    plt.hist(filtered, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
-    plt.hist(val_filtered, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_loss_array, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_val_loss_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Loss', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    loss_mean = "Train Loss Mean = {:.3f} \n Val Loss Mean = {:.3f}".format(history_loss_array.mean(), history_val_loss_array.mean())
-    plt.text(0.75, 0.9, loss_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Loss & Validation Loss',fontsize=20)
-    plt.legend(['loss', 'val_loss'], loc='upper left')
+    plt.legend(['train_loss', 'train_loss'], loc='upper left')
     plt.axvline(history_loss_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_loss_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
     plt.grid()
-    plt.savefig(loss_hist_filename, dpi = 200)
-    plt.show()
+    plt.savefig(loss_hist_filename, dpi=200)
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_hist_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'loss_hist.png')
     utils.upload_file(blob_path, loss_hist_filename)
 
     #filter MAE histograms for outliers
-    filtered = history_mae_array[~is_outlier(history_mae_array)]
-    val_filtered = history_val_mae_array[~is_outlier(history_val_mae_array)]
+    if filter_outliers:
+        filtered = history_mae_array[~is_outlier(history_mae_array)]
+        val_filtered = history_val_mae_array[~is_outlier(history_val_mae_array)]
+    else:
+        filtered = history_mae_array
+        val_filtered = history_val_mae_array
 
     #Training and validation Mean Absolute Error histograms
     plt.figure(figsize=[10,8])
-    plt.hist(filtered, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
-    plt.hist(val_filtered, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_mae_array, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_val_mae_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Mean Absolute Error', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    mae_mean = "Train MAE Mean = {:.3f} \n Val MAE Mean = {:.3f}".format(history_mae_array.mean(), history_val_mae_array.mean())
-    plt.text(0.75, 0.9, mae_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Training & Validation MAE',fontsize=20)
-    plt.legend(['mae', 'val_mae'], loc='upper left')
+    plt.legend(['train_mae', 'val_mae'], loc='upper left')
     plt.axvline(history_mae_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_mae_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
     plt.grid()
-    plt.savefig(mae_hist_filename, dpi = 200)
-    plt.show()
+    plt.savefig(mae_hist_filename, dpi=200)
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_hist_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'mae_hist.png')
     utils.upload_file(blob_path, mae_hist_filename)
 
     #filter MSE histograms for outliers
-    filtered = history_mse_array[~is_outlier(history_mse_array)]
-    val_filtered = history_val_mse_array[~is_outlier(history_val_mse_array)]
+    if filter_outliers:
+        filtered = history_mse_array[~is_outlier(history_mse_array)]
+        val_filtered = history_val_mse_array[~is_outlier(history_val_mse_array)]
+    else:
+        filtered = history_mse_array
+        val_filtered = history_val_mse_array
 
     #Training and validation Mean Squared Error histograms
     plt.figure(figsize=[10,8])
-    plt.hist(filtered, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
-    plt.hist(val_filtered, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_mse_array, facecolor='peru', edgecolor='blue',bins=10, alpha=0.5, orientation="vertical")
+    plt.hist(history_val_mse_array, facecolor='orangered', edgecolor='maroon',bins=10, alpha=0.5, orientation="vertical")
     plt.xlabel('Mean Squared Error', fontsize=15)
     plt.ylabel('Frequency',fontsize=15)
-    mse_mean = "Train MSE Mean = {:.3f} \n Val MSE Mean = {:.3f}".format(history_mse_array.mean(), history_val_mse_array.mean())
-    plt.text(0.75, 0.9, mse_mean, transform=plt.gca().transAxes, fontweight='bold')
     plt.title('Histogram of Training & Validation MSE',fontsize=20)
-    plt.legend(['mse', 'val_mse'], loc='upper left')
+    plt.legend(['train_mse', 'val_mse'], loc='upper left')
     plt.axvline(history_mse_array.mean(), color='peru', linestyle='dashed',linewidth=2)
     plt.axvline(history_val_mse_array.mean(), color='orangered', linestyle='dashed',linewidth=2)
     plt.grid()
-    plt.savefig(mse_hist_filename, dpi = 200)
-    plt.show()
+    plt.savefig(mse_hist_filename, dpi=200)
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_hist_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'mse_hist.png')
     utils.upload_file(blob_path, mse_hist_filename)
 
-#Plot Kernel Density estimates of metrics from model
-def plot_kde(history):
+
+def plot_kde(history, filter_outliers):
+
+    """
+    Description:
+        Plotting and visualising metrics using kernel density estimates from
+        the model history trained on the training and validation datasets.
+        Plotting following metrics: accuracy, loss, MSE, MAE, recall and precsion.
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        save (bool): save visualisation in model folder, default: True
+        filter_outliers (bool): filter out outliers of metric arrays before plotting
+    Returns:
+        None
+
+    """
 
     #Accuracy KDE
     plt.figure(figsize=(10,8), dpi= 200)
     sns.kdeplot(history_accuracy_array, shade=True, color="b", label="accuracy", alpha=.5)
     sns.kdeplot(history_val_accuracy_array, shade=True, color="g", label="val_accuracy", alpha=.5)
     plt.title('KDE Plot for Training/Validation Accuracy', fontsize = 20)
+    plt.legend(['train_acc', 'val_acc'], loc='upper right')
     plt.xlabel("Loss", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
     plt.grid()
-    plt.savefig(accuracy_kde_filename, dpi = 200)
-    plt.show()
+    plt.savefig(accuracy_kde_filename, dpi=200)
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/accuracy_kde_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'accuracy_kde.png')
     utils.upload_file(blob_path, accuracy_kde_filename)
 
     #Loss KDE
@@ -360,14 +425,13 @@ def plot_kde(history):
     sns.kdeplot(history_loss_array, shade=True, color="b", label="loss", alpha=.5)
     sns.kdeplot(history_val_loss_array, shade=True, color="g", label="val_loss", alpha=.5)
     plt.title('KDE Plot for Training/Validation Loss', fontsize = 20)
+    plt.legend(['train_loss', 'val_loss'], loc='upper right')
     plt.xlabel("Loss", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
-    plt.grid()
-    plt.savefig(loss_kde_filename, dpi = 200)
-    plt.show()
+    plt.savefig(loss_kde_filename, dpi=200)
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/loss_kde_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'loss_kde.png')
     utils.upload_file(blob_path, loss_kde_filename)
 
     #Mean Absolute Error KDE
@@ -375,14 +439,14 @@ def plot_kde(history):
     sns.kdeplot(history_mae_array, shade=True, color="b", label="loss", alpha=.5)
     sns.kdeplot(history_val_mae_array, shade=True, color="g", label="val_loss", alpha=.5)
     plt.title('KDE Plot for Training/Validation Mean Absolute Error', fontsize = 17)
+    plt.legend(['train_mae', 'val_mae'], loc='upper right')
     plt.xlabel("Mean Absolute Error", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
     plt.grid()
-    plt.savefig(mae_kde_filename, dpi = 200)
-    plt.show()
+    plt.savefig(mae_kde_filename, dpi=200)
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mae_kde_'+ current_datetime+ '.png'
+    blob_path = os.path.join(plots_path, 'mae_kde.png')
     utils.upload_file(blob_path, mae_kde_filename)
 
     #Mean Squared Error KDE
@@ -390,23 +454,90 @@ def plot_kde(history):
     sns.kdeplot(history_mse_array, shade=True, color="b", label="loss", alpha=.5)
     sns.kdeplot(history_val_mse_array, shade=True, color="g", label="val_loss", alpha=.5)
     plt.title('KDE Plot for Training/Validation Mean Squared Error', fontsize = 17)
+    plt.legend(['train_mse', 'train_mse'], loc='upper right')
     plt.xlabel("Mean Squared Error", fontsize = 15)
     plt.ylabel("Kernel Density Estimate", fontsize = 15)
     plt.grid()
-    plt.savefig(mse_kde_filename, dpi = 200)
-    plt.show()
+    plt.savefig(mse_kde_filename, dpi=200)
     plt.close()
 
-    blob_path = plots_path + str(datetime.date(datetime.now())) + '/mse_kde_'+ current_datetime + '.png'
+    blob_path = os.path.join(plots_path, 'mse_kde.png')
     utils.upload_file(blob_path, mse_kde_filename)
 
 
-#Function for calculating and removing outliers from an array of elements
+def plot_protein_labels(pred_labels, calling_test_dataset):
+
+    """
+    Description:
+        Plotting and visualising the distribution of the protein structure class labels
+        after evaluation on the test datasets.
+    Args:
+        pred_labels (np.array): array of the predicted class labels from the test datasets
+        calling_test_dataset (str): name of the test dataset calling function, used for labelling plots
+    Returns:
+        None
+    """
+    #plots_path ERROR
+
+    protein_labels_filename = 'protein_labels_' + calling_test_dataset + '.png'
+    print('Plots path',plots_path)
+    print('Protein labels filename', protein_labels_filename)
+    print('Lable new filepath : ', os.path.join(plots_path, protein_labels_filename))
+
+    #converting the array of predicted labels and the values into Pandas Series
+    protein_series = pd.Series([pred_labels[5], pred_labels[2],pred_labels[0], pred_labels[7],
+        pred_labels[6], pred_labels[3], pred_labels[1], pred_labels[4]], ['H','E','L','T','S','G','B','I'])
+
+    #colours for each label
+    plot_colors = ['r', 'g', 'b', 'k', 'y', 'm', 'c','magenta']
+
+    #plot horizontal barplot
+    ax = protein_series.plot(kind='barh',color=plot_colors)
+    plt.title('Protein Structure Labels after evaluation on '+calling_test_dataset, fontsize = 17)
+    plt.xlabel('Label Proportion', fontsize = 15)
+    plt.ylabel('Protein Label', fontsize = 15)
+    plt.grid()
+    plt.savefig(protein_labels_filename, dpi=200)
+    plt.close()
+
+    blob_path = os.path.join(plots_path, 'protein_labels.png')
+    utils.upload_file(blob_path, protein_labels_filename)
+
+
+def plot_lr(history):
+
+    """
+    Description:
+        Plotting and visualising the learning rate during training of model.
+    Args:
+        history (dict): model training history
+    Returns:
+        None
+    """
+    learning_rate = history.history['lr']
+    epochs = range(1, len(learning_rate) + 1)
+    plt.plot(epochs, learning_rate)
+    plt.title('Learning rate')
+    plt.xlabel('Epochs')
+    plt.ylabel('Learning rate')
+    plt.grid()
+    plt.savefig('lr_epochs.png', dpi=200)
+    plt.close()
+
 def is_outlier(points, thresh=3):
 
-    #Reference:
-        #https://stackoverflow.com/questions/11882393/matplotlib-disregard-outliers-when-plotting
-
+    """ Description:
+            Auxillary function for calculting and removing outliers from array of elements
+        Args:
+            points(): An numobservations by numdimensions array of observations
+            thread(int): The modified z-score to use as a threshold. Observations with
+            a modified z-score (based on the median absolute deviation) greater
+            than this value will be classified as outliers ,default: 3.
+        Returns:
+            mask : A numobservations-length boolean array.
+         Reference:
+            https://stackoverflow.com/questions/11882393/matplotlib-disregard-outliers-when-plotting
+    """
     if len(points.shape) == 1:
         points = points[:,None]
     median = np.median(points, axis=0)
@@ -419,15 +550,21 @@ def is_outlier(points, thresh=3):
     return modified_z_score > thresh
 
 
-#initialise global vars used for plotting
-def initialise_vars(history,model_folder_path):
+def initialise_vars(history,job_name):
 
+    """
+    Description:
+        Initialise any global vars or global numpy arrays used for storing metrics from model history
+    Args:
+        history (dict): dictionary containing training history of keras model with all captured metrics
+        model_folder_path (str): path to model folder used to save plots and models to
+    Returns:
+        None
+
+    """
     #create dir for plots: model plots stored in same folder as trained model
-    plots_path = model_folder_path + '/plots/plots_'
-
-    # global current_datetime
-    # current_datetime = str(datetime.date(datetime.now())) + \
-    #     '_' + str((datetime.now().strftime('%H:%M')))
+    global plots_path
+    plots_path = os.path.join(job_name, 'plots')
 
     #converting history into dataframe
     history_df = pd.DataFrame(history.items(), columns =['Metrics','Score'], index = history.keys())

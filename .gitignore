@@ -15,6 +15,7 @@ env/
 venv/
 psp_venv/
 /psp_gcp/venv
+/psp_aws
 
 #ignore dataset files and models
 /psp_gcp/*.npy
@@ -25,9 +26,9 @@ psp_venv/
 /models/*.npy
 /models/*.h5
 /psp_gcp/*.h5
+**/saved_models
 *.npy
 *.gz
-*.h5
 *.csv
 *.pkl
 *.ipynb
@@ -37,6 +38,10 @@ psp_venv/
 /saved_models
 /old_stuff
 /psp_gcp.egg-info
+/psp/checkpoints/
+/checkpoints
+/output_data
+/psp/output_data/
 
 #ignore json files, specifically json storing cloud credentials
 *.json

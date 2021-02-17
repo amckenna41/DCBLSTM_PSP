@@ -41,8 +41,12 @@
 #     main(args)
 #
 #
-# 1.) Input PSSM and FASTA Seq file of protein
+# 1.) Input PSSM and FASTA Seq file of protein (assert protein seq is valid)
 # 2.) User decides whether they will use pssm or seq or both
 # 3.) user inputs model to predict on
 # 4.) Load model
 # 5.)
+
+# import as pdb file???
+# 
+# download from pdb URL given pdb ID

@@ -1,40 +1,42 @@
-##########################################
-### Loading training and test datasets ###
-##########################################
+###Downloading the training and test datasets and uploading them to a GCP Storage Bucket
+#Datasets downloaded to local psp_gcp directory as they are required when the GCP job is packaged
+#and sent to GCP Ai-Platform
 
 #importing libraries and dependancies
 import numpy as np
 import gzip
 import h5py
-import os, sys
-from globals import *
+import os
 import requests
 import shutil
+import argparse
+import training.training_utils.gcp_utils as utils
+from training.training_utils.globals import *
+from sklearn.preprocessing import OneHotEncoder
+
 
 class CullPDB(object):
 
     """
-    Description:
-        CullPDB class creates instance of the training dataset.
+        Description:
+            CullPDB class creates instance of the training dataset.
 
-    Args:
-        all_data (float): The proportion of the training data to use, must be in range 0.5 to 1.0, default: 1.0
-        filtered (bool): What PDB training dataset to use, filtered or unfiltered, default = True.
+        Args:
+            all_data (float): The proportion of the training data to use, must be in range 0.5 to 1.0, default: 1.0
+            filtered (bool): What PDB training dataset to use, filtered or unfiltered, default = True.
 
-    Returns:
-        CullPDB training dataset object
+        Returns:
+            CullPDB training dataset object
     """
+
     def __init__(self, type= 5926, filtered = True):
 
         self.filtered = filtered
         self.type = type
 
-        #ensuring dataset is of type 6133 or 5926
         assert (self.type == 6133 or self.type ==5926), 'training datatset must be of type 6133 or 5926'
 
-        #set training path and url class variables
         if (self.type == 6133):
-
             if (self.filtered):
                 self.train_path = TRAIN_PATH_FILTERED_6133
                 self.url = TRAIN_FILTERED_6133_URL
@@ -50,18 +52,19 @@ class CullPDB(object):
                 self.url = TRAIN_UNFILTERED_5926_URL
 
         #download dataset if not already in current directory
-        if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.train_path))):
+        if not (os.path.isfile(self.train_path[:-3])):
             self.get_cullpdb()
 
         #load in dataset
         self.load_cullpdb()
 
     def load_cullpdb(self):
+        """ Load CullPDB training dataset into memory """
 
         print("Loading CullPDB {} training dataset (filtered: {})...\n".format(self.type, self.filtered))
 
         #load dataset
-        data = np.load(os.path.join(os.getcwd(), DATA_DIR, self.train_path[:-3]))
+        data = np.load(self.train_path[:-3])
 
         #reshape dataset
         data = np.reshape(data, (-1, 700, 57))
@@ -88,7 +91,6 @@ class CullPDB(object):
                 vallabel = labels[seq_index[5278:5534]] #8
                 valpssm = datapssm[seq_index[5278:5534]] # 21
 
-                #one-hot encoding of val labels
                 val_hot = np.ones((valhot.shape[0], valhot.shape[1])) #target array
                 val_hot = get_onehot(valhot, val_hot)
 
@@ -102,7 +104,6 @@ class CullPDB(object):
                 testlabel = labels[seq_index[5605:5877]]
                 testpssm = datapssm[seq_index[5605:5877]]
 
-                #one-hot encoding of test labels
                 test_hot = np.ones((testhot.shape[0], testhot.shape[1])) #target array
                 self.test_hot = get_onehot(testhot, test_hot)
 
@@ -110,7 +111,6 @@ class CullPDB(object):
                 vallabel = labels[seq_index[5877:6133]] #8
                 valpssm = datapssm[seq_index[5877:6133]] # 21
 
-                #one-hot encoding of val labels
                 val_hot = np.ones((valhot.shape[0], valhot.shape[1])) #target array
                 val_hot = get_onehot(valhot, val_hot)
 
@@ -120,11 +120,11 @@ class CullPDB(object):
                 data_index = 5365 - 256
                 val_index = 256
 
+                # val_index = int(236)
                 valhot = datahot[seq_index[5109:5365]] #21
                 vallabel = labels[seq_index[5109:5365]] #8
                 valpssm = datapssm[seq_index[5109:5365]] # 21
 
-                #one-hot encoding of val labels
                 val_hot = np.ones((valhot.shape[0], valhot.shape[1])) #target array
                 val_hot = get_onehot(valhot, val_hot)
 
@@ -132,6 +132,7 @@ class CullPDB(object):
                 data_index = 5430
                 val_index = 5926-5690
 
+                # val_index = int(236)
                 valhot = datahot[seq_index[5690:5926]] #21
                 vallabel = labels[seq_index[5690:5926]] #8
                 valpssm = datapssm[seq_index[5690:5926]] # 21
@@ -143,23 +144,26 @@ class CullPDB(object):
                 testlabel = labels[seq_index[5435:5690]]
                 testpssm = datapssm[seq_index[5435:5690]]
 
-                #one-hot encoding of test labels
                 test_hot = np.ones((testhot.shape[0], testhot.shape[1])) #target array
                 self.test_hot = get_onehot(testhot, test_hot)  #test_hot (target) not crrated
 
 
+        print('data index:', data_index)
+        print('seqindex shaoe:', seq_index.shape)
+
         trainhot = datahot[seq_index[:data_index]]
         trainlabel = labels[seq_index[:data_index]]
         trainpssm = datapssm[seq_index[:data_index]]
+        print('trainpssm shaoe:', trainpssm.shape)
+        print('trainlabel shaoe:', trainlabel.shape)
+        print('trainhot shaoe:', trainhot.shape)
 
-        #one-hot encoding of train labels
         train_hot = np.ones((trainhot.shape[0], trainhot.shape[1])) #target array
         train_hot = get_onehot(trainhot, train_hot)
 
-        #delete training data from memory
+        #delete training data from ram
         del data
 
-        #set cullpdb class variables
         self.train_hot = train_hot
         self.trainpssm = trainpssm
         self.trainlabel = trainlabel
@@ -171,33 +175,28 @@ class CullPDB(object):
             self.testlabel = testlabel
             self.testpssm = testpssm
 
-
     def get_cullpdb(self):
         """ Download Cullpdb dataset from Princeton URL and store locally in data directory """
 
         try:
-            print(os.path.join(os.getcwd(), DATA_DIR, self.train_path[:-3]))
+            print(self.train_path[:-3])
 
-            if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.train_path[:-3]))):
+            if not (os.path.isfile(self.train_path[:-3])):
 
-                #get data from url
                 r = requests.get(self.url, allow_redirects = True) #error handling, if response == 200
-                r.raise_for_status()    #if response status code != 200
+                r.raise_for_status()
 
-                dir_path = (os.path.join(os.getcwd(), DATA_DIR))
-                source_path = (os.path.join(dir_path, self.train_path))
-                destination_path = os.path.join(dir_path, self.train_path[:-3])
+                dir_path = DATA_DIR
+                source_path = self.train_path
+                destination_path = self.train_path[:-3]
 
-                #open local file
                 open(source_path, 'wb').write(r.content)
 
-                #export zipped dataset and store .npy file
-                print('Exporting CullPDB {} Filtered = {} datatset....'.format(self.type, self.filtered))
+                print('Exporting CullPDB {} {} datatset....'.format(self.type, self.filtered))
                 with gzip.open(source_path, 'rb') as f_in:
                     with open(destination_path, 'wb') as f_out:
                         shutil.copyfile(source_path, destination_path)
 
-                #remove unrequired zipped version of dataset
                 os.remove(source_path)
 
                 print('Dataset downloaded successfully - stored in {} of size {} '.format(destination_path,self.dataset_size()))
@@ -232,7 +231,10 @@ class CullPDB(object):
 
     def dataset_size(self):
         """ Get size of CullPDB dataset """
-        return str(round((os.path.getsize(os.path.join(os.getcwd(), DATA_DIR, self.train_path)))/(1024*1024))) + ' MB'
+        return str(round((os.path.getsize(self.train_path))/(1024*1024))) + ' MB'
+
+
+
 
 class CB513(object):
 
@@ -255,11 +257,22 @@ class CB513(object):
         print("Loading test dataset (CB513)...\n")
 
         #download dataset if not already in current directory
-        if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path[:-3]))):
+        # # if not (os.path.isfile(TEST_PATH)):
+        # if not (os.path.isfile(os.path.join(DATA_DIR, self.test_path[:-3]))):
+        #     self.get_cb513()
+
+        #download dataset if not already in current directory
+        if not (os.path.isfile(self.test_path[:-3])):
             self.get_cb513()
 
+        #load in dataset
+        self.load_cb513()
+
+    def load_cb513(self):
+        """ Load CB513 test dataset into memory """
+
         #load test dataset
-        CB513 = np.load(os.path.join(os.getcwd(), DATA_DIR, self.test_path[:-3]))
+        CB513 = np.load(self.test_path[:-3])
 
         #reshape dataset
         CB513= np.reshape(CB513,(-1,700,57))
@@ -274,14 +287,13 @@ class CB513(object):
         testpssm = testpssm[:514]
         testlabel = testlabel[:514]
 
-        #convert to one-hot encoding array
+        #convert to one-hot array
         test_hot = np.ones((testhot.shape[0], testhot.shape[1]))
         test_hot = get_onehot(testhot, test_hot)
 
         #delete test data from ram
         del CB513
 
-        #set cb513 class variables
         self.test_hot = test_hot
         self.testpssm = testpssm
         self.testlabel = testlabel
@@ -290,31 +302,28 @@ class CB513(object):
         """ Download CASP11 dataset from Princeton URL and store locally in data directory """
 
         try:
-            if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path))):
+            if not (os.path.isfile(self.test_path[:-3])):
 
-                #get data from url
-                r = requests.get(self.url, allow_redirects = True)
-                r.raise_for_status()    #if response status code != 200
+                r = requests.get(self.url, allow_redirects = True) #error handling, if response == 200
+                r.raise_for_status()
 
-                dir_path = (os.path.join(os.getcwd(), DATA_DIR))
-                source_path = (os.path.join(dir_path, self.test_path))
-                destination_path = os.path.join(dir_path, self.test_path[:-3])
+                dir_path = DATA_DIR
+                source_path = self.test_path
+                destination_path = self.test_path[:-3]
 
-                #open local file
                 open(source_path, 'wb').write(r.content)
 
-                #export zipped dataset and store .npy file
                 print('Exporting CB513 datatset....')
                 with gzip.open(source_path, 'rb') as f_in:
                     with open(destination_path, 'wb') as f_out:
                         shutil.copyfile(source_path, destination_path)
 
-                #remove unrequired zipped version of dataset
                 os.remove(source_path)
 
                 print('Dataset downloaded successfully - stored in {} of size {} '.format(destination_path,self.dataset_size()))
 
             else:
+
                 #dataset already present
                 print(str(self) + " already present...")
 
@@ -340,7 +349,8 @@ class CB513(object):
 
     def dataset_size(self):
         """ Get size of CB513 dataset """
-        return str(round((os.path.getsize(os.path.join(os.getcwd(), DATA_DIR, self.test_path)))/(1024*1024))) + ' MB'
+        return str(round((os.path.getsize(self.test_path))/(1024*1024))) + ' MB'
+
 
 
 class CASP10(object):
@@ -364,11 +374,17 @@ class CASP10(object):
         print("Loading CASP10 dataset...\n")
 
         #download dataset if not already in current directory
-        if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path))):
+        if not (os.path.isfile(self.test_path[:-3])):
             self.get_casp10()
 
+        #load in dataset
+        self.load_casp10()
+
+    def load_casp10(self):
+        """ Load CASP10 test dataset into memory """
+
         #load casp10 dataset
-        casp10_data = h5py.File((os.path.join(os.getcwd(), DATA_DIR, self.test_path)),'r')
+        casp10_data = h5py.File(self.test_path,'r')
 
         #load protein sequence and profile feature data
         casp10_data_hot = casp10_data['features'][:, :, 0:21]
@@ -377,7 +393,7 @@ class CASP10(object):
         #load protein label data
         test_labels = casp10_data['labels'][:, :, 0:8]
 
-        #crete one hot encoding vector for casp10 labels
+        #create new protein sequence feature, set values to max value if if value!=0 ?
         casp10_data_test_hot = np.ones((casp10_data_hot.shape[0], casp10_data_hot.shape[1]))
         casp10_data_test_hot = get_onehot(casp10_data_hot, casp10_data_test_hot)
 
@@ -386,7 +402,6 @@ class CASP10(object):
         #delete test data from ram
         del casp10_data
 
-        #set casp10 class variables
         self.casp10_data_test_hot = casp10_data_test_hot
         self.casp10_data_pssm = casp10_data_pssm
         self.test_labels = test_labels
@@ -396,16 +411,15 @@ class CASP10(object):
         """ Download CASP10 dataset from repository and store locally in data directory """
 
         try:
-            if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path))):
 
-                #get data from url
-                r = requests.get(self.url, allow_redirects = True)
-                r.raise_for_status() #if response status code != 200
+            if not (os.path.isfile(self.test_path)):
 
-                dir_path = (os.path.join(os.getcwd(), DATA_DIR))
-                source_path = (os.path.join(dir_path, self.test_path))
+                r = requests.get(self.url, allow_redirects = True) #error handling, if response == 200
+                r.raise_for_status()
 
-                #open local file
+                dir_path = DATA_DIR
+                source_path = self.test_path
+
                 open(source_path, 'wb').write(r.content)
 
                 print('Dataset downloaded successfully - stored in {} of size {} '.format(source_path,self.dataset_size()))
@@ -436,7 +450,7 @@ class CASP10(object):
 
     def dataset_size(self):
         """ Get size of CASP10 dataset """
-        return str(round((os.path.getsize(os.path.join(os.getcwd(), DATA_DIR, self.test_path)))/(1024*1024))) + ' MB'
+        return str(round((os.path.getsize(self.test_path))/(1024*1024))) + ' MB'
 
 
 class CASP11(object):
@@ -460,20 +474,25 @@ class CASP11(object):
         print("Loading CASP11 dataset...\n")
 
         #download dataset if not already in current directory
-        if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path))):
+        if not (os.path.isfile(self.test_path[:-3])):
             self.get_casp11()
 
-        #load casp11 dataset
-        casp11_data = h5py.File((os.path.join(os.getcwd(), DATA_DIR, self.test_path)),'r')
+        #load in dataset
+        self.load_casp11()
 
-        #load protein sequence feature data
+    def load_casp11(self):
+        """ Load CASP11 test dataset into memory """
+
+        #load casp11 dataset
+        casp11_data = h5py.File(self.test_path,'r')
+
+        #load protein sequence and profile feature data
         casp11_data_hot = casp11_data['features'][:,:,0:21]
-        # load profile feature data
         casp11_data_pssm = casp11_data['features'][:,:,21:42]
-        #load protein label feature data
+        #load protein label data
         test_labels = casp11_data['labels'][:,:,0:8]
 
-        #convert to one-hot encoding array
+        #create new protein sequence feature, set values to max value if if value!=0 ?
         casp11_data_test_hot = np.ones((casp11_data_hot.shape[0], casp11_data_hot.shape[1]))
         casp11_data_test_hot = get_onehot(casp11_data_hot, casp11_data_test_hot)
 
@@ -482,7 +501,6 @@ class CASP11(object):
         #delete test data from ram
         del casp11_data
 
-        #set casp11 class variables
         self.casp11_data_test_hot = casp11_data_test_hot
         self.casp11_data_pssm = casp11_data_pssm
         self.test_labels = test_labels
@@ -491,16 +509,14 @@ class CASP11(object):
         """ Download CASP11 dataset from repository and store locally in data directory """
 
         try:
-            if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path))):
+            if not (os.path.isfile(self.test_path)):
 
-                #get data from url
-                r = requests.get(self.url, allow_redirects = True)
+                r = requests.get(self.url, allow_redirects = True) #error handling, if response == 200
                 r.raise_for_status()
 
-                dir_path = (os.path.join(os.getcwd(), DATA_DIR))
-                source_path = (os.path.join(dir_path, self.test_path))
+                dir_path = DATA_DIR
+                source_path = self.test_path
 
-                #open local file
                 open(source_path, 'wb').write(r.content)
 
                 print('Dataset downloaded successfully - stored in {} of size {} '.format(source_path,self.dataset_size()))
@@ -532,7 +548,8 @@ class CASP11(object):
 
     def dataset_size(self):
         """ Get size of CASP11 dataset """
-        return str(round((os.path.getsize(os.path.join(os.getcwd(), DATA_DIR, self.test_path)))/(1024*1024))) + ' MB'
+        return str(round((os.path.getsize(self.test_path))/(1024*1024))) + ' MB'
+
 
 def get_onehot(source_array, target_array):
     """
@@ -555,28 +572,22 @@ def get_onehot(source_array, target_array):
 
     return target_array
 
+
 def download_all_data():
 
     """
         Description:
-            Download all datatsets (training and test) used in project
+            Download all datatsets - training and test - used in project
         Args:
             None
         Returns:
             None
     """
 
-    cullpdb_5926_filt = CullPDB()
-    cullpdb_5926_unfilt = CullPDB(filtered=False)
-    cullpdb_6133_filt = CullPDB(type=6133,filtered=True)
-    cullpdb_6133_unfilt = CullPDB(type=6133,filtered=False)
+    cullpdb_5926_filt = CullPDB(type=5926)
+    cullpdb_5926_unfilt = CullPDB(type=5926, filtered=False)
+    cullpdb_6133_filt = CullPDB()
+    cullpdb_6133_unfilt = CullPDB(filtered=False)
     cb513 = CB513()
     casp10 = CASP10()
     casp11 = CASP11()
-
-if __name__ == '__main__':
-
-
-    #os.chdir to change to the correct desired dir
-
-    download_all_data()

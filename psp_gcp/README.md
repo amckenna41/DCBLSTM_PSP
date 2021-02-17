@@ -1,27 +1,80 @@
+# Google Cloud Platform Distribution for Protein Structure Prediction #<a name="TOP"></a>
+
+A full GCP pipeline for building, training and evaluating any of the models used in this project.
+
+## Installation ##
+
+### Set up local development environment ###
 
 
-**Building, fitting and evaluating the models on Google Cloud Platform** <br>
+The Google Cloud guide to [Setting up a Python development environment](https://cloud.google.com/python/setup) provide detailed instructions for meeting these requirements. The following steps provide a condensed set of instructions:
 
-**Setup and configuration to GCP:** <br>
-1.)
-Using a terminal/command line, ensure that the current working directory is psp_gcp - cd psp_gcp  <br>
-##include picture of setup on GCP console
-1.)Execute the gcp_config.sh bash script which installs all the relevant dependancies and libraries required for connection to the GCP from the command line. This script ... <br>
+ 1. Install and initialize the Cloud SDK.
+
+ 2. Install Python 3.
+
+ 3. Install virtualenv and create a virtual environment that uses Python 3. virtualenv mypython
+
+ 4. Activate that environment. source mypython/bin/activate
+
+
+### Set up your GCP project ###
+
+ 1. Select or create a GCP project.
+
+ 2. Make sure that billing is enabled for your project.
+
+ 3. Enable the AI Platform ("Cloud Machine Learning Engine") and Compute Engine APIs.
+
+ 4. From a command line/terminal run:
+```
+gcloud config set project $PROJECT_ID
+```
+where $PROJECT_ID is your GCP project ID.
+
+### Authenticate GCP account ###
+
+1. In the GCP Console, go to the Create service account key page.
+
+1. From the Service account drop-down list, select New service account.
+
+2. In the Service account name field, enter a name.
+
+3. From the Role drop-down list, select Machine Learning Engine > AI Platform Admin and Storage > Storage Object Admin.
+
+4. Click Create. A JSON file that contains your key downloads to your local environment.
+
+5. Enter the path to your service account key as the GOOGLE_APPLICATION_CREDENTIALS environment variables as below:
+```
+export GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
+```
+
+### Create Bucket ###
+
+1. Run the following code to create bucket using gsutil tool:
+```
+gsutil mb -l $REGION gs://$BUCKET_NAME
+```
+where $REGION is GCP region and $BUCKET_NAME is the name of the bucket.
+
+## Usage ##
+
+Using a terminal/command line, ensure that the current working directory is psp_gcp.  <br>
 
 To call the model with the optimum parameters, from a command line, run:
+
 ```
 ./gcp_training
-```
 
-Passing in arguments to script:
-```
--b batch size
--e epochs
--td test dataset
+-b batch size (default = 120)
+-e epochs (default = 10)
+-td test dataset (default = all)
+-m model to use (default = psp_dcblstm_gcp_model)
+-gpu use a GPU with TF (default = False)
 
-./gcp_training
+e.g.
+./gcp_training -b 120 -e 10 -td all -m psp_dculstm_gcp_model -gpu True
 ```
-
 
 To call the hyperparameter tuning script, from a command line call:
 ```
@@ -29,20 +82,27 @@ To call the hyperparameter tuning script, from a command line call:
 ```
 If you want to change any of the default hyperparameters then pass the parameter in when calling the script, e.g:
 ```
-./gcp_hptuning -epochs 10 -batch_size 42 -alldata 0.5
+./gcp_hptuning
+-b batch size (default = 120)
+-e epochs (default = 5)
+-td test dataset (default = cb513)
+
+e.g.
+./gcp_hptuning -e 10 -b 120 -td casp10
 ```
 
-<br>
-2.) Execute
+To get secondary structure prediction of protein sequence from pre-built model, from a command line, run:
+```
+./gcp_predict
 
+-m model
+-i input_data
 
+e.g. ./gcp_predict -m psp_dculstm_gcp_model -i input_predictions.json
+```
 
+## AI-Platform Configuration ## **update this
 
-
-**How to change model hyperparameters:** <br>
-The model hyperparameters are passed into the main calling module from a bash script - gcp_hptuning.sh. The current parameters in the script are the pre-determined optimal parameters for the model.
-
-**How to change GCP Ai-Platform configuration:** <br>
 The configuration  ... can be found in gcp_training_config.yaml . For running the main CDBLSTM/CDULSTM models the high memory CPU n1-highmem-8 machine is sufficent. (run on compute engine)
 GPU's and TPU's are also available which were tested with the models but ultimately gave similar results to using just CPU's but at a greater cost, therefore high memory CPU machines were utilised.
 
@@ -50,42 +110,46 @@ More info about the different GCP machine types can be found at:
 https://cloud.google.com/compute/docs/machine-types
 
 
-**Google Cloud Platform Architecture**<br>
+
+## Google Cloud Platform Architecture ##
 The cloud architecture used within the GCP for this project can be seen below were several services were taken advantage of including: Ai-Platform, Compute Engine GCS, Logging, Monitoring and IAM.
 
 ![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/gcp_architecture.png?raw=true)
 
-
-**Running on Windows**
-1.) Download and install Google Cloud SDK, following the steps from the guide: https://cloud.google.com/sdk/docs/install#windows <br>
-2.) SDK Installation should take you through the authentication process, if not then call - gcloud auth login - from terminal to authenticate account.
-3.) From Windows Powershell or terminal call the script gcp_resources.sh to create all the neccessary cloud resources required for the project.
-4.) From a Windows Powershell or terminal, call the scripts ./gcp_training.sh to build and deploy default best CDBLSTM model with its optimal parameters. Or call the script ./gcp_hptuning.sh to do hyperparameter tuning.
-
-**Running on Mac/Linux**
-
-1.) Download and install Google Cloud SDK, following the steps from the guide: https://cloud.google.com/sdk/docs/install
-2.) SDK Installation should take you through the authentication process, if not then call - gcloud auth login - from terminal to authenticate account.
-3.) From terminal call the script gcp_resources.sh to create all the neccessary cloud resources required for the project.
-4.) From a terminal, call the scripts ./gcp_training.sh to build and deploy default best CDBLSTM model with its optimal parameters. Or call the script ./gcp_hptuning.sh to do hyperparameter tuning.
+## Model Saving Structure ##
 
 
-#create script that captures all metrics and results from training into using Pub/Sub to package and send as csv via email when training done.
+* After training is complete, the model and all its attributes and associated objects will be stored in a new folder inside a GCP storage bucket. The directory structure of this can be seen below.
+* The folder name in the bucket is determined by the Ai-Platform job name, which itself is created once the training script is called in the format: $MODEL_NAME_YYYY_MM_DD:HH:MM_epochs_$EPOCHS_batch_size_$BATCH_SIZE
 
+```
+bucket_name
+├── job_name
+│   └── model_plots         
+│         └── figure1.png
+│         └── figure2.png
+│   └── model.h5
+│   └── model_history.pckl
+│   └── model_arch.json
+│   └── model_output.csv
+└-
+```
 
+## GCP Notification Function ##
 
-  """
-    Normalize the real part of the cross spectrum to Leahy, absolute rms^2,
-    fractional rms^2 normalization, or not at all.
-    Parameters
-    ----------
-    unnorm_power: numpy.ndarray
-        The unnormalized cross spectrum.
-    tseg: int
-        The length of the Fourier segment, in seconds.
-    Returns
-    -------
-    power: numpy.nd.array
-        The normalized co-spectrum (real part of the cross spectrum). For
-        'none' normalization, imaginary part is returned as well.
-    """
+This Google Cloud Function is used to notify when training has been completed and notifies some of the training results via an email server to a receipient. Currently, with Google Cloud's ML Engine/Ai-Platform there is no mechanism at which to know when training has been completed and the Ai job is finished, this function alleviates that.
+
+**To configure function, call setup script:**
+```
+./gcp_notification_func $BUCKET_NAME $TOPIC $SUBSCRIPTION $SOURCE_DIR $TOMAIL $FROMMAIL $EMAIL_PASS
+
+$BUCKETNAME - name of GCP storage bucket
+$TOPIC - name of pubsub topic
+$SUBSCRIPTION - name of pubsub subscription
+$SOURCE_DIR - name of dir containing function source code (main.py & requirements.txt)
+$TOMAIL - receipient of training notification and results
+$FROMMAIL - sender of training notification, ideally a gmail account with less secure app access configured
+$EMAIL_PASS - password for less secure $FROMMAIL email account
+
+```
+[Back to top](#TOP)

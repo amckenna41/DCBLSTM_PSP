@@ -1,41 +1,21 @@
 #########################################################################
-### CDULSTM - Convolutional Deep Unidirectional Long short-term memory ###
+### DCBLSTM - Deep Convolutional Bidirectional Long short-term memory ###
 #########################################################################
 
 #import required modules and dependancies
 import tensorflow as tf
-import argparse
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Bidirectional, LSTM, Input, Conv1D, Embedding, Dense, Dropout, Activation, Convolution2D, GRU, Concatenate, Reshape,MaxPooling1D, Conv2D, MaxPooling2D,Convolution1D,BatchNormalization
+from tensorflow.keras.layers import Bidirectional, LSTM, Input, Conv1D, Embedding, Dense, Dropout, Activation,  Concatenate, Reshape,MaxPooling1D, BatchNormalization,ReLU
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
-from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 from tensorflow.keras import activations
-import os
-import sys
-from datetime import date
-from datetime import datetime
-
-### Tensorboard parameters and configuration ###
-tf.compat.v1.reset_default_graph()
-from tensorflow.core.protobuf import rewriter_config_pb2
-tf.keras.backend.clear_session()  # For easy reset of notebook state.
-from tensorflow.compat.v1.keras.backend import set_session
-# config_proto = tf.ConfigProto()
-config_proto = tf.compat.v1.ConfigProto()
-off = rewriter_config_pb2.RewriterConfig.OFF
-config_proto.gpu_options.allow_growth = True
-config_proto.graph_options.rewrite_options.arithmetic_optimization = off
-# session = tf.Session(config=config_proto)
-session = tf.compat.v1.Session(config=config_proto)
-set_session(session)
 
 def build_model():
 
     """
     Description:
-        Building CDULSTM model
+        Building DCBLSTM model
     Args:
         None
     Returns:
@@ -59,44 +39,45 @@ def build_model():
     #concatenate 2 input layers
     concat = Concatenate(axis=-1)([embed, auxiliary_input])
 
-    #3x1D Convolutional Hidden Layers with BatchNormalization, Dropout and MaxPooling
+    ######## 3x1D-Convolutional Layers with BatchNormalization, Dropout and MaxPooling ########
+
     conv_layer1 = Conv1D(16, 7, kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer1)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv2D_act = ReLU()(batch_norm)
+    conv1_dropout = Dropout(0.2)(conv2D_act)
     max_pool_1D_1 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     conv_layer2 = Conv1D(32, 7, padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer2)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv2D_act = ReLU()(batch_norm)
+    conv2_dropout = Dropout(0.2)(conv2D_act)
     max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     conv_layer3 = Conv1D(64, 7,kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer3)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv2D_act = ReLU()(batch_norm)
+    conv3_dropout = Dropout(0.2)(conv2D_act)
     max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
+    ##maybe try removing dropout after batchnorm - batchnorm acts as a form of regularisation thus reduces need for dropout
     ############################################################################################
 
     #concatenate convolutional layers
     conv_features = Concatenate(axis=-1)([max_pool_1D_1, max_pool_1D_2, max_pool_1D_3])
+    # conv_features = Concatenate(axis=-1)([conv1_dropout, conv2_dropout, conv3_dropout])
 
     #dense layer before LSTM's
     lstm_dense = Dense(600, activation='relu', name="after_cnn_dense")(conv_features)
 
-     ######## Recurrent Unidirectional Long-Short-Term-Memory Layers ########
-    lstm_f1 = LSTM(200,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_dense)
+    ######## Recurrent Bi-Directional Long-Short-Term-Memory Layers ########
+    lstm_f1 = Bidirectional(LSTM(200,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5))(lstm_dense)
 
-    lstm_f2 = LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_f1)
-
-    lstm_f3 = LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(lstm_f2)
+    lstm_f2 = Bidirectional(LSTM(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5))(lstm_f1)
 
     ############################################################################################
 
     #concatenate LSTM with convolutional layers
-    concat_features = Concatenate(axis=-1)([lstm_f1, lstm_f2, lstm_f3, lstm_dense])
+    concat_features = Concatenate(axis=-1)([lstm_f1, lstm_f2, lstm_dense])
     concat_features = Dropout(0.4)(concat_features)
 
     #Dense Fully-Connected DNN layers
@@ -113,14 +94,9 @@ def build_model():
     adam = Adam(lr=0.00015)
 
     #compile model using adam optimizer and the cateogorical crossentropy loss function
-    model.compile(optimizer = adam, loss={'main_output': 'categorical_crossentropy'}, metrics=['accuracy', MeanSquaredError(), FalseNegatives(), FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision()])
+    model.compile(optimizer = adam, loss={'main_output': 'categorical_crossentropy'}, metrics=['accuracy', MeanSquaredError(), FalseNegatives(), FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision(), AUC()])
 
     #print model summary
     model.summary()
-
-    #set earlyStopping and checkpoint callback
-    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
-    checkpoint_path = "/CDULSTM_" + str(datetime.date(datetime.now())) + ".h5"
-    checkpointer = ModelCheckpoint(filepath=checkpoint_path,verbose=1,save_best_only=True, monitor='val_acc', mode='max')
 
     return model

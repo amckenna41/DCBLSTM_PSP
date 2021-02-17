@@ -1,24 +1,18 @@
 #!/bin/bash
 
 ### check current version of pip and update, if neccessry ###
-# if !(pip --version == '20.2.2')
-# then
-#   echo "Updating pip to latest version"
-#   sudo -H pip3 install --upgrade pip
-# else
-#   echo "Pip up-to-date"
-# fi
+python3 -m pip install --user --upgrade pip
 
 #update Python Path
 # export PATH="${PATH}:/root/.local/bin"
 # export PYTHONPATH="${PYTHONPATH}:/root/.local/bin"
 
-# export GOOGLE_APPLICATION_CREDENTIALS="service-account.json" - set GAC env variable
-# echo $GOOGLE_APPLICATION_CREDENTIALS
 
 #### Parse positonal arguments ###
 #https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 #source ./ arguments.sh
+
+# EMAIL_PASS=$7   - Parse args by their position rather than their name
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
@@ -35,18 +29,18 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    -ad|--all_data)
-    ALL_DATA="$2"
-    shift # past argument
-    shift # past value
-    ;;
     -td|--test_dataset)
     TEST_DATASET="$2"
     shift # past argument
     shift # past value
     ;;
-    -m|--module)
-    MODULE="$2"
+    -m|--model)
+    MODEL="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -gpu|--gpu)
+    USE_GPU="$2"
     shift # past argument
     shift # past value
     ;;
@@ -65,21 +59,19 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 if [ $# -eq 0 ]
   then
     BATCH_SIZE=256
-    EPOCHS=3
-    ALL_DATA=1.0
+    EPOCHS=10
     TEST_DATASET="All"
-    MODULE="training.psp_blstm_gcp_model"
-fi
+    MODEL="psp_dcblstm_gcp_model"
+    USE_GPU=0
 
-#set arguments to be passed into model
-# BATCH_SIZE=250
-EPOCHS=1
-ALL_DATA=0.1
+fi
 
 #set Ai-Platform Job environment variables
 BUCKET_NAME="gs://keras-python-models-2"
-JOB_NAME="CDBLSTM_model_$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
+JOB_NAME="$MODEL"_"$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
+MODULE="training.train_gcp"
 JOB_DIR="$BUCKET_NAME/job_logs"      # - where to store job logs
+LOGS_DIR="$JOB_DIR""/logs/tensorboard/$JOB_NAME"   # - TensorBoard logs
 PACKAGE_PATH="training/"             # - path of folder to be packaged
 CONFIG="training/training_utils/gcp_training_config.yaml"   # - job config file
 RUNTIME_VERSION="2.1"   # - https://cloud.google.com/ai-platform/training/docs/runtime-version-list
@@ -87,9 +79,6 @@ PYTHON_VERSION="3.7"
 REGION="us-central1"    # - cloud region to run job
 export CUDA_VISIBLE_DEVICES=0   # - initialise CUDA env var
 # CUDA_VISIBLE_DEVICES=1 - If using 1 CUDA enabled GPU
-
-LOGS_DIR="$JOB_DIR""/logs/tensorboard/$JOB_NAME"   # - TensorBoard logs
-
 
 #Function to parse GCP config file
 function parse_yaml {
@@ -122,7 +111,7 @@ echo "Logs and models stored in bucket: $JOB_DIR"
 echo "Batch Size: $BATCH_SIZE"
 echo "Epochs: $EPOCHS"
 echo "Test Dataset: $TEST_DATASET"
-echo "Using $ALL_DATA % of data"
+echo "Using $MODEL model"
 echo ""
 
 echo "GCP Machine Type Parameters..."
@@ -134,29 +123,58 @@ echo "Worker Count : $trainingInput_workerCount"
 echo "Parameter Server Count: $trainingInput_parameterServerCount"
 echo ""
 
-     # #submitting Tensorflow training job to Google Cloud
-     gcloud ai-platform jobs submit training $JOB_NAME \
-         --package-path $PACKAGE_PATH \
-         --module-name $MODULE \
-         --staging-bucket $BUCKET_NAME \
-         --runtime-version $RUNTIME_VERSION \
-         --python-version $PYTHON_VERSION  \
-         --job-dir $JOB_DIR \
-         --region $REGION \
-         --config $CONFIG \
-         -- \
-         --epochs $EPOCHS \
-         --batch_size $BATCH_SIZE \
-         --alldata $ALL_DATA \
-         --logs_dir $LOGS_DIR \
-         --test_dataset $TEST_DATASET \
-         --job_name $JOB_NAME
+ #submitting Tensorflow training job to Google Cloud
+ gcloud ai-platform jobs submit training $JOB_NAME \
+     --package-path $PACKAGE_PATH \
+     --module-name $MODULE \
+     --staging-bucket $BUCKET_NAME \
+     --runtime-version $RUNTIME_VERSION \
+     --python-version $PYTHON_VERSION  \
+     --job-dir $JOB_DIR \
+     --region $REGION \
+     --config $CONFIG \
+     -- \
+     --epochs $EPOCHS \
+     --batch_size $BATCH_SIZE \
+     --logs_dir $LOGS_DIR \
+     --test_dataset $TEST_DATASET \
+     --job_name $JOB_NAME \
+     --model $MODEL \
+     --use_gpu $USE_GPU
 
 echo ""
 echo "To view model progress through tensorboard in Google Cloud shell or terminal execute..."
 echo "tensorboard --logdir=$LOGS_DIR --port=8080"
 echo "If in cloud shell, then click on the web preview option "
 
+##############################################
+
+###       Results Notification Function    ###
+FUNCTION_NAME="notification_func"
+SOURCE_DIR="notification_func"
+FUNC_VERSION="python37"
+BUCKET_FOLDER="$JOB_NAME/output_results.csv"
+TOPIC="notification_topic"
+
+#deploy gcloud function
+gcloud functions deploy $FUNCTION_NAME \
+    --source $SOURCE_DIR \
+    --runtime $FUNC_VERSION \
+    --trigger-topic $TOPIC \
+    --update-env-vars JOB_NAME=$JOB_NAME \
+    --allow-unauthenticated
+
+#create bucket notification to trigger function when output csv lands in bucket folder
+gsutil notification create \
+   -p $BUCKET_FOLDER \
+   -t $TOPIC \
+   -f json \
+   -e OBJECT_FINALIZE $BUCKET_NAME
+
+
+##Function to get list of available models/input argument parameters
+
+##############################################
 
 ### Visualise model results on TensorBoard ###
      #tensorboard --logdir [LOGS_PATH] - path declared in Tensorboard callback:
@@ -182,7 +200,6 @@ echo "If in cloud shell, then click on the web preview option "
       #   -- \
       #   --epochs $EPOCHS \
       #   --batch_size $BATCH_SIZE \
-      #   --alldata $ALL_DATA \
       #   --logs_dir $LOGS_DIR
 
       #To cancel current job:

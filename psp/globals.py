@@ -1,21 +1,32 @@
 
+#########################################################################
+###                         Global Variables                          ###
+#########################################################################
+
+
+#######################################################################
+###### Get current date and time, store in current_datetime var #######
 
 from datetime import date
 from datetime import datetime
 current_datetime = str(datetime.date(datetime.now())) + \
     '_' + str((datetime.now().strftime('%H:%M')))
 
+#####################################################
+######      Directories for output and data   #######
+DATA_DIR = 'data'
+OUTPUT_DIR = 'output_data'
 
 #####################################################
 ###### File paths for train and test datasets #######
 
-TRAIN_PATH_FILTERED = 'cullpdb+profile_6133_filtered.npy.gz'
-TRAIN_PATH_UNFILTERED = 'cullpdb+profile_6133.npy.gz'
-# TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy.gz'
-TRAIN_PATH_FILTERED_NPY = 'cullpdb+profile_6133_filtered.npy'
-TRAIN_PATH_UNFILTERED_NPY = 'cullpdb+profile_6133.npy'
+TRAIN_PATH_FILTERED_6133 = 'cullpdb+profile_6133_filtered.npy.gz'
+TRAIN_PATH_UNFILTERED_6133 = 'cullpdb+profile_6133.npy.gz'
+
+TRAIN_PATH_FILTERED_5926 = 'cullpdb+profile_5926_filtered.npy.gz'
+TRAIN_PATH_UNFILTERED_5926 = 'cullpdb+profile_5926.npy.gz'
+
 CB513_PATH = 'cb513+profile_split1.npy.gz'
-CB513_NPY = 'cb513+profile_split1.npy'
 CASP10_PATH = 'casp10.h5'
 CASP11_PATH = 'casp11.h5'
 
@@ -24,11 +35,15 @@ CASP11_PATH = 'casp11.h5'
 ########################################################
 ###### URL's for train and test dataset download #######
 
-TRAIN_FILTERED_URL = "http://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_6133_filtered.npy.gz"
-TRAIN_UNFILTERED_URL = "https://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_6133.npy.gz"
-CB513_URL = "http://www.princeton.edu/~jzthree/datasets/ICML2014/cb513+profile_split1.npy.gz"
-CASP10_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp10.h5"
-CASP11_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLearning/raw/master/data/casp11.h5"
+TRAIN_FILTERED_6133_URL = "https://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_6133_filtered.npy.gz"
+TRAIN_UNFILTERED_6133_URL = "https://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_6133.npy.gz"
+
+TRAIN_FILTERED_5926_URL = 'https://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_5926_filtered.npy.gz'
+TRAIN_UNFILTERED_5926_URL = 'https://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_5926.npy.gz'
+
+CB513_URL = "https://www.princeton.edu/~jzthree/datasets/ICML2014/cb513+profile_split1.npy.gz"
+CASP10_URL = "https://github.com/amckenna41/CDBLSTM_PSSP/raw/master/casp10.h5"
+CASP11_URL = "https://github.com/amckenna41/CDBLSTM_PSSP/raw/master/casp11.h5"
 
 ##################################################
 
@@ -38,16 +53,6 @@ CASP11_URL = "https://github.com/amckenna41/protein_structure_prediction_DeepLea
 model_output = {}
 
 ##################################################
-
-######################################
-###### History Pickle Filename #######
-
-history_filepath = 'history_' + current_datetime +'.pckl'
-
-##################################################
-
-checkpoint_path = ''
-
 
 #####################################################
 ###### Filenames for plots and visualisations #######
