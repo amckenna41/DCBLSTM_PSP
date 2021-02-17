@@ -1,5 +1,41 @@
 # Secondary Protein Structure Prediction using Machine learning and Deep Learning #
 
+
+### To do list
+
+- [ ] Fix README's
+- [ ] Check Latest Travis Build
+- [X] Add AUC() metric class to models
+- [ ] Change colour of box in boxplot
+- [ ] Fix Boxplots - what do they represent etc...
+- [ ] Model Tests
+- [ ] Tests for inputting data for prediction - fasta, txt, pdb tests, add data folder in tests folder
+- [X] Add learning rate scheduler
+- [ ] Add labels to readme
+- [ ] Add CI Github workflows
+- [ ] Add CI Testing - https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#introduction
+- [X] Add AUC, FP and FN to output metrics
+- [ ] Coveralls - https://coveralls.io/
+- [ ] Review one-hot encoding process
+- [X] Review neccisity of all_data variable
+- [ ] Reach out to ICML people and find out how they developed their data
+- [ ] H/w requirements in readme
+- [ ] Look into pytest
+- [ ] CodeCov - Code Coverage
+- [ ] Python Version Badge - https://shields.io/category/platform-support
+- [ ] Last Modified Badge - https://shields.io/category/activity
+- [ ] LinkedIn Badge
+- [ ] GCP Badge - https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
+- [ ] Python Logo Badge
+- [ ] Visualise Keras model - https://www.machinecurve.com/index.php/2019/10/07/how-to-visualize-a-model-with-keras/
+- [ ] Re do model tests
+- [X] Remove TensorBaord stuff from model and only keep in training file
+- [ ] Keras JSON Parser
+- [ ] Check variable and layer names for models
+- [ ] Terraform script for resoucres??
+ - [ ] Add Google Cloud CI
+- [ ] Remove GCP config script
+
   <a href="https://coveralls.io/github/badges/shields">
         <img src="https://img.shields.io/coveralls/github/badges/shields"
             alt="coverage"></a>
@@ -209,36 +245,6 @@ If you have any questions or feedback, please contact amckenna41@qub.ac.uk.
 12. https://www.mitpressjournals.org/doi/abs/10.1162/neco.1997.9.8.1735
 13. https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218
 
-### To do list
 
-- [X] Add AUC() metric class to models
-- [ ] Change colour of box in boxplot
-- [ ] Fix Boxplots - what do they represent etc...
-- [ ] Model Tests
-- [ ] Tests for inputting data for prediction - fasta, txt, pdb tests, add data folder in tests folder
-- [X] Add learning rate scheduler
-- [ ] Add labels to readme
-- [ ] Add CI Github workflows
-- [ ] Add CI Testing - https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#introduction
-- [X] Add AUC, FP and FN to output metrics
-- [ ] Coveralls - https://coveralls.io/
-- [ ] Review one-hot encoding process
-- [X] Review neccisity of all_data variable
-- [ ] Reach out to ICML people and find out how they developed their data
-- [ ] H/w requirements in readme
-- [ ] Look into pytest
-- [ ] CodeCov - Code Coverage
-- [ ] Python Version Badge - https://shields.io/category/platform-support
-- [ ] Last Modified Badge - https://shields.io/category/activity
-- [ ] LinkedIn Badge
-- [ ] GCP Badge - https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
-- [ ] Python Logo Badge
-- [ ] Visualise Keras model - https://www.machinecurve.com/index.php/2019/10/07/how-to-visualize-a-model-with-keras/
-- [ ] Re do model tests
-- [X] Remove TensorBaord stuff from model and only keep in training file
-- [ ] Keras JSON Parser
-- [ ] Check variable and layer names for models
-- [ ] Terraform script for resoucres??
- - [ ] Add Google Cloud CI
 ## status
 > Development Stage
