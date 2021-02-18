@@ -35,6 +35,7 @@
 - [ ] Terraform script for resoucres??
  - [ ] Add Google Cloud CI
 - [ ] Remove GCP config script
+- [ ] Add Workflow tests for psp_gcp whereby gcloud sdk is installed and a few commands are attempted to see if it is working correctly etc
 
   <a href="https://coveralls.io/github/badges/shields">
         <img src="https://img.shields.io/coveralls/github/badges/shields"
@@ -42,7 +43,7 @@
 
 [![Build Status](https://travis-ci.org/amckenna41/CDBLSTM_PSP.svg?branch=master)](https://travis-ci.org/amckenna41/CDBLSTM_PSP)
 ![](https://img.shields.io/badge/dependencies-rdkit%2C%20pybel-green.svg)
-![](https://img.shields.io/badge/platforms-linux%2C%20windows-brightgreen.svg)
+![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)
 code coverage percentage: ![coverage](https://img.shields.io/badge/coverage-80%25-yellowgreen)
 ![](https://img.shields.io/badge/platform-linux--64%20%7C%20win--32%20%7C%20osx--64%20%7C%20win--64-lightgrey)
 ## status
