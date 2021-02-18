@@ -9,6 +9,12 @@ before_install:
   - echo "Python Version"
   - python3 --version
   - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+  # - "export PYTHONPATH=${PYTHONPATH}:/   $(pwd)"
+  #
+  #  export PYTHONPATH="${PYTHONPATH}:/my/other/path"
+
+  - echo "Travis CI Dir $TRAVIS_BUILD_DIR"
+
 install:
   - echo "Install project dependancies and requirements"
   - pip3 install codecov
