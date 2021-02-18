@@ -22,8 +22,11 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
+        echo "Installing Dependancies"
         python -m pip install --upgrade pip
         pip install flake8 pytest
+        pip install codecov
+        pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -33,4 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest
+        echo "Running dataset tests"
+        python -m pytest psp.tests.test_datasets.py
+        
+
