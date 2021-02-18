@@ -43,20 +43,20 @@ def build_model():
 
     conv_layer1 = Conv1D(16, 7, kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer1)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv_act = activations.relu(batch_norm)
+    conv_dropout = Dropout(0.2)(conv_act)
     max_pool_1D_1 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     conv_layer2 = Conv1D(32, 7, padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer2)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv_act = activations.relu(batch_norm)
+    conv_dropout = Dropout(0.2)(conv_act)
     max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     conv_layer3 = Conv1D(64, 7,kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer3)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv_act = activations.relu(batch_norm)
+    conv_dropout = Dropout(0.2)(conv_act)
     max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     ############################################################################################

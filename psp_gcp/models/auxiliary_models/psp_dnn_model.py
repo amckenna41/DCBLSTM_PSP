@@ -38,7 +38,7 @@ def build_model():
     print ("Protein Profile shape: ",auxiliary_input.get_shape())
 
     #concatenate 2 input layers
-    concat = Concatenate(axis=-1)([embed, auxiliary_input])
+    concat_features = Concatenate(axis=-1)([embed, auxiliary_input])
 
 
     ############################################################################################

@@ -43,20 +43,20 @@ def build_model():
     #3x1D Convolutional Hidden Layers with BatchNormalization, Dropout and MaxPooling
     conv_layer1 = Conv1D(16, 7, kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer1)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv_act = activations.relu(batch_norm)
+    conv_dropout = Dropout(0.2)(conv_act)
     max_pool_1D_1 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     conv_layer2 = Conv1D(32, 7, padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer2)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv_act = activations.relu(batch_norm)
+    conv_dropout = Dropout(0.2)(conv_act)
     max_pool_1D_2 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     conv_layer3 = Conv1D(64, 7,kernel_regularizer = "l2", padding='same')(concat)
     batch_norm = BatchNormalization()(conv_layer3)
-    conv2D_act = activations.relu(batch_norm)
-    conv_dropout = Dropout(0.2)(conv2D_act)
+    conv_act = activations.relu(batch_norm)
+    conv_dropout = Dropout(0.2)(conv_act)
     max_pool_1D_3 = MaxPooling1D(pool_size=2, strides=1, padding='same')(conv_dropout)
 
     ############################################################################################
@@ -68,11 +68,11 @@ def build_model():
     gru_dense = Dense(600, activation='relu', name="after_cnn_dense")(conv_features)
 
      ######## Recurrent Unidirectional Long-Short-Term-Memory Layers ########
-    gru_f1 = GRU(200,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(gru_dense)
+    gru_f1 = GRU(200,return_sequences=True,activation = 'tanh', recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(gru_dense)
 
-    gru_f2 = GRU(200, activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(gru_f1)
+    gru_f2 = GRU(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(gru_f1)
 
-    gru_f3 = GRU(200, activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(gru_f2)
+    gru_f3 = GRU(200, return_sequences=True,activation = 'tanh',recurrent_activation='sigmoid',dropout=0.5,recurrent_dropout=0.5)(gru_f2)
 
     ############################################################################################
 

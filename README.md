@@ -45,7 +45,6 @@
 ![](https://img.shields.io/badge/platforms-linux%2C%20windows-brightgreen.svg)
 code coverage percentage: ![coverage](https://img.shields.io/badge/coverage-80%25-yellowgreen)
 ![](https://img.shields.io/badge/platform-linux--64%20%7C%20win--32%20%7C%20osx--64%20%7C%20win--64-lightgrey)
-![](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
 ## status
 > Development Stage
 
@@ -227,7 +226,11 @@ To be able to run the model on the cloud you must have an existing GCP account a
 
 ## Contact:
 
-If you have any questions or feedback, please contact amckenna41@qub.ac.uk.
+If you have any questions or feedback, please contact amckenna41@qub.ac.uk or visit my [LinkedIn](https://www.linkedin.com/in/adam-mckenna-7a5b22151/)
+
+![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
+
+[Setting up a Python development environment](https://cloud.google.com/python/setup)
 
 ## References:
 \[1\]: https://www.princeton.edu/~jzthree/datasets/ICML2014/  <br>
