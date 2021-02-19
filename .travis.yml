@@ -25,7 +25,7 @@ install:
   - pip3 install pytest
 
 script:
-  - cd psp
+  - cd $TRAVIS_BUILD_DIR/psp
   - echo "Travis CI Dir $TRAVIS_BUILD_DIR"
   - echo "Running dataset tests"
   - python3 -m tests.test_datasets.py
