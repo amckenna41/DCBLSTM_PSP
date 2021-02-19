@@ -37,6 +37,6 @@ jobs:
     - name: Test with pytest
       run: |
         echo "Running dataset tests"
-        python -m pytest psp.tests.test_datasets.py
+        python -m pytest psp.tests.test_datasets
         
 
