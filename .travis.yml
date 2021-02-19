@@ -28,7 +28,7 @@ script:
   - cd $TRAVIS_BUILD_DIR/psp
   - echo "Travis CI Dir $TRAVIS_BUILD_DIR"
   - echo "Running dataset tests"
-  - python3 -m tests.test_datasets.py
+  - python3 -m tests.test_datasets
   - echo "Running model tests"
   # - python3 -m psp.tests.test_models.py
 
