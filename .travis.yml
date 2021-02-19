@@ -8,7 +8,10 @@ before_install:
   - python3 -m pip install --upgrade pip
   - echo "Python Version"
   - python3 --version
-  - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)
+
+    # - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+
   # - "export PYTHONPATH=${PYTHONPATH}:/   $(pwd)"
   #
   #  export PYTHONPATH="${PYTHONPATH}:/my/other/path"
@@ -22,8 +25,10 @@ install:
   - pip3 install pytest
 
 script:
+  - cd psp
+  - echo "Travis CI Dir $TRAVIS_BUILD_DIR"
   - echo "Running dataset tests"
-  - python3 -m psp.tests.test_datasets.py
+  - python3 -m tests.test_datasets.py
   - echo "Running model tests"
   # - python3 -m psp.tests.test_models.py
 

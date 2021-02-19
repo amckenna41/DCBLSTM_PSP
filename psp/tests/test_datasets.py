@@ -5,8 +5,9 @@
 
 try:
     from data.load_dataset import *
-except:
+except ImportError:
     from psp.data.load_dataset import *
+    
 import os
 import requests
 import numpy as np
