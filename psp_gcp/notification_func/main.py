@@ -19,17 +19,16 @@ import json
 import pandas as pd
 
 def notification_func(event, context):
-
     """
-        Description:
-            Main entry function for Google Cloud function that notifes and emails when
-            training has completed. Results are parsed and emailed. Triggered from a message
-            on a Cloud Pub/Sub topic.
-        Args:
-            event (dict): Event payload.
-            context (google.cloud.functions.Context): Metadata for the event.
-        Returns:
-            None
+    Description:
+        Main entry function for Google Cloud function that notifes and emails when
+        training has completed. Results are parsed and emailed. Triggered from a message
+        on a Cloud Pub/Sub topic.
+    Args:
+        event (dict): Event payload.
+        context (google.cloud.functions.Context): Metadata for the event.
+    Returns:
+        None
     """
 
     job_name = os.environ['JOB_NAME']
@@ -54,18 +53,16 @@ def notification_func(event, context):
 
 
 def send_email(data_df, csv_path):
-
     """
-        Description:
-            Parses required training results, packages them and sends them to receipent via
-            email using SMTP over SSL.
-        Args:
-            data_df (dataframe): training results dataframe
-            csv_path (str): path to locally stored results csv for sending results via attachment
-        Returns:
-            None
+    Description:
+        Parses required training results, packages them and sends them to receipent via
+        email using SMTP over SSL.
+    Args:
+        data_df (dataframe): training results dataframe
+        csv_path (str): path to locally stored results csv for sending results via attachment
+    Returns:
+        None
     """
-
     #get server environment variables
     EMAIL_ADDRESS = os.environ['EMAIL_USER'] #to - 45678
     EMAIL_PASS = os.environ['EMAIL_PASS']
@@ -87,6 +84,10 @@ def send_email(data_df, csv_path):
     msg['Subject'] = f'Results from: {job_name}'
     msg['From'] = from_mail
     msg['To'] = EMAIL_ADDRESS
+
+    epochs = data_df['Epochs'][0]
+    lr = data_df['Learning Rate'][0]
+    batch_size = data_df['Batch Size'][0]
 
     #parse dataframe to get requried results - getting accuracy, precision and recall for training set and all test datasets
     training_acc = data_df['Training Accuracy'][0]
@@ -119,12 +120,15 @@ def send_email(data_df, csv_path):
 
     #email body
     results_str= '''
-        Job {} has completed, the results are below... \n
+        Job: {} has completed, the results are below... \n
+        Epochs: {} \n
+        Learning Rate: {} \n
+        Batch Size: {} \n\n
         Results: \n
         Training Accuracy: {} \n
         Training Loss: {} \n
         Training Precision: {} \n
-        Training Recall: {} \n
+        Training Recall: {} \n\n
         CB513 Test Accuracy: {} \n
         CB513 Recall: {} \n
         CB513 Precision: {} \n\n
@@ -137,8 +141,8 @@ def send_email(data_df, csv_path):
         Model Architecture: \n
         {} \n
         Results stored in: {} bucket \n
-    '''.format(job_name, training_acc, training_loss, training_precision, training_recall,
-                cb513_acc, cb513_recall, cb513_precision, casp10_acc,
+    '''.format(job_name, epochs, lr, batch_size,training_acc, training_loss, training_precision,
+                training_recall, cb513_acc, cb513_recall, cb513_precision, casp10_acc,
                 casp10_recall, casp10_precision, casp11_acc, casp11_recall,
                 casp11_precision, layer_str, bucket_name)
 

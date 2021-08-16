@@ -11,7 +11,7 @@ from globals import *
 import requests
 import shutil
 
-class CullPDB(object):
+class CullPDB():
 
     """
     Description:
@@ -28,6 +28,8 @@ class CullPDB(object):
 
         self.filtered = filtered
         self.type = type
+
+        #if dataset not 5926 or 6133 then set to 5926 default.
 
         #ensuring dataset is of type 6133 or 5926
         assert (self.type == 6133 or self.type ==5926), 'training datatset must be of type 6133 or 5926'
@@ -51,7 +53,7 @@ class CullPDB(object):
 
         #download dataset if not already in current directory
         if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.train_path))):
-            self.get_cullpdb()
+            self.download_cullpdb()
 
         #load in dataset
         self.load_cullpdb()
@@ -171,13 +173,15 @@ class CullPDB(object):
             self.testlabel = testlabel
             self.testpssm = testpssm
 
+    def download_cullpdb(self):
+        """
+        Download Cullpdb dataset from Princeton URL and store locally in data directory
 
-    def get_cullpdb(self):
-        """ Download Cullpdb dataset from Princeton URL and store locally in data directory """
+        Parameters
+        ----------
 
+        """
         try:
-            print(os.path.join(os.getcwd(), DATA_DIR, self.train_path[:-3]))
-
             if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.train_path[:-3]))):
 
                 #get data from url
@@ -200,14 +204,15 @@ class CullPDB(object):
                 #remove unrequired zipped version of dataset
                 os.remove(source_path)
 
-                print('Dataset downloaded successfully - stored in {} of size {} '.format(destination_path,self.dataset_size()))
+                print('Dataset downloaded successfully - stored in {} of size \
+                    {} '.format(destination_path,self.dataset_size()))
 
             else:
                 #dataset already present
-                print("CullPDB {} already present...".format(self.type))
+                pass
 
         except OSError:
-            print('Error downloading and exporting training dataset\n')
+            print('Error downloading and exporting training dataset.\n')
 
     def __len__(self):
         """ Get number of proteins in CullPDB dataset - length of the 1st dimension """
@@ -215,7 +220,8 @@ class CullPDB(object):
 
     def __str__(self):
         """ Print string representation of CullPDB object """
-        return ('CullPDB {} Training datatset - filtered: {}. Shape of dataset: {}'.format(self.type,self.filtered, self.shape()))
+        return ('CullPDB {} Training datatset - filtered: {}. \
+            Shape of dataset: {}'.format(self.type,self.filtered, self.shape()))
 
     def is_filtered(self):
         """ Is current CullPDB class object using the filtered or unfiltered dataset """
@@ -256,7 +262,7 @@ class CB513(object):
 
         #download dataset if not already in current directory
         if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path[:-3]))):
-            self.get_cb513()
+            self.download_cb513()
 
         #load test dataset
         CB513 = np.load(os.path.join(os.getcwd(), DATA_DIR, self.test_path[:-3]))
@@ -286,7 +292,7 @@ class CB513(object):
         self.testpssm = testpssm
         self.testlabel = testlabel
 
-    def get_cb513(self):
+    def download_cb513(self):
         """ Download CASP11 dataset from Princeton URL and store locally in data directory """
 
         try:
@@ -304,7 +310,6 @@ class CB513(object):
                 open(source_path, 'wb').write(r.content)
 
                 #export zipped dataset and store .npy file
-                print('Exporting CB513 datatset....')
                 with gzip.open(source_path, 'rb') as f_in:
                     with open(destination_path, 'wb') as f_out:
                         shutil.copyfile(source_path, destination_path)
@@ -316,10 +321,10 @@ class CB513(object):
 
             else:
                 #dataset already present
-                print(str(self) + " already present...")
+                pass
 
         except OSError:
-            print('Error downloading and exporting dataset\n')
+            print('Error downloading and exporting dataset...\n')
 
     def __len__(self):
         """ Get number of proteins in CB513 dataset - length of the 1st dimension """
@@ -342,8 +347,7 @@ class CB513(object):
         """ Get size of CB513 dataset """
         return str(round((os.path.getsize(os.path.join(os.getcwd(), DATA_DIR, self.test_path)))/(1024*1024))) + ' MB'
 
-
-class CASP10(object):
+class CASP10():
 
     """
         Description:
@@ -365,7 +369,7 @@ class CASP10(object):
 
         #download dataset if not already in current directory
         if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path))):
-            self.get_casp10()
+            self.download_casp10()
 
         #load casp10 dataset
         casp10_data = h5py.File((os.path.join(os.getcwd(), DATA_DIR, self.test_path)),'r')
@@ -381,8 +385,6 @@ class CASP10(object):
         casp10_data_test_hot = np.ones((casp10_data_hot.shape[0], casp10_data_hot.shape[1]))
         casp10_data_test_hot = get_onehot(casp10_data_hot, casp10_data_test_hot)
 
-        print('CASP10 dataset loaded...\n')
-
         #delete test data from ram
         del casp10_data
 
@@ -391,8 +393,7 @@ class CASP10(object):
         self.casp10_data_pssm = casp10_data_pssm
         self.test_labels = test_labels
 
-
-    def get_casp10(self):
+    def download_casp10(self):
         """ Download CASP10 dataset from repository and store locally in data directory """
 
         try:
@@ -408,14 +409,15 @@ class CASP10(object):
                 #open local file
                 open(source_path, 'wb').write(r.content)
 
-                print('Dataset downloaded successfully - stored in {} of size {} '.format(source_path,self.dataset_size()))
+                print('Dataset downloaded successfully - stored in {} of size \
+                    {} '.format(source_path,self.dataset_size()))
 
             else:
                 #dataset already present
-                print(str(self) + " already present...")
+                pass
 
         except OSError:
-            print('Error downloading and exporting dataset\n')
+            print('Error downloading and exporting dataset...\n')
 
     def __len__(self):
         """ Get number of proteins in CASP10 dataset - length of the 1st dimension """
@@ -436,10 +438,11 @@ class CASP10(object):
 
     def dataset_size(self):
         """ Get size of CASP10 dataset """
-        return str(round((os.path.getsize(os.path.join(os.getcwd(), DATA_DIR, self.test_path)))/(1024*1024))) + ' MB'
+        return str(round((os.path.getsize(os.path.join(os.getcwd(), DATA_DIR,
+            self.test_path)))/(1024*1024))) + ' MB'
 
 
-class CASP11(object):
+class CASP11():
 
     """
         Description:
@@ -461,7 +464,7 @@ class CASP11(object):
 
         #download dataset if not already in current directory
         if not (os.path.isfile(os.path.join(os.getcwd(), DATA_DIR, self.test_path))):
-            self.get_casp11()
+            self.download_casp11()
 
         #load casp11 dataset
         casp11_data = h5py.File((os.path.join(os.getcwd(), DATA_DIR, self.test_path)),'r')
@@ -477,8 +480,6 @@ class CASP11(object):
         casp11_data_test_hot = np.ones((casp11_data_hot.shape[0], casp11_data_hot.shape[1]))
         casp11_data_test_hot = get_onehot(casp11_data_hot, casp11_data_test_hot)
 
-        print('CASP11 dataset loaded...\n')
-
         #delete test data from ram
         del casp11_data
 
@@ -487,7 +488,7 @@ class CASP11(object):
         self.casp11_data_pssm = casp11_data_pssm
         self.test_labels = test_labels
 
-    def get_casp11(self):
+    def download_casp11(self):
         """ Download CASP11 dataset from repository and store locally in data directory """
 
         try:
@@ -507,10 +508,10 @@ class CASP11(object):
 
             else:
                 #dataset already present
-                print(str(self) + " already present...")
+                pass
 
         except OSError:
-            print('Error downloading and exporting dataset\n')
+            print('Error downloading and exporting dataset...\n')
 
 
     def __len__(self):
@@ -539,7 +540,8 @@ def get_onehot(source_array, target_array):
     Description:
         Convert protein structure labels into one-hot encoding vector
 
-    Args:
+    Parameters
+    ----------
         source_array (np.array): array of class labels to convert into one-hot vector
         target_array (np.array): array of class labels converted into one-hot encoding
 
@@ -554,29 +556,3 @@ def get_onehot(source_array, target_array):
                 target_array[i,j] = np.argmax(source_array[i,j,:])
 
     return target_array
-
-def download_all_data():
-
-    """
-        Description:
-            Download all datatsets (training and test) used in project
-        Args:
-            None
-        Returns:
-            None
-    """
-
-    cullpdb_5926_filt = CullPDB()
-    cullpdb_5926_unfilt = CullPDB(filtered=False)
-    cullpdb_6133_filt = CullPDB(type=6133,filtered=True)
-    cullpdb_6133_unfilt = CullPDB(type=6133,filtered=False)
-    cb513 = CB513()
-    casp10 = CASP10()
-    casp11 = CASP11()
-
-if __name__ == '__main__':
-
-
-    #os.chdir to change to the correct desired dir
-
-    download_all_data()

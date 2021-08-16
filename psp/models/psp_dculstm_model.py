@@ -6,35 +6,30 @@
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Bidirectional, LSTM, Input, Conv1D, Embedding, Dense, Dropout, Activation, Concatenate, Reshape,MaxPooling1D, BatchNormalization
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam, SGD, RMSprop, Adagrad, Adadelta, Adamax
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 from tensorflow.keras import activations
 
 def build_model():
-
     """
     Description:
-        Building DCULSTM model
+        Building DCULSTM neural network model.
     Args:
-        None
+        params (dict): dictionary of various model and GCP parameters to use in
+        building and training of network.
     Returns:
-        None
-
+        model (keras.model): trained Tensorflow Keras ML model.
     """
-
+    
     #main input is the length of the amino acid in the protein sequence (700,)
-    main_input = Input(shape=(700,), dtype='float32', name='main_input')
+    main_input = Input(shape=(params["model_parameters"][0]["input_shape"],), dtype='float32', name='main_input')
 
     #Embedding Layer used as input to the neural network
-    embed = Embedding(output_dim=21, input_dim=21, input_length=700)(main_input)
+    embed = Embedding(output_dim=params["model_parameters"][0]["num_aminoacids"], input_dim=params["model_parameters"][0]["num_aminoacids"], input_length=params["model_parameters"][0]["input_shape"])(main_input)
 
     #secondary input is the protein profile features
-    auxiliary_input = Input(shape=(700,21), name='aux_input')
-
-    #get shape of input layers
-    print ("Protein Sequence shape: ", main_input.get_shape())
-    print ("Protein Profile shape: ",auxiliary_input.get_shape())
+    auxiliary_input = Input(shape=(params["model_parameters"][0]["input_shape"],params["model_parameters"][0]["num_aminoacids"]), name='aux_input')
 
     #concatenate 2 input layers
     concat = Concatenate(axis=-1)([embed, auxiliary_input])

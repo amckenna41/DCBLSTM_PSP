@@ -15,7 +15,7 @@ current_datetime = str(datetime.date(datetime.now())) + \
 #####################################################
 ######      Directories for output and data   #######
 DATA_DIR = 'data'
-OUTPUT_DIR = 'output_data'
+OUTPUT_DIR = 'output'
 
 #####################################################
 ###### File paths for train and test datasets #######

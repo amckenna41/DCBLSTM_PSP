@@ -47,13 +47,7 @@ def get_model_output(model_save_path):
     #converting model_output dictionary to pandas Dataframe
     model_output_df = pd.DataFrame(model_output, index=[0])
 
-    # #transposing model_output Dataframe
-    # model_output_df_t = model_output_df.transpose()
-    # #setting 'values' as dataframe column name
-    # model_output_df_t.columns = ['Values']
-
     #exporting Dataframe to CSV
-    # model_output_df_t.to_csv(save_path,columns=['Values'])
     model_output_df.to_csv(save_path,index=False)
 
     print('Model Output file exported and stored in {} '.format(save_path))

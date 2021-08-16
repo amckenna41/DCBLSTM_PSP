@@ -11,7 +11,7 @@ import argparse
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.metrics import plot_confusion_matrix
 from globals import *
-from data.load_dataset import *
+from load_dataset import *
 from plot_model import *
 from utils import *
 
@@ -415,7 +415,6 @@ def recall(y_true, y_pred):
     return recall
 
 def FN(y_true, y_pred):
-
     """
     Description:
         Calculate the number of false negatives during prediction
@@ -433,7 +432,6 @@ def FN(y_true, y_pred):
     return fn
 
 def FP(y_true, y_pred):
-
     """
     Description:
         Calculate the number of false positives during prediction
@@ -451,7 +449,6 @@ def FP(y_true, y_pred):
     return fp
 
 def auc(y_true, y_pred):
-
     """
     Description:
         Calculate the area under the curve (AUC)
@@ -471,7 +468,6 @@ def auc(y_true, y_pred):
     return auc_result
 
 def poisson(y_true, y_pred):
-
     """
     Description:
         Calculates the poisson function over prediction and target values.
@@ -485,7 +481,6 @@ def poisson(y_true, y_pred):
     return K.mean(y_pred - y_true * K.log(y_pred + K.epsilon()))
 
 def fbeta_score(y_true, y_pred, beta=1):
-
     """
     Description:
         Calculates the F score, the weighted harmonic mean of precision and recall.
@@ -515,10 +510,16 @@ def fbeta_score(y_true, y_pred, beta=1):
     return fbeta_score
 
 def confusion_matrix_(y_true, y_pred):
-
-    # keras.metrics.confusion_matrix(y_true, y_pred)
+    """
+    Description:
+        Builds confusion matrix of predicted and observed secondary structure labels.
+     Args:
+        y_true (np.ndarray): ground truth class labels
+        y_pred (np.ndarray): predicted class label
+    Returns:
+        matrix(float): matrix of predicted vs observed.
+    """
     matrix = confusion_matrix(y_true.argmax(axis=1), y_pred.argmax(axis=1))
-    # cm = plot_confusion_matrix(clf, y_true , y, cmap=plt.cm.Greens)
 
     return matrix
 

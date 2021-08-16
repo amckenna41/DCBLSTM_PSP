@@ -3,11 +3,11 @@
 ###                       Tests for datasets                          ###
 #########################################################################
 
-try:
-    from data.load_dataset import *
-except ImportError:
-    from psp.data.load_dataset import *
-    
+# try:
+from load_dataset import *
+# except ImportError:
+#     from psp.data.load_dataset import *
+
 import os
 import requests
 import numpy as np

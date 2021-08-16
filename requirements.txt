@@ -4,7 +4,8 @@ six>=1.13.0
 h5py==2.10.0
 matplotlib==3.3.1
 tensorboard==2.1.0
+tensorflow==1.15
+tensorflow-gpu==1.15
 seaborn==0.10.1
 requests==2.24.0
 fastaparser==1.1
- 

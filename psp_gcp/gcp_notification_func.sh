@@ -1,4 +1,26 @@
+
+################################################################################
+#############            GCP Notification Function                ##############
+################################################################################
+
 #!/bin/bash
+
+#Help Funtion showing script usage
+Help()
+{
+   echo "Bash Script for utilising GCP notification functionality"
+   echo ""
+   echo "Basic Usage, using default parameters: ./gcp_notification_func "
+   echo "Usage: ./gcp_notification_func [--b|--e|--t|--tr|-g|--bu|--sT|--mT|--h]"
+   echo ""
+   echo "Options:"
+   echo "-b     GCP storage bucket name"
+   echo "-t     PubSub Topic"
+   echo ""
+
+
+   exit
+}
 
 ### Only need to run this script once before calling gcp_training script ###
 BUCKET_NAME=$1
@@ -19,6 +41,71 @@ echo 'SOURCE_DIR = ' $4
 echo 'TOMAIL = ' $5
 echo 'FROMMAIL = ' $6
 echo 'EMAIL_PASS = ' $7
+
+
+# for i in "$@"
+# do
+# case $i in
+#     -bu=*|--BUCKET_NAME=*)
+#     BUCKET_NAME="${i#*=}"
+#     shift # past argument=value
+#     ;;
+#     -m=*|--MODEL=*)
+#     MODEL="${i#*=}"
+#     shift # past argument=value
+#     ;;
+#     -b=*|--BATCH_SIZE=*)
+#     BATCH_SIZE="${i#*=}"
+#     shift # past argument=value
+#     ;;
+#     -e=*|--EPOCHS=*)
+#     EPOCHS="${i#*=}"
+#     shift # past argument=value
+#     ;;
+#     -t=*|--TEST_DATASET=*)
+#     TEST_DATASET="${i#*=}"
+#     shift # past argument=value
+#     ;;
+#     -g=*|--USE_GPU=*)
+#     USE_GPU="${i#*=}"
+#     shift # past argument=value
+#     ;;
+#     --default)
+#     DEFAULT=YES
+#     shift # past argument with no value
+#     ;;
+#     *)
+#           # unknown option
+#     ;;
+# esac
+# done
+#
+# if [[ -n $1 ]]; then
+#     echo "Last line of file specified as non-opt/last argument:"
+#     tail -1 $1
+# fi
+#
+# if [ -z "$BATCH_SIZE" ]; then
+#   BATCH_SIZE=256
+# fi
+# if [ -z "$EPOCHS" ]; then
+#   EPOCHS=7
+# fi
+# if [ -z "$TEST_DATASET" ]; then
+#   TEST_DATASET='all'
+# fi
+# if [ -z "$MODEL" ]; then
+#   MODEL='psp_dcblstm_model'
+# fi
+# if [ -z "$USE_GPU" ]; then
+#   USE_GPU=0
+# fi
+# if [ -z "$BUCKET_NAME" ]; then
+#   BUCKET_NAME="gs://keras-python-models-2"
+# fi
+
+
+
 
 #update any gcloud components
 gcloud components update

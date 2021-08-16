@@ -32,9 +32,9 @@ class CullPDB(object):
     def __init__(self, type= 5926, filtered = True):
 
         self.filtered = filtered
-        self.type = type
+        self.type = int(type)
 
-        assert (self.type == 6133 or self.type ==5926), 'training datatset must be of type 6133 or 5926'
+        assert (self.type == 6133 or self.type ==5926), f'training datatset must be of type 6133 or 5926 but got {self.type}'
 
         if (self.type == 6133):
             if (self.filtered):
@@ -234,6 +234,18 @@ class CullPDB(object):
         return str(round((os.path.getsize(self.train_path))/(1024*1024))) + ' MB'
 
 
+    # def __len__(self):
+    #     """      """
+    #     return get_num_features(self)
+    #
+    # def __doc__(self):
+    #     pass
+    #
+    # def __repr__(self):
+    #     pass
+    #
+    # def __sizeof__(self):
+    #     pass
 
 
 class CB513(object):
@@ -351,6 +363,18 @@ class CB513(object):
         """ Get size of CB513 dataset """
         return str(round((os.path.getsize(self.test_path))/(1024*1024))) + ' MB'
 
+    # def __len__(self):
+    #     """      """
+    #     return get_num_features(self)
+    #
+    # def __doc__(self):
+    #     pass
+    #
+    # def __repr__(self):
+    #     pass
+    #
+    # def __sizeof__(self):
+    #     pass
 
 
 class CASP10(object):

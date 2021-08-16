@@ -19,7 +19,8 @@ import training.training_utils.gcp_utils as utils
 from training.training_utils.globals import *
 
 
-def plot_history(history, job_name,  show_histograms = False, show_boxplots = False, show_kde = False, filter_outliers = True):
+def plot_history(history, job_name,  show_histograms = False, show_boxplots = False,
+    show_kde = False, filter_outliers = True):
 
     """
     Description:

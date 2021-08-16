@@ -1,104 +1,92 @@
+
+################################################################################
+###############             GCP Training Script                 ################
+################################################################################
+
 #!/bin/bash
 
 ### check current version of pip and update, if neccessry ###
-python3 -m pip install --user --upgrade pip
+# python3 -m pip install --user --upgrade pip
 
 #update Python Path
 # export PATH="${PATH}:/root/.local/bin"
 # export PYTHONPATH="${PYTHONPATH}:/root/.local/bin"
 
+#Help Funtion showing script usage
+Help()
+{
+   echo "Bash Script for building and training PSP model's on GCP"
+   echo ""
+   echo "Basic Usage, using default parameters: ./gcp_training "
+   echo "Usage: ./gcp_training [--b|--e|--t|--tr|-g|--bu|--sT|--mT|--h]"
+   echo ""
+   echo "Options:"
+   echo "-b     batch size for training - default: 256"
+   echo "-e     number of epochs to train for - default: 10"
+   echo "-td    test dataset to use for evaluation - CB513, CASP10, CASP11, All, default: all"
+   echo "-tr    training dataset to use for training - 6133, 5926, default: 5926"
+   echo "-g     use GPU for training - 0,1, default: 0 "
+   echo "-bu    GCP cloud bucket name to use for storing trained models and all model utilities"
+   echo "-sT    scale Tier - default: CUSTOM"
+   echo "-mT    master Tier - default: n1-highmem-8"
+   echo "-h     help"
+   exit
+}
 
-#### Parse positonal arguments ###
-#https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
-#source ./ arguments.sh
-
-# EMAIL_PASS=$7   - Parse args by their position rather than their name
-POSITIONAL=()
-while [[ $# -gt 0 ]]
+for i in "$@"
 do
-key="$1"
-
-case $key in
-    -b|--batch_size)
-    BATCH_SIZE="$2"
-    shift # past argument
-    shift # past value
+case $i in
+    -c=*|--config=*)
+    CONFIG="${i#*=}"
+    shift # past argument=value
     ;;
-    -e|--epochs)
-    EPOCHS="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -td|--test_dataset)
-    TEST_DATASET="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -m|--model)
-    MODEL="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -gpu|--gpu)
-    USE_GPU="$2"
-    shift # past argument
-    shift # past value
+    -h|--h)
+    Help
+    shift # past argument=value
     ;;
     --default)
     DEFAULT=YES
-    shift # past argument
+    shift # past argument with no value
     ;;
-    *)    # unknown option
-    POSITIONAL+=("$1") # save it in an array for later
-    shift # past argument
+    *)
+          # unknown option
     ;;
 esac
 done
-set -- "${POSITIONAL[@]}" # restore positional parameters
 
-if [ $# -eq 0 ]
-  then
-    BATCH_SIZE=256
-    EPOCHS=10
-    TEST_DATASET="All"
-    MODEL="psp_dcblstm_gcp_model"
-    USE_GPU=0
-
+if [[ -n $1 ]]; then
+    echo "Last line of file specified as non-opt/last argument:"
+    tail -1 $1
 fi
 
-#set Ai-Platform Job environment variables
-BUCKET_NAME="gs://keras-python-models-2"
-JOB_NAME="$MODEL"_"$(date +"%Y%m%d_%H%M")_epochs_""$EPOCHS""_batch_size_""$BATCH_SIZE"
-MODULE="training.train_gcp"
-JOB_DIR="$BUCKET_NAME/job_logs"      # - where to store job logs
-LOGS_DIR="$JOB_DIR""/logs/tensorboard/$JOB_NAME"   # - TensorBoard logs
-PACKAGE_PATH="training/"             # - path of folder to be packaged
-CONFIG="training/training_utils/gcp_training_config.yaml"   # - job config file
-RUNTIME_VERSION="2.1"   # - https://cloud.google.com/ai-platform/training/docs/runtime-version-list
-PYTHON_VERSION="3.7"
-REGION="us-central1"    # - cloud region to run job
-export CUDA_VISIBLE_DEVICES=0   # - initialise CUDA env var
-# CUDA_VISIBLE_DEVICES=1 - If using 1 CUDA enabled GPU
+if [ -z "$CONFIG" ]; then
+  CONFIG="config/dummy_config.json"
+fi
 
-#Function to parse GCP config file
-function parse_yaml {
-   local prefix=$2
-   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-   sed -ne "s|^\($s\):|\1|" \
-        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
-        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
-   awk -F$fs '{
-      indent = length($1)/2;
-      vname[indent] = $2;
-      for (i in vname) {if (i > indent) {delete vname[i]}}
-      if (length($3) > 0) {
-         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
-         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
-      }
-   }'
-}
-#evaluate parsed gcp config file
-eval $(parse_yaml training/training_utils/gcp_training_config.yaml)
+echo "Config---- $CONFIG"
+# MODEL=$(jq .gcp_parameters[0].module_name $CONFIG | tr -d '"')
+
+PACKAGE_PATH=$(jq -r .gcp_parameters[0].package_path $CONFIG)
+echo "Package $PACKAGE_PATH"
+MODEL="$PACKAGE_PATH."$(jq -r .gcp_parameters[0].module_name $CONFIG)
+echo "$MODEL"
+JOB_NAME="psp_""$(date +"%Y%m%d_%H%M")"
+echo "$JOB_NAME"
+
+STAGING_BUCKET=$(jq -r .gcp_parameters[0].staging_bucket $CONFIG)
+echo "$STAGING_BUCKET"
+RUNTIME_VERSION=$(jq -r .gcp_parameters[0].runtime_version $CONFIG)
+PYTHON_VERSION=$(jq -r .gcp_parameters[0].python_verion $CONFIG)
+
+JOB_DIR=$(jq -r .gcp_parameters[0].job_dir $CONFIG)
+echo "jbo-dir$JOB_DIR"
+REGION=$(jq -r .gcp_parameters[0].region $CONFIG)
+SCALE_TIER=$(jq -r .gcp_parameters[0].scale_tier $CONFIG)
+MACHINE_TYPE=$(jq -r .gcp_parameters[0].master_machine_type $CONFIG)
+
+export CUDA_VISIBLE_DEVICES=0   # - initialise CUDA env var
+# # CUDA_VISIBLE_DEVICES=1 - If using 1 CUDA enabled GPU
+
 
 echo "Running model on Google Cloud Platform"
 echo ""
@@ -108,68 +96,57 @@ echo "Cloud Runtime Version: $RUNTIME_VERSION"
 echo "Python Version: $PYTHON_VERSION"
 echo "Region: $REGION"
 echo "Logs and models stored in bucket: $JOB_DIR"
-echo "Batch Size: $BATCH_SIZE"
-echo "Epochs: $EPOCHS"
-echo "Test Dataset: $TEST_DATASET"
-echo "Using $MODEL model"
 echo ""
 
-echo "GCP Machine Type Parameters..."
-echo "Scale Tier: $trainingInput_scaleTier"
-echo "Master Type: $trainingInput_masterType"
-echo "Worker Type: $trainingInput_workerType"
-echo "Parameter Server Type: $trainingInput_parameterServerType"
-echo "Worker Count : $trainingInput_workerCount"
-echo "Parameter Server Count: $trainingInput_parameterServerCount"
-echo ""
-
- #submitting Tensorflow training job to Google Cloud
+#  submitting Tensorflow training job to Google Cloud
  gcloud ai-platform jobs submit training $JOB_NAME \
      --package-path $PACKAGE_PATH \
-     --module-name $MODULE \
-     --staging-bucket $BUCKET_NAME \
+     --module-name $MODEL \
+     --staging-bucket $STAGING_BUCKET \
      --runtime-version $RUNTIME_VERSION \
      --python-version $PYTHON_VERSION  \
      --job-dir $JOB_DIR \
      --region $REGION \
-     --config $CONFIG \
+     --scale-tier $SCALE_TIER \
+     --master-machine-type $MACHINE_TYPE \
      -- \
-     --epochs $EPOCHS \
-     --batch_size $BATCH_SIZE \
-     --logs_dir $LOGS_DIR \
-     --test_dataset $TEST_DATASET \
-     --job_name $JOB_NAME \
-     --model $MODEL \
-     --use_gpu $USE_GPU
+     --config_ $CONFIG
 
-echo ""
-echo "To view model progress through tensorboard in Google Cloud shell or terminal execute..."
-echo "tensorboard --logdir=$LOGS_DIR --port=8080"
-echo "If in cloud shell, then click on the web preview option "
 
-##############################################
+#stream logs to terminal
+gcloud ai-platform jobs stream-logs $JOB_NAME
 
-###       Results Notification Function    ###
-FUNCTION_NAME="notification_func"
-SOURCE_DIR="notification_func"
-FUNC_VERSION="python37"
-BUCKET_FOLDER="$JOB_NAME/output_results.csv"
-TOPIC="notification_topic"
 
-#deploy gcloud function
-gcloud functions deploy $FUNCTION_NAME \
-    --source $SOURCE_DIR \
-    --runtime $FUNC_VERSION \
-    --trigger-topic $TOPIC \
-    --update-env-vars JOB_NAME=$JOB_NAME \
-    --allow-unauthenticated
+# echo ""
+# echo "To view model progress through tensorboard in Google Cloud shell or terminal execute..."
+# echo "tensorboard --logdir=$LOGS_DIR --port=8080"
+# echo "If in cloud shell, then click on the web preview option "
+#
+# ##############################################
+#
+# ###       Results Notification Function    ###
+# FUNCTION_NAME="notification_func"
+# SOURCE_DIR="notification_func"
+# FUNC_VERSION="python37"
+# BUCKET_FOLDER="$JOB_NAME/output_results.csv"
+# TOPIC="notification_topic"
+#
+# # # #deploy gcloud function
+# gcloud functions deploy $FUNCTION_NAME \
+#     --source $SOURCE_DIR \
+#     --runtime $FUNC_VERSION \
+#     --trigger-topic $TOPIC \
+#     --update-env-vars JOB_NAME=$JOB_NAME \
+#     --allow-unauthenticated
+#
+# #create bucket notification to trigger function when output csv lands in bucket folder
+# gsutil notification create \
+#    -p $BUCKET_FOLDER \
+#    -t $TOPIC \
+#    -f json \
+#    -e OBJECT_FINALIZE $BUCKET_NAME
 
-#create bucket notification to trigger function when output csv lands in bucket folder
-gsutil notification create \
-   -p $BUCKET_FOLDER \
-   -t $TOPIC \
-   -f json \
-   -e OBJECT_FINALIZE $BUCKET_NAME
+
 
 
 ##Function to get list of available models/input argument parameters

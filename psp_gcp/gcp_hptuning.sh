@@ -1,41 +1,9 @@
+
+################################################################################
+##########            GCP Hyperparameter Tuning Function             ###########
+################################################################################
+
 #!/bin/bash
-
-#Script called on hyperparameter tuning model class
-## Optimal Default values for model hyperparameters ##
-#   Edit script with desired hyperparameters
-
-gcloud components update
-
-#Hyperparameters for CNN component of model
-CONV1_FILTERS=16
-CONV2_FILTERS=32
-CONV3_FILTERS=64
-WINDOW_SIZE=7
-CONV2D_DROPOUT=0.4
-KERNEL_REGULARIZER='l2'
-CONV_KERNEL_INITIALIZER='glorot_uniform'
-POOL_SIZE=2
-
-#Hyperparameters for RNN component of model
-RECURRENT_LAYER1=300
-RECURRENT_LAYER2=300
-RECURRENT_DROPOUT=0.5
-RECURRENT_RECURRENT_DROPOUT=0.4
-AFTER_RECURRENT_DROPOUT=0.4
-BIDIRECTION=True
-RECURRENT_LAYER='lstm'
-RECURRENT_KERNEL_INITIALIZER='glorot_uniform'
-
-#Hyperparameters for DNN component of model
-DENSE_1=600
-DENSE_DROPOUT=0.5
-DENSE_KERNEL_INITIALIZER='glorot_uniform'
-
-#Model hyperparameters
-OPTIMIZER="adam"
-LEARNING_RATE=0.003
-EPOCHS=3
-BATCH_SIZE=120
 
 #Job Parameters
 BUCKET_NAME="keras-python-models-2"
@@ -96,42 +64,18 @@ echo "Max Parellel Trials: $trainingInput_hyperparameters_maxParallelTrials"
 echo "Enable Early Stopping: $trainingInput_hyperparameters_enableEarlyStopping"
 echo ""
 
-          #submit packaged training job to Gcloud Ai-Platform
-          gcloud ai-platform jobs submit training $JOB_NAME \
-            --package-path $PACKAGE_PATH \
-            --module-name $MODULE \
-            --staging-bucket $STAGING_BUCKET \
-            --runtime-version $RUNTIME_VERSION \
-            --python-version $PYTHON_VERSION  \
-            --job-dir $JOB_DIR \
-            --region $REGION \
-            --config $HP_CONFIG \
-            -- \
-            --conv1_filters $CONV1_FILTERS \
-            --conv2_filters $CONV2_FILTERS \
-            --conv3_filters $CONV3_FILTERS \
-            --window_size $WINDOW_SIZE \
-            --kernel_regularizer $KERNEL_REGULARIZER \
-            --conv_weight_initializer $CONV_KERNEL_INITIALIZER \
-            --pool_size $POOL_SIZE \
-            --conv2d_dropout $CONV2D_DROPOUT \
-            --recurrent_layer1 $RECURRENT_LAYER1 \
-            --recurrent_layer2 $RECURRENT_LAYER2 \
-            --recurrent_dropout $RECURRENT_DROPOUT \
-            --after_recurrent_dropout $AFTER_RECURRENT_DROPOUT \
-            --recurrent_recurrent_dropout $RECURRENT_RECURRENT_DROPOUT \
-            --recurrent_weight_initializer $RECURRENT_KERNEL_INITIALIZER \
-            --optimizer $OPTIMIZER \
-            --learning_rate $LEARNING_RATE \
-            --bidirection $BIDIRECTION \
-            --recurrent_layer $RECURRENT_LAYER \
-            --dense_1 $DENSE_1 \
-            --dense_weight_initializer $DENSE_KERNEL_INITIALIZER \
-            --epochs $EPOCHS \
-            --batch_size $BATCH_SIZE \
-            --logs_dir $LOGS_DIR \
-            --project_name $PROJECT_NAME \
-            --job_name $JOB_NAME
+    #submit packaged training job to Gcloud Ai-Platform
+    gcloud ai-platform jobs submit training $JOB_NAME \
+      --package-path $PACKAGE_PATH \
+      --module-name $MODULE \
+      --staging-bucket $STAGING_BUCKET \
+      --runtime-version $RUNTIME_VERSION \
+      --python-version $PYTHON_VERSION  \
+      --job-dir $JOB_DIR \
+      --region $REGION \
+      --config $HP_CONFIG \
+      -- \
+      --config_ $CONFIG
 
 
 echo "To view model progress through tensorboard in Google Cloud shell or terminal execute..."

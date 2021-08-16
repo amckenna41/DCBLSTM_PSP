@@ -66,7 +66,6 @@ def upload_file(blob_path, filepath):
     Returns:
         None
     """
-
     print('Uploading blob to GCP Storage')
     blob = bucket.blob(blob_path)
 
@@ -226,8 +225,6 @@ def get_model_output(job_name):
     #exporting Dataframe to CSV
     model_output_df.to_csv('output_results.csv',index=False)
 
-    #add additonal column that multiples values * 100, except for loss/MAE/MSE etc
-
     #uploading blob to cloud storage
     upload_file(os.path.join(job_name, 'output_results.csv'),'output_results.csv')
 
@@ -249,7 +246,7 @@ def append_model_output(output_key, output_value):
 
 def parse_json_arch(arch_json):
     pass
-    
+
 class StepDecay():
 
     """

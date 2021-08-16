@@ -1,71 +1,36 @@
 # Secondary Protein Structure Prediction using Machine learning and Deep Learning #
 
-
-### To do list
-
-- [ ] Fix README's
-- [ ] Check Latest Travis Build
-- [X] Add AUC() metric class to models
-- [ ] Change colour of box in boxplot
-- [ ] Fix Boxplots - what do they represent etc...
-- [ ] Model Tests
-- [ ] Tests for inputting data for prediction - fasta, txt, pdb tests, add data folder in tests folder
-- [X] Add learning rate scheduler
-- [ ] Add labels to readme
-- [ ] Add CI Github workflows
-- [ ] Add CI Testing - https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#introduction
-- [X] Add AUC, FP and FN to output metrics
-- [ ] Coveralls - https://coveralls.io/
-- [ ] Review one-hot encoding process
-- [X] Review neccisity of all_data variable
-- [ ] Reach out to ICML people and find out how they developed their data
-- [ ] H/w requirements in readme
-- [ ] Look into pytest
-- [ ] CodeCov - Code Coverage
-- [ ] Python Version Badge - https://shields.io/category/platform-support
-- [ ] Last Modified Badge - https://shields.io/category/activity
-- [ ] LinkedIn Badge
-- [ ] GCP Badge - https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
-- [ ] Python Logo Badge
-- [ ] Visualise Keras model - https://www.machinecurve.com/index.php/2019/10/07/how-to-visualize-a-model-with-keras/
-- [ ] Re do model tests
-- [X] Remove TensorBaord stuff from model and only keep in training file
-- [ ] Keras JSON Parser
-- [ ] Check variable and layer names for models
-- [ ] Terraform script for resoucres??
- - [ ] Add Google Cloud CI
-- [ ] Remove GCP config script
-- [ ] Add Workflow tests for psp_gcp whereby gcloud sdk is installed and a few commands are attempted to see if it is working correctly etc
-
-  <a href="https://coveralls.io/github/badges/shields">
-        <img src="https://img.shields.io/coveralls/github/badges/shields"
-            alt="coverage"></a>
-
-[![Build Status](https://travis-ci.org/amckenna41/CDBLSTM_PSP.svg?branch=master)](https://travis-ci.org/amckenna41/CDBLSTM_PSP)
-![](https://img.shields.io/badge/dependencies-rdkit%2C%20pybel-green.svg)
-![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)
-code coverage percentage: ![coverage](https://img.shields.io/badge/coverage-80%25-yellowgreen)
-![](https://img.shields.io/badge/platform-linux--64%20%7C%20win--32%20%7C%20osx--64%20%7C%20win--64-lightgrey)
-## status
+Status
+------
 > Development Stage
 
+Table of Contents
+-----------------
 
-## Table of Contents
-
-[**Introduction**](#Introduction)
-
-[**Approach**](#Approach)
-
-[**Installation**](#Installation)
-
-[**Usage**](#Usage)
-
-[**Cloud Distribution**](#Cloud Distribution)
-
-[**References**](#References)
+  * [Introduction](#introduction)
+  * [Approach](#approach)
+  * [Datasets](#datasets)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [Directory Folders](#directories)
+  * [Tests](#tests)
+  * [Contact](#contact)
+  * [References](#references)
 
 
-## Introduction
+
+![](https://img.shields.io/badge/dependencies-rdkit%2C%20pybel-green.svg)
+[![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)](https://pypi.org/project/pySAR/)
+[![PythonV](https://img.shields.io/pypi/pyversions/pySAR?logo=2)](https://pypi.org/project/pySAR/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
+[![Issues](https://img.shields.io/github/issues/amckenna41/pySAR)](https://github.com/amckenna41/PSP_DCBLSTM/issues)
+[![Size](https://img.shields.io/github/repo-size/amckenna41/pySAR)](https://github.com/amckenna41/PSP_DCBLSTM)
+[![Commits](https://img.shields.io/github/commit-activity/w/amckenna41/pySAR)](https://github.com/PSP_DCBLSTM/pySAR)
+
+
+Introduction
+------------
 Protein Structure Prediction (PSP) is the determination of a protein's structure from its initial primary amino acid sequence. Here we focus on secondary protein structure prediction (SPSP) which acts as an intermediate between the primary and tertiary. PSP is one of the most important goals in the field of bioinformatics and remains highly important in the field of medicine and biotechnology, e.g in drug design and environmental stability [[1]](#references) [[2]](#references). The secondary structure is commonly broken down into 8 categories:
 
 * alpha helix ('H')
@@ -77,14 +42,15 @@ Protein Structure Prediction (PSP) is the determination of a protein's structure
 * beta bridge ('B')
 * 5-helix (pi helix) ('I')
 
-Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins [3]. Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the secondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures[4], quaternary structure is when a protein consists of more than one polypeptide chain [5]. A visualisation of these structures can be seen below in Figure 1.
+Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins [[3]](#references). Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the secondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures [[4]](#references), quaternary structure is when a protein consists of more than one polypeptide chain [[5]](#references). A visualisation of these structures can be seen below in Figure 1.
 
 <br>
 <img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/protein_structure.jpeg" height="400" width="250">
 
-## Approach
+Approach
+--------
 
-Many different machine learning approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc [6, 7, 8, 9, 10]. There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory) [11, 12]. These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. An LSTM cell is made up of 3 gates - input, output and forget [13]. The forget gate decodes what information the should 'forget' or not. The input gate updates the cell state and output gate controls the extent to which a value in the cell is used to compute the output activation of the LSTM. <br>
+Many different machine learning approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc [[6, 7, 8, 9, 10]](#references). There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory) [[11, 12]](#references). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. An LSTM cell is made up of 3 gates - input, output and forget [[13]](#references). The forget gate decodes what information the should 'forget' or not. The input gate updates the cell state and output gate controls the extent to which a value in the cell is used to compute the output activation of the LSTM. <br>
 
 ![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/lstm_cell.png?raw=true)
 
@@ -92,10 +58,10 @@ Bidirectional LSTM's which allow for the LSTM unit to consider the protein seque
 Optimisation and regularisation techniques were applied to the model to maximise performance and efficiency.
 
 
-## Datasets
-
+Datasets
+--------
 ### Training
-The training datasets used in this project are taken from the ICML 2014 Deep Supervised and Convolutional Generative Stochastic Network paper [[1]](#references). The datasets in this paper were created using the PISCES  .... cullpdb+profile_6133. As of Oct 2018, an updated dataset, with any of the duplicated in the previous __6133 dataset removed, has been release called cullpdb+profile_5926.
+The training datasets used in this project are taken from the ICML 2014 Deep Supervised and Convolutional Generative Stochastic Network paper [[1]](#references). The datasets in this paper were created using the PISCES protein culling server, that is used to cull protein sequences from the protein data bank (PDB) [[14]](#references). As of Oct 2018, an updated dataset, with any of the duplicated in the previous __6133 dataset removed, has been release called cullpdb+profile_5926.
 Both of the datasets contain a filtered and unfiltered version. The filtered version is filtered to remove any redundancy with the CB513 test dataset. The unfiltered datasets have the train/test/val split whilst for filtered, all proteins can be used for training and test on CB513 dataset. Both filtered and unfiltered dataset were trained and evaluated on the models.  
 <br>
 More about the composition of the training datasets including the reshaping and features used can be found here:
@@ -108,9 +74,9 @@ https://www.princeton.edu/~jzthree/datasets/ICML2014/
 
 Three datasets were used for evaluating the models created throughout this project:
 
-- cb513+profile_split1.npy.gz
-- casp10.h5
-- casp11.h5
+- CB513
+- CASP10
+- CASP11
 
 The CB513 dataset is available at:
 https://www.princeton.edu/~jzthree/datasets/ICML2014/
@@ -120,32 +86,41 @@ https://predictioncenter.org/casp10/index.cgi
 https://predictioncenter.org/casp11/index.cgi
 
 The CASP10 and CASP11 datasets are available at:
-https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
+https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d OR
+https://github.com/amckenna41/CDBLSTM_PSP/tree/master/psp/data/casp10.h5 ,
+https://github.com/amckenna41/CDBLSTM_PSP/tree/master/psp/data/casp11.h5
 
 
-## Conclusions and Results
-
-#insert graphs and tables here ....
-
-Evaluation Accuracy | Evaluation Loss | Recall | Precision
-| :--- | ---: | :---:
-CB513  | Content Cell | Content Cell
-CASP10  | Content Cell | Content Cell
-CASP11  | Content Cell | Content Cell
-
-The paper is available at...
-
-
-## Implementation
+Implementation
+--------------
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
 <img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250">
 
 
-## System Requirements:
+Conclusions and Results
+--------------------------
+
+#insert graphs and tables here ....
+
+The paper is available at...
+
+
+Requirements
+-------------
 ```
-Python3
+* [Python][python] >= 3.6
+* [numpy][numpy] >= 1.16.0
+* [pandas][pandas] >= 1.1.0
+* [h5py][h5py] >= 2.10.0
+* [tensorflow][tensorflow] >= 1.15
+* [tensorflow-gpu][tensorflow-gpu] >= 1.15
+* [tensorboard][tensorboard] >= 2.1.0
+* [requests][requests] >= 2.24.0
+* [fastaparser][fastaparser] >= 1.1
+* [matplotlib][matplotlib] >= 3.3.1
+* [seaborn][seaborn] >= 0.10.1
 
 ```
 
@@ -248,7 +223,44 @@ If you have any questions or feedback, please contact amckenna41@qub.ac.uk or vi
 11. https://doi.org/10.1093/bioinformatics/btx218
 12. https://www.mitpressjournals.org/doi/abs/10.1162/neco.1997.9.8.1735
 13. https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218
-
+14. https://academic.oup.com/bioinformatics/article/19/12/1589/258419
 
 ## status
 > Development Stage
+
+### To do list
+
+- [ ] Continue Hyperparameter tuning of model
+- [ ] Add https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d to Data Section
+- [ ] Fix README's
+- [ ] Check Latest Travis Build
+- [X] Add AUC() metric class to models
+- [ ] Change colour of box in boxplot
+- [ ] Fix Boxplots - what do they represent etc...
+- [ ] Model Tests
+- [ ] Tests for inputting data for prediction - fasta, txt, pdb tests, add data folder in tests folder
+- [X] Add learning rate scheduler
+- [ ] Add labels to readme
+- [ ] Add CI Github workflows
+- [ ] Add CI Testing - https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#introduction
+- [X] Add AUC, FP and FN to output metrics
+- [ ] Coveralls - https://coveralls.io/
+- [ ] Review one-hot encoding process
+- [X] Review neccisity of all_data variable
+- [ ] Reach out to ICML people and find out how they developed their data
+- [ ] H/w requirements in readme
+- [ ] Look into pytest
+- [ ] CodeCov - Code Coverage
+- [ ] Python Version Badge - https://shields.io/category/platform-support
+- [ ] Last Modified Badge - https://shields.io/category/activity
+- [ ] LinkedIn Badge
+- [ ] GCP Badge - https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
+- [ ] Python Logo Badge
+- [ ] Visualise Keras model - https://www.machinecurve.com/index.php/2019/10/07/how-to-visualize-a-model-with-keras/
+- [ ] Re do model tests
+- [X] Remove TensorBaord stuff from model and only keep in training file
+- [ ] Keras JSON Parser
+- [ ] Check variable and layer names for models
+- [ ] Remove GCP config script
+- [ ] Add Workflow tests for psp_gcp whereby gcloud sdk is installed and a few commands are attempted to see if it is working correctly etc
+- [ ] Remove show plots parameter #unnessary

@@ -7,7 +7,7 @@
 ####Training Using High Memory n1 machine types####
 trainingInput:
   scaleTier: CUSTOM
-  masterType: n1-highmem-2
+  masterType: n1-highmem-8
   runtimeVersion: '2.1'
   pythonVersion: '3.7'
 

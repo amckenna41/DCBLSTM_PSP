@@ -59,8 +59,8 @@ TRAIN_FILTERED_5926_URL = 'https://www.princeton.edu/~jzthree/datasets/ICML2014/
 TRAIN_UNFILTERED_5926_URL = 'https://www.princeton.edu/~jzthree/datasets/ICML2014/cullpdb+profile_5926.npy.gz'
 
 CB513_URL = "https://www.princeton.edu/~jzthree/datasets/ICML2014/cb513+profile_split1.npy.gz"
-CASP10_URL = "https://github.com/amckenna41/CDBLSTM_PSSP/raw/master/casp10.h5"
-CASP11_URL = "https://github.com/amckenna41/CDBLSTM_PSSP/raw/master/casp11.h5"
+CASP10_URL = "https://github.com/amckenna41/CDBLSTM_PSP/raw/master/psp/data/casp10.h5"
+CASP11_URL = "https://github.com/amckenna41/CDBLSTM_PSP/raw/master/psp/data/casp11.h5"
 
 ##################################################
 

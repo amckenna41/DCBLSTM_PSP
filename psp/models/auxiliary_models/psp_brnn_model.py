@@ -12,7 +12,7 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 from tensorflow.keras import activations
 
-def build_model():
+def build_model(params):
 
     """
     Description:

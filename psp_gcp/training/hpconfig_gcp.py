@@ -1,6 +1,6 @@
-###############################################
+################################################################################
 ###     Hyperparameter Tuning on the GCP    ###
-###############################################
+################################################################################
 
 #import required modules and dependancies
 import numpy as np
@@ -14,8 +14,6 @@ from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoa
 from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 from tensorflow.keras import activations
 import pandas as pd
-# from io import BytesIO
-# from tensorflow.python.lib.io import file_io
 import os
 import sys
 from datetime import date
@@ -45,7 +43,7 @@ def build_model_hpconfig(args):
 
     """
     Description:
-        Building models for hyperparameter Tuning
+        Building model to find its optimal hyperparameters.
 
     Args:
         args: input arguments
@@ -212,14 +210,8 @@ def main(args):
     project_name = str(args.project_name)
     job_name = str(args.job_name)
 
-
-    epochs = 3
-
     #Load data
     cullPDB = CullPDB()
-
-    ##evaluate on cb513 only ###
-
 
     model = build_model_hpconfig(args)
 
@@ -240,18 +232,17 @@ def main(args):
     elapsed = (time.time() - start)
     print('Elapsed Training Time: {}'.format(elapsed))
 
-
     print('Evaluating model')
-    score = model.evaluate({'main_input': test_hot, 'aux_input': testpssm},{'main_output': testlabel},verbose=1,
-            batch_size=1,callbacks=[tensorboard])
+
+    cb513 =  CB513()
+    score = model.evaluate({'main_input': cb513.test_hot, 'aux_input': cb513.testpssm},{'main_output': cb513.testlabel},verbose=1,
+             batch_size=1,callbacks=[tensorboard])
+
     #evaluate with casp10 and casp11 test datasets
     eval_score = score[1]
 
     print("Training Accuracy: ", max(history.history['accuracy']))
     print("Training Loss: ", min(history.history['loss']))
-
-    print('Model Loss : ', score[0])
-    print('Model Accuracy : ', score[1])
 
     #Initialise Hypertuning
     hpt = hypertune.HyperTune()
@@ -261,8 +252,8 @@ def main(args):
         global_step=1000
     )
 
-    model_save_path = 'model_hptuning_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime \
-        + '_accuracy-'+ str(score[1]) +'_loss-' + str(score[0]) + '.h5'
+    # model_save_path = 'model_hptuning_' +'epochs_' + str(args.epochs) +'_'+ 'batch_size_' + str(args.batch_size) + '_' + current_datetime \
+    #     + '_accuracy-'+ str(score[1]) +'_loss-' + str(score[0]) + '.h5'
 
     # get_job_hyperparmeters(project_name, job_name):
     # get_model_output()

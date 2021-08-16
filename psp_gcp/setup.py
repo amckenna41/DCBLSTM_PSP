@@ -1,7 +1,7 @@
-######################################################################
-### Setup.py - installs all the required packages and dependancies ###
-###        when packaging the GCP application for training         ###
-######################################################################
+################################################################################
+######## Setup.py - installs all the required packages and dependancies ########
+########        when packaging the GCP application for training         ########
+################################################################################
 
 from setuptools import setup, find_packages
 import sys
@@ -10,13 +10,13 @@ if sys.version_info[0] < 3:
     sys.exit('Python 3 is the minimum version requirement')
 
 setup(name='training',
-      version='0.1',
+      version='1.0.0',
       description='Running Protein Structure Prediction, on Google Cloud Ai-platform',
       author='Adam McKenna',
       author_email='amckenna41@qub.ac.uk',
-      license='',
+      license='MIT',
       install_requires=[
-          'tensorflow>=2.1.2',
+          'tensorflow>=2.2.0',
           'numpy==1.16.6',
           'h5py',
           'pandas',
@@ -33,7 +33,7 @@ setup(name='training',
      include_package_data=True,
      zip_safe=False)
 
-       # no longer needed modules/libraries 
+       # no longer needed modules/libraries
        # 'google-cloud-logging',
        # 'google-cloud-pubsub==2.1.0",
        # 'tensorflow-gpu==1.15',
