@@ -45,3 +45,6 @@ psp_venv/
 
 #ignore json files, specifically json storing cloud credentials
 *.json
+
+!/psp/config/*
+!/psp_gcp/config/*

@@ -4,22 +4,6 @@ Status
 ------
 > Development Stage
 
-Table of Contents
------------------
-
-  * [Introduction](#introduction)
-  * [Approach](#approach)
-  * [Datasets](#datasets)
-  * [Requirements](#requirements)
-  * [Installation](#installation)
-  * [Usage](#usage)
-  * [Directory Folders](#directories)
-  * [Tests](#tests)
-  * [Contact](#contact)
-  * [References](#references)
-
-
-
 ![](https://img.shields.io/badge/dependencies-rdkit%2C%20pybel-green.svg)
 [![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)](https://pypi.org/project/pySAR/)
 [![PythonV](https://img.shields.io/pypi/pyversions/pySAR?logo=2)](https://pypi.org/project/pySAR/)
@@ -27,6 +11,20 @@ Table of Contents
 [![Issues](https://img.shields.io/github/issues/amckenna41/pySAR)](https://github.com/amckenna41/PSP_DCBLSTM/issues)
 [![Size](https://img.shields.io/github/repo-size/amckenna41/pySAR)](https://github.com/amckenna41/PSP_DCBLSTM)
 [![Commits](https://img.shields.io/github/commit-activity/w/amckenna41/pySAR)](https://github.com/PSP_DCBLSTM/pySAR)
+
+Table of Contents
+-----------------
+
+  * [Introduction](#introduction)
+  * [Approach](#approach)
+  * [Datasets](#datasets)
+  * [Implementation](#implementation)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+  * [Usage](#cloud distribution)
+  * [Directory Folders](#directory folders)
+  * [Contact](#contact)
+  * [References](#references)
 
 
 Introduction
@@ -42,10 +40,10 @@ Protein Structure Prediction (PSP) is the determination of a protein's structure
 * beta bridge ('B')
 * 5-helix (pi helix) ('I')
 
-Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins [[3]](#references). Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the secondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures [[4]](#references), quaternary structure is when a protein consists of more than one polypeptide chain [[5]](#references). A visualisation of these structures can be seen below in Figure 1.
+Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins [[3]](#references). Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the secondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures [[4]](#references), quaternary structure is when a protein consists of more than one polypeptide chain [[5]](#references). A visualisation of these structures can be seen below.
 
 <br>
-<img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/protein_structure.jpeg" height="400" width="250">
+<img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/protein_structure.jpeg" height="400" width="250">
 
 Approach
 --------
@@ -96,11 +94,11 @@ Implementation
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-<img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250">
+<!-- <img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250"> -->
 
 
 Conclusions and Results
---------------------------
+-----------------------
 
 #insert graphs and tables here ....
 
@@ -109,7 +107,7 @@ The paper is available at...
 
 Requirements
 -------------
-```
+
 * [Python][python] >= 3.6
 * [numpy][numpy] >= 1.16.0
 * [pandas][pandas] >= 1.1.0
@@ -122,20 +120,12 @@ Requirements
 * [matplotlib][matplotlib] >= 3.3.1
 * [seaborn][seaborn] >= 0.10.1
 
-```
 
-## Installation
-
+Installation
+-------------
 Clone Repository
 ```
-git clone https://github.com/amckenna41/DCBLSTM_PSSP.git
-```
-
-## Running model locally with default parameters:
-
-**From main repo directory, change to PSP directory:**
-```
-cd psp
+git clone https://github.com/amckenna41/DCBLSTM_PSP.git
 ```
 
 **Create and activate Python virtual environment:**
@@ -151,56 +141,47 @@ pip install -r requirements.txt
 
 ```
 
-**Run train function to build and train default model with default parameters:**
+**From main repo directory, change to PSP directory:**
 ```
-python train.py
-
-
+cd psp
 ```
 
-**Run train function with different model and or parameters:**
+**Run main function to build and train model with from specified json config file, e.g running DCBLSTM model using dcblstm.json **
 ```
-python train.py
+python main.py -config "config/dcblstm.json"
 
--model  name of model to train
--epochs number of epochs to run model
--batch_size batch size during training
--training_data training dataset to use (5926 or 6133)
--test_data test dataset to use (cb513, casp10, casp11, all)
--cuda if using GPU with TensorFlow, enable CUDA
--show_plots True/False, whether to plot and save model visualisations
 
 ```
 
-## Cloud Distribution ##
+Cloud Distribution
+------------------
 
-With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset locally due to the computational constraints. Thus, a Cloud implementation to run the model successfully was created using the Google Cloud Platform.
+With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset locally due to the computational constraints. Thus, a Cloud implementation to train the model successfully was created using the Google Cloud Platform. The full code pipeline for this cloud distribution is in the <em>psp_gcp</em> folder and contains somewhat replicated code to that of the <em>psp</em> directory that is packaged up and ran on Google's infrastructure.
 
 **Change current working directory to psp_gcp:**
 ```
 cd psp_gcp
 ```
 
-To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the README.md and in the psp_gcp directory, which contains the relevant commands and steps to follow to configure your GCP account. <br>
+To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the README.md and in the <em>psp_gcp</em> directory, which contains the relevant commands and steps to follow to configure your GCP account. <br>
 
-**From a cmd line/terminal, to train current CDBLSTM model configuration:**
+**From a cmd line/terminal, to train current DCBLSTM model configuration from its config file:**
 ```
-./gcp_training.sh
+./gcp_training.sh --config=config/dcblstm.json
 
--b batch size
--e epochs
--ad proportion of training dataset to use
--m module - python module containing commands to build and train model
+--config: relative path to desired model config file to train.
 
 ```
 
-## Directory folders:
+Directory folders
+-----------------
 
 * `/images` - images used for README
 * `/psp` - main protein structure directory containing all modules and code required for building and training models locally.  
 * `/psp_gcp` - Google Cloud Platform distribution for training and building models for PSP on the cloud
 
-## Contact:
+Contact
+-------
 
 If you have any questions or feedback, please contact amckenna41@qub.ac.uk or visit my [LinkedIn](https://www.linkedin.com/in/adam-mckenna-7a5b22151/)
 
@@ -208,28 +189,30 @@ If you have any questions or feedback, please contact amckenna41@qub.ac.uk or vi
 
 [Setting up a Python development environment](https://cloud.google.com/python/setup)
 
-## References:
+References
+----------
 \[1\]: https://www.princeton.edu/~jzthree/datasets/ICML2014/  <br>
 \[2\]: https://www.sciencedirect.com/science/article/abs/pii/0958166994900264  <br>
 \[3\]: https://www.ncbi.nlm.nih.gov/books/NBK26911 <br>
 \[4\]: https://scholar.google.comscholar_lookup?title=Proteins+and+enzymes.+Lane+Medical+Lectures,+Stanford+University+Publications,+University+Series,+Medical+Sciences&author=KU+Linderstr%C3%B8m-Lang&publication_year=1952&
-
-5. https://pubmed.ncbi.nlm.nih.gov/19059267/
-6. https://doi.org/10.1038/srep18962
-7. http://airccse.org/journal/ijsc/papers/2112ijsc06.pdf
-8. https://doi.org/10.1186/s12859-020-3383-3
-9. https://www.sciencedirect.com/science/article/abs/pii/S0022283683714646
-10. https://doi.org/10.1093/bioinformatics/9.2.141
-11. https://doi.org/10.1093/bioinformatics/btx218
-12. https://www.mitpressjournals.org/doi/abs/10.1162/neco.1997.9.8.1735
-13. https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218
-14. https://academic.oup.com/bioinformatics/article/19/12/1589/258419
+\[5\]: https://pubmed.ncbi.nlm.nih.gov/19059267/
+\[6\]: https://doi.org/10.1038/srep18962
+\[7\]: http://airccse.org/journal/ijsc/papers/2112ijsc06.pdf
+\[8\]: https://doi.org/10.1186/s12859-020-3383-3
+\[9\]: https://www.sciencedirect.com/science/article/abs/pii/S0022283683714646
+\[10\]: https://doi.org/10.1093/bioinformatics/9.2.141
+\[11\]: https://doi.org/10.1093/bioinformatics/btx218
+\[12\]: https://www.mitpressjournals.org/doi/abs/10.1162/neco.1997.9.8.1735
+\[13\]: https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218
+\[14\]: https://academic.oup.com/bioinformatics/article/19/12/1589/258419
 
 ## status
 > Development Stage
 
-### To do list
+To do list
+----------
 
+- [ ] In workflow, test code pipeline by running dummy model and checking resultant files etc.
 - [ ] Continue Hyperparameter tuning of model
 - [ ] Add https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d to Data Section
 - [ ] Fix README's
