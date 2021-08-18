@@ -21,8 +21,8 @@ Table of Contents
   * [Implementation](#implementation)
   * [Requirements](#requirements)
   * [Installation](#installation)
-  * [Usage](#cloud distribution)
-  * [Directory Folders](#directory folders)
+  * [Cloud Distribution](#clouddistribution)
+  * [Directory Folders](#directoryfolders)
   * [Contact](#contact)
   * [References](#references)
 
@@ -187,8 +187,6 @@ If you have any questions or feedback, please contact amckenna41@qub.ac.uk or vi
 
 ![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
 
-[Setting up a Python development environment](https://cloud.google.com/python/setup)
-
 References
 ----------
 \[1\]: https://www.princeton.edu/~jzthree/datasets/ICML2014/  <br>
@@ -247,3 +245,12 @@ To do list
 - [ ] Remove GCP config script
 - [ ] Add Workflow tests for psp_gcp whereby gcloud sdk is installed and a few commands are attempted to see if it is working correctly etc
 - [ ] Remove show plots parameter #unnessary
+
+[python]: https://www.python.org/downloads/release/python-360/
+[numpy]: https://numpy.org/
+[pandas]: https://pandas.pydata.org/
+[sklearn]: https://scikit-learn.org/stable/
+[scipy]: https://www.scipy.org/
+[tqdm]: https://tqdm.github.io/
+[seaborn]: https://seaborn.pydata.org/
+[Issues]: https://github.com/amckenna41/DCBLSTM_PSP/issues
