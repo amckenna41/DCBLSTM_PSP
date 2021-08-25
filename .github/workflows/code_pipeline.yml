@@ -46,27 +46,27 @@ jobs:
         pip3 install pytest
         pip3 install pytest-cov
         pip3 install bandit
-    - name : Bandit
-      run: |
+     - name : Bandit
+       run: |
         python3 -m bandit -r /psp > bandit_output_$NOW.txt
         echo "SERVICE_AC::${{ secrets.SERVICE_ACCOUNT }}" >> $GITHUB_ENV
         $SERVICE_AC > service_account.json
-    - name: Install GCP Dependancies
-      run: |
+     - name: Install GCP Dependancies
+       run: |
         echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
         sudo apt-get install apt-transport-https ca-certificates gnupg
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
         sudo apt-get update && sudo apt-get install google-cloud-sdk
         gcloud auth activate-service-account --key-file=service_account.json
         gsutil
-    - name: Lint with flake8
-      run: |
+     - name: Lint with flake8
+       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Run Dummy Model
-      run: |
+     - name: Run Dummy Model
+       run: |
         cd psp
         python3 main.py -config "config/dummy.json"
 
