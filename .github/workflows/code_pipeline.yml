@@ -1,4 +1,9 @@
 
+#save outputs from bandit to Google Storage bucket
+#https://cloud.google.com/storage/docs/gsutil_install#deb
+#https://stackoverflow.com/questions/33898687/automating-gsutil-commands
+#jq -R -s -c 'split("\n")' < just_lines.txt
+#https://stackoverflow.com/questions/43373176/store-json-directly-in-bash-script-with-variables/43373520
 
 name: Protein Structure Prediction using Deep Convolutional LSTM's
 
@@ -14,19 +19,24 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      datetime: date
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]   #testing on multiple python versions
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
+     - name: Set up Python ${{ matrix.python-version }}
+       uses: actions/setup-python@v2
+       with:
+         python-version: ${{ matrix.python-version }}
+     - name: Set current date as env variable
+       run: echo "NOW::$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+     - name: Echo current date
+       run: echo $NOW
+     - name: Install dependencies
+       run: |
         echo "Installing Dependancies"
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         python -m pip install --upgrade pip
@@ -35,8 +45,20 @@ jobs:
         pip3 install coverage
         pip3 install pytest
         pip3 install pytest-cov
-        git clone https://github.com/TravisToolbox/bandit
-        ./bandit/install.sh
+        pip3 install bandit
+    - name : Bandit
+      run: |
+        python3 -m bandit -r /psp > bandit_output_$NOW.txt
+        echo "SERVICE_AC::${{ secrets.SERVICE_ACCOUNT }}" >> $GITHUB_ENV
+        $SERVICE_AC > service_account.json
+    - name: Install GCP Dependancies
+      run: |
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        sudo apt-get install apt-transport-https ca-certificates gnupg
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+        sudo apt-get update && sudo apt-get install google-cloud-sdk
+        gcloud auth activate-service-account --key-file=service_account.json
+        gsutil
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
