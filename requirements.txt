@@ -3,7 +3,7 @@ pandas>=0.25.3
 six>=1.13.0
 h5py==3.1.0
 matplotlib==3.3.1
-tensorboard==2.4.0
+tensorboard==2.5.0
 #tensorflow==1.15
 #tensorflow-gpu==1.15
 tensorflow==2.5.1
