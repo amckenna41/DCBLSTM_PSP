@@ -1,7 +1,7 @@
 numpy>=1.16.4/1.16.6
 pandas>=0.25.3
 six>=1.13.0
-h5py==2.10.0
+h5py==3.1.0
 matplotlib==3.3.1
 tensorboard==2.4.0
 #tensorflow==1.15
