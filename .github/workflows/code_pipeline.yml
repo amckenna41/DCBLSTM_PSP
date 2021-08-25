@@ -48,7 +48,7 @@ jobs:
         pip3 install bandit
      - name : Bandit
        run: |
-        python3 -m bandit -r /psp > bandit_output_"${{ env.NOW }}".txt
+        python3 -m bandit -r /psp > bandit_output_${{ env.NOW }}.txt
         echo "SERVICE_AC=${{ secrets.SERVICE_ACCOUNT }}" >> $GITHUB_ENV
         $SERVICE_AC > service_account.json
      - name: Install GCP Dependancies
