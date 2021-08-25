@@ -19,8 +19,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      datetime: date
+    # env:
+    #   datetime: date
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]   #testing on multiple python versions
@@ -32,7 +32,7 @@ jobs:
        with:
          python-version: ${{ matrix.python-version }}
      - name: Set current date as env variable
-       run: echo "NOW::$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+       run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
      - name: Echo current date
        run: echo $NOW
      - name: Install dependencies
