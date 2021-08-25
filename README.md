@@ -132,13 +132,11 @@ git clone https://github.com/amckenna41/DCBLSTM_PSP.git
 ```
 python3 -m venv psp_venv
 source psp_venv/bin/activate
-
 ```
 
 **The required Python modules/packages can be installed by:**
 ```
 pip install -r requirements.txt
-
 ```
 
 **From main repo directory, change to PSP directory:**
@@ -149,8 +147,6 @@ cd psp
 **Run main function to build and train model with from specified json config file, e.g running DCBLSTM model using dcblstm.json **
 ```
 python main.py -config "config/dcblstm.json"
-
-
 ```
 
 Cloud Distribution
@@ -207,6 +203,8 @@ References
 ## status
 > Development Stage
 
+[Back to top](#TOP)
+
 To do list
 ----------
 
@@ -249,8 +247,11 @@ To do list
 [python]: https://www.python.org/downloads/release/python-360/
 [numpy]: https://numpy.org/
 [pandas]: https://pandas.pydata.org/
-[sklearn]: https://scikit-learn.org/stable/
-[scipy]: https://www.scipy.org/
-[tqdm]: https://tqdm.github.io/
 [seaborn]: https://seaborn.pydata.org/
+[h5py]: https://docs.h5py.org/en/stable/
+[tensorflow]: https://www.tensorflow.org/install
+[tensorflow-gpu]: https://www.tensorflow.org/install
+[tensorboard]: https://www.tensorflow.org/tensorboard
+[requests]: https://docs.python-requests.org/en/master/
+[fastaparser]: https://fastaparser.readthedocs.io/en/latest/
 [Issues]: https://github.com/amckenna41/DCBLSTM_PSP/issues

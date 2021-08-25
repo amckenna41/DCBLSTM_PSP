@@ -3,18 +3,32 @@
 ########        when packaging the GCP application for training         ########
 ################################################################################
 
+
 from setuptools import setup, find_packages
-import sys
+import sys, pathlib
+import training
 
 if sys.version_info[0] < 3:
     sys.exit('Python 3 is the minimum version requirement')
 
-setup(name='training',
-      version='1.0.0',
+setup(name='DCBLSTM_PSP on GCP',
+      version=training.__version__,
       description='Running Protein Structure Prediction, on Google Cloud Ai-platform',
-      author='Adam McKenna',
-      author_email='amckenna41@qub.ac.uk',
-      license='MIT',
+      long_description=README,
+      long_description_content_type="text/markdown",
+      author=training.__license__,
+      author_email=training.__authorEmail__,
+      license=training.__license__,
+      url=training.__url__,
+      classifiers=[
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Topic :: Scientific/Engineering :: Medical Science Apps.',
+      ],
       install_requires=[
           'tensorflow>=2.2.0',
           'numpy==1.16.6',
