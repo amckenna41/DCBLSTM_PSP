@@ -18,17 +18,9 @@ Help()
    echo "Bash Script for building and training PSP model's on GCP"
    echo ""
    echo "Basic Usage, using default parameters: ./gcp_training "
-   echo "Usage: ./gcp_training [--b|--e|--t|--tr|-g|--bu|--sT|--mT|--h]"
+   echo "Usage: ./gcp_training [--config]"
    echo ""
    echo "Options:"
-   echo "-b     batch size for training - default: 256"
-   echo "-e     number of epochs to train for - default: 10"
-   echo "-td    test dataset to use for evaluation - CB513, CASP10, CASP11, All, default: all"
-   echo "-tr    training dataset to use for training - 6133, 5926, default: 5926"
-   echo "-g     use GPU for training - 0,1, default: 0 "
-   echo "-bu    GCP cloud bucket name to use for storing trained models and all model utilities"
-   echo "-sT    scale Tier - default: CUSTOM"
-   echo "-mT    master Tier - default: n1-highmem-8"
    echo "-h     help"
    exit
 }
