@@ -30,7 +30,6 @@ def notification_func(event, context):
     Returns:
         None
     """
-
     job_name = os.environ['JOB_NAME']
     bucket_name = os.environ['BUCKET']
     results_filename = 'output_results.csv'
@@ -176,7 +175,6 @@ def send_email(data_df, csv_path):
 
 def get_layer_attributes(layers):
     pass
-
 
    # msg = MIMEMultipart()
    #  msg['To'] = "4_server_dev@company.com"

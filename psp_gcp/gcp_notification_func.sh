@@ -14,11 +14,16 @@ Help()
    echo "Usage: ./gcp_notification_func [--b|--e|--t|--tr|-g|--bu|--sT|--mT|--h]"
    echo ""
    echo "Options:"
-   echo "-b     GCP storage bucket name"
-   echo "-t     PubSub Topic"
+   echo "$1 GCP Storage Bucket name"
+   echo "$2 GCP PubSub Topic name"
+   echo "$3 GCP PubSub Subscription name"
+   echo "$4 Path to source directory for notification function"
+   echo "$5 Destination email that will be notified"
+   echo "$6 Less secure source email where results will be sent from"
+   echo "$7 Password for SMTP client for source email"
+   echo "$8 GCP Cloud Function Name"
+   echo "$9 GCP Cloud Function runtime version"
    echo ""
-
-
    exit
 }
 
@@ -33,7 +38,9 @@ EMAIL_PASS=$7
 FUNCTION_NAME="notification_func"
 RUNTIME_VERSION="python37"
 
+echo ""
 echo "Input Arguments"
+echo "#########################"
 echo 'BUCKET NAME = ' $1
 echo 'TOPIC = ' $2
 echo 'SUBSCRIPTION = ' $3
@@ -41,86 +48,23 @@ echo 'SOURCE_DIR = ' $4
 echo 'TOMAIL = ' $5
 echo 'FROMMAIL = ' $6
 echo 'EMAIL_PASS = ' $7
-
-
-# for i in "$@"
-# do
-# case $i in
-#     -bu=*|--BUCKET_NAME=*)
-#     BUCKET_NAME="${i#*=}"
-#     shift # past argument=value
-#     ;;
-#     -m=*|--MODEL=*)
-#     MODEL="${i#*=}"
-#     shift # past argument=value
-#     ;;
-#     -b=*|--BATCH_SIZE=*)
-#     BATCH_SIZE="${i#*=}"
-#     shift # past argument=value
-#     ;;
-#     -e=*|--EPOCHS=*)
-#     EPOCHS="${i#*=}"
-#     shift # past argument=value
-#     ;;
-#     -t=*|--TEST_DATASET=*)
-#     TEST_DATASET="${i#*=}"
-#     shift # past argument=value
-#     ;;
-#     -g=*|--USE_GPU=*)
-#     USE_GPU="${i#*=}"
-#     shift # past argument=value
-#     ;;
-#     --default)
-#     DEFAULT=YES
-#     shift # past argument with no value
-#     ;;
-#     *)
-#           # unknown option
-#     ;;
-# esac
-# done
-#
-# if [[ -n $1 ]]; then
-#     echo "Last line of file specified as non-opt/last argument:"
-#     tail -1 $1
-# fi
-#
-# if [ -z "$BATCH_SIZE" ]; then
-#   BATCH_SIZE=256
-# fi
-# if [ -z "$EPOCHS" ]; then
-#   EPOCHS=7
-# fi
-# if [ -z "$TEST_DATASET" ]; then
-#   TEST_DATASET='all'
-# fi
-# if [ -z "$MODEL" ]; then
-#   MODEL='psp_dcblstm_model'
-# fi
-# if [ -z "$USE_GPU" ]; then
-#   USE_GPU=0
-# fi
-# if [ -z "$BUCKET_NAME" ]; then
-#   BUCKET_NAME="gs://keras-python-models-2"
-# fi
-
-
-
+echo "#########################"
+echo ""
 
 #update any gcloud components
-gcloud components update
+# gcloud components update
 
 #listing existing pubsub topics
 gcloud pubsub topics list
 
 #delete topic if already exists
-gcloud pubsub topics delete $TOPIC  #may get error if topic doesn't exist but will not halt execution
+gcloud pubsub topics delete $TOPIC  #* may get error if topic doesn't exist but will not halt execution
 
 #create pubsub topic
 gcloud pubsub topics create $TOPIC
 
 #delete pubsub subscription if already exists
-gcloud pubsub subscriptions delete $SUBSCRIPTION #may get error if subscription doesn't exist but will not halt execution
+gcloud pubsub subscriptions delete $SUBSCRIPTION #* may get error if subscription doesn't exist but will not halt execution
 
 #create subscription to topic
 gcloud pubsub subscriptions create $SUBSCRIPTION \
@@ -130,10 +74,10 @@ gcloud pubsub subscriptions create $SUBSCRIPTION \
 gsutil notification list $BUCKET_NAME
 
 #delete bucket notifications
-gsutil notification delete $BUCKET_NAME
+gsutil notification delete $BUCKET_NAME #* may get error if notification doesn't exist but will not halt execution
 
-#delete gcloud function if exists
-gcloud functions delete $FUNCTION_NAME #may get error if function doesn't exist but will not halt execution
+#delete gcloud function if exists (need to enable Cloud Build API)
+gcloud functions delete $FUNCTION_NAME #* may get error if function doesn't exist but will not halt execution
 
 #deploy gcloud function
 gcloud functions deploy $FUNCTION_NAME \
@@ -142,9 +86,6 @@ gcloud functions deploy $FUNCTION_NAME \
     --trigger-topic $TOPIC \
     --set-env-vars BUCKET=$BUCKET_NAME,EMAIL_USER=$TOMAIL,FROM_MAIL=$FROMMAIL,EMAIL_PASS=$EMAIL_PASS \
     --allow-unauthenticated
-
-
-
 
     #Shell script for making all the resources required for deployment
     # PROJECT_ID='[PROJECT_ID]' #@param {type:"string"}

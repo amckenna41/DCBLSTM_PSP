@@ -5,7 +5,7 @@
 #import required modules and dependancies
 import tensorflow as tf
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Unidirectional, LSTM, Input, Conv1D, Embedding, Dense, Dropout, Activation,  Concatenate, Reshape,MaxPooling1D, BatchNormalization
+from tensorflow.keras.layers import LSTM, Input, Conv1D, Embedding, Dense, Dropout, Activation,  Concatenate, Reshape,MaxPooling1D, BatchNormalization
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop, Adagrad, Adadelta, Adamax
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall

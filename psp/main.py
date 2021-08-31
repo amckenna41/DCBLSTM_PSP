@@ -149,7 +149,6 @@ def main(args):
     save_history(history, history_filepath)
 
     # plot history ##
-    # if show_plots:
     plot_model.plot_history(history.history, model_folder_path, show_histograms = True,
         show_boxplots = True, show_kde = True, filter_outliers = True, save = True)
 
@@ -180,7 +179,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction')
 
     parser.add_argument('-config', '--config', type=str, required=True,
-                        help='')
+                        help='File path to config json file.')
 
     args = parser.parse_args()
 

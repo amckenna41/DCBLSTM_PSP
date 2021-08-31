@@ -4,7 +4,6 @@ Status
 ------
 > Development Stage
 
-![](https://img.shields.io/badge/dependencies-rdkit%2C%20pybel-green.svg)
 [![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)](https://pypi.org/project/pySAR/)
 [![PythonV](https://img.shields.io/pypi/pyversions/pySAR?logo=2)](https://pypi.org/project/pySAR/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
@@ -50,7 +49,7 @@ Approach
 
 Many different machine learning approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc [[6, 7, 8, 9, 10]](#references). There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory) [[11, 12]](#references). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. An LSTM cell is made up of 3 gates - input, output and forget [[13]](#references). The forget gate decodes what information the should 'forget' or not. The input gate updates the cell state and output gate controls the extent to which a value in the cell is used to compute the output activation of the LSTM. <br>
 
-![alt text](https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/lstm_cell.png?raw=true)
+![alt text](https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/lstm_cell.png?raw=true)
 
 Bidirectional LSTM's which allow for the LSTM unit to consider the protein sequence in the forward and backward direction. Additionally, to map local dependancies and context between adjacent residues, a CNN preceded the recurrent component of the model where 1-Dimensional convolutional layers were used.
 Optimisation and regularisation techniques were applied to the model to maximise performance and efficiency.
@@ -85,8 +84,8 @@ https://predictioncenter.org/casp11/index.cgi
 
 The CASP10 and CASP11 datasets are available at:
 https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d OR
-https://github.com/amckenna41/CDBLSTM_PSP/tree/master/psp/data/casp10.h5 ,
-https://github.com/amckenna41/CDBLSTM_PSP/tree/master/psp/data/casp11.h5
+https://github.com/amckenna41/DCBLSTM_PSP/tree/master/psp/data/casp10.h5 &
+https://github.com/amckenna41/DCBLSTM_PSP/tree/master/psp/data/casp11.h5
 
 
 Implementation
@@ -94,7 +93,7 @@ Implementation
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-<!-- <img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250"> -->
+<!-- <img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250"> -->
 
 
 Conclusions and Results
@@ -188,7 +187,7 @@ References
 \[1\]: https://www.princeton.edu/~jzthree/datasets/ICML2014/  <br>
 \[2\]: https://www.sciencedirect.com/science/article/abs/pii/0958166994900264  <br>
 \[3\]: https://www.ncbi.nlm.nih.gov/books/NBK26911 <br>
-\[4\]: https://scholar.google.comscholar_lookup?title=Proteins+and+enzymes.+Lane+Medical+Lectures,+Stanford+University+Publications,+University+Series,+Medical+Sciences&author=KU+Linderstr%C3%B8m-Lang&publication_year=1952&
+\[4\]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4692135/
 \[5\]: https://pubmed.ncbi.nlm.nih.gov/19059267/
 \[6\]: https://doi.org/10.1038/srep18962
 \[7\]: http://airccse.org/journal/ijsc/papers/2112ijsc06.pdf
@@ -208,9 +207,10 @@ References
 To do list
 ----------
 
-- [ ] In workflow, test code pipeline by running dummy model and checking resultant files etc.
+- [ ] Update function comments
+- [X] In workflow, test code pipeline by running dummy model and checking resultant files etc.
 - [ ] Continue Hyperparameter tuning of model
-- [ ] Add https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d to Data Section
+- [X] Add https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d to Data Section
 - [ ] Fix README's
 - [ ] Check Latest Travis Build
 - [X] Add AUC() metric class to models
@@ -219,30 +219,31 @@ To do list
 - [ ] Model Tests
 - [ ] Tests for inputting data for prediction - fasta, txt, pdb tests, add data folder in tests folder
 - [X] Add learning rate scheduler
-- [ ] Add labels to readme
-- [ ] Add CI Github workflows
+- [X] Add labels to readme
+- [X] Add CI Github workflows
 - [ ] Add CI Testing - https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#introduction
 - [X] Add AUC, FP and FN to output metrics
 - [ ] Coveralls - https://coveralls.io/
-- [ ] Review one-hot encoding process
+- [X] Review one-hot encoding process
 - [X] Review neccisity of all_data variable
 - [ ] Reach out to ICML people and find out how they developed their data
 - [ ] H/w requirements in readme
 - [ ] Look into pytest
 - [ ] CodeCov - Code Coverage
-- [ ] Python Version Badge - https://shields.io/category/platform-support
-- [ ] Last Modified Badge - https://shields.io/category/activity
-- [ ] LinkedIn Badge
-- [ ] GCP Badge - https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
-- [ ] Python Logo Badge
+- [X] Python Version Badge - https://shields.io/category/platform-support
+- [X] Last Modified Badge - https://shields.io/category/activity
+- [X] LinkedIn Badge
+- [X] GCP Badge - https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white
+- [X] Python Logo Badge
 - [ ] Visualise Keras model - https://www.machinecurve.com/index.php/2019/10/07/how-to-visualize-a-model-with-keras/
 - [ ] Re do model tests
 - [X] Remove TensorBaord stuff from model and only keep in training file
 - [ ] Keras JSON Parser
 - [ ] Check variable and layer names for models
-- [ ] Remove GCP config script
-- [ ] Add Workflow tests for psp_gcp whereby gcloud sdk is installed and a few commands are attempted to see if it is working correctly etc
-- [ ] Remove show plots parameter #unnessary
+- [X] Remove GCP config script
+- [X] Add Workflow tests for psp_gcp whereby gcloud sdk is installed and a few commands are attempted to see if it is working correctly etc
+- [X] Remove show plots parameter #unnessary
+- [X] Add help to argparse etc
 
 [python]: https://www.python.org/downloads/release/python-360/
 [numpy]: https://numpy.org/

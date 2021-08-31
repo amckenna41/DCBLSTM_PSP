@@ -26,7 +26,7 @@ from training.training_utils.load_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
 from training.training_utils.globals import *
-from training.evaluate import *
+from training.training_utils.evaluate import *
 from models import *
 from models.auxiliary_models import *
 
@@ -174,9 +174,9 @@ if __name__ == "__main__":
     parser.add_argument('-config_', '--config_', type=str, required=True,
                         help='File path to config json file.')
 
-    parser.add_argument('-job-dor', '--job-dir', help='GCS location to write checkpoints and export models',required=False)
+    parser.add_argument('-job-dir', '--job-dir', required=False,
+        help='GCS location to write checkpoints and export models')
 
     args = parser.parse_args()
 
-    # main(args)
     main(args)

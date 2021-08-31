@@ -23,6 +23,7 @@ from training.training_utils.load_dataset import *
 from training.training_utils.plot_model import *
 from training.training_utils.gcp_utils import *
 from training.training_utils.globals import *
+from training.training_utils.evaluate import *
 
 #set required parameters and configuration for TensorBoard
 tf.compat.v1.reset_default_graph()

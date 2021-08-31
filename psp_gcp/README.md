@@ -1,5 +1,7 @@
 # Google Cloud Platform Distribution for Protein Structure Prediction #<a name="TOP"></a>
 
+[![GCP](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+
 A full GCP pipeline for building, training and evaluating any of the models used in this project.
 
 ## Installation ##
@@ -61,19 +63,15 @@ where $REGION is GCP region and $BUCKET_NAME is the name of the bucket.
 
 Using a terminal/command line, ensure that the current working directory is psp_gcp.  <br>
 
-To call the model with the optimum parameters, from a command line, run:
+**To call the model with the optimum parameters, from a command line, run:
 
 ```
-./gcp_training
+./gcp_training.sh --config=
 
--b batch size (default = 120)
--e epochs (default = 10)
--td test dataset (default = all)
--m model to use (default = psp_dcblstm_gcp_model)
--gpu use a GPU with TF (default = False)
+e.g ./gcp_training.sh --config=config/dcblstm.json
 
-e.g.
-./gcp_training -b 120 -e 10 -td all -m psp_dculstm_gcp_model -gpu True
+--config: relative path to desired model config file to train.
+
 ```
 
 To call the hyperparameter tuning script, from a command line call:
@@ -137,7 +135,7 @@ bucket_name
 
 ## GCP Notification Function ##
 
-This Google Cloud Function is used to notify when training has been completed and notifies some of the training results via an email server to a receipient. Currently, with Google Cloud's ML Engine/Ai-Platform there is no mechanism at which to know when training has been completed and the Ai job is finished, this function alleviates that.
+This Google Cloud Function is used to notify when training has been completed and notifies some of the training results via an email server to a recipient. Currently, with Google Cloud's ML Engine/Ai-Platform there is no mechanism at which to know when training has been completed and the Ai job is finished, this function alleviates that.
 
 **To configure function, call setup script:**
 ```
