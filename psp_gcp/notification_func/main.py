@@ -1,9 +1,9 @@
-#########################################################################
-##        Cloud Function for notifying results of training             ##
-#########################################################################
+################################################################################
+#######        Cloud Function for notifying results of training          #######
+################################################################################
 
 #import required modules and dependancies
-import base64
+# import base64
 from google.cloud import storage, exceptions
 from googleapiclient import errors
 from googleapiclient import discovery
@@ -25,8 +25,8 @@ def notification_func(event, context):
         training has completed. Results are parsed and emailed. Triggered from a message
         on a Cloud Pub/Sub topic.
     Args:
-        event (dict): Event payload.
-        context (google.cloud.functions.Context): Metadata for the event.
+        :event (dict): Event payload.
+        :context (google.cloud.functions.Context): Metadata for the event.
     Returns:
         None
     """
@@ -36,7 +36,7 @@ def notification_func(event, context):
     blob_path = os.path.join(bucket_name, job_name, results_filename)
     bucket_path = 'gs://' + blob_path
 
-    # Instantiate a Google Cloud Storage client and specify required bucket
+    #Instantiate a Google Cloud Storage client and specify required bucket
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
 
@@ -50,15 +50,14 @@ def notification_func(event, context):
     #call send_email func to parse training results and send via email
     send_email(data_df, filepath)
 
-
 def send_email(data_df, csv_path):
     """
     Description:
         Parses required training results, packages them and sends them to receipent via
         email using SMTP over SSL.
     Args:
-        data_df (dataframe): training results dataframe
-        csv_path (str): path to locally stored results csv for sending results via attachment
+        :data_df (dataframe): training results dataframe.
+        :csv_path (str): path to locally stored results csv for sending results via attachment.
     Returns:
         None
     """
@@ -72,7 +71,7 @@ def send_email(data_df, csv_path):
     arch_filename = 'model_architecture.json'
     blob_path = os.path.join(job_name, arch_filename)
 
-    # Instantiate a Google Cloud Storage client and specify required bucket
+    #Instantiate a Google Cloud Storage client and specify required bucket
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
 
@@ -106,9 +105,10 @@ def send_email(data_df, csv_path):
     casp11_recall = data_df['CASP11 Recall'][0]
     casp11_precision = data_df['CASP11 Precision'][0]
 
+    #create bucket blob
     blob = bucket.blob(blob_path)
 
-    # Download the contents of the blob as a string and then parse it using json.loads() method
+    #Download the contents of the blob as a string and then parse it using json.loads() method
     arch_json = json.loads(blob.download_as_string(client=None))
     layers = []
 
@@ -176,6 +176,10 @@ def send_email(data_df, csv_path):
 def get_layer_attributes(layers):
     pass
 
+def check_job_status():
+    #parse job logs and email if job fails - send error etc.
+    pass
+
    # msg = MIMEMultipart()
    #  msg['To'] = "4_server_dev@company.com"
    #  msg['From'] = "system@company.com"
@@ -189,3 +193,33 @@ def get_layer_attributes(layers):
    #      attachment = MIMEApplication(open(file_path, "rb").read(), _subtype="txt")
    #      attachment.add_header('Content-Disposition','attachment', filename=f)
    #      msg.attach(attachment)
+
+
+
+# def get_job_status(job_name):
+#     """
+#     Description:
+#
+#     Args:
+#         :job_name(str):
+#
+#     """
+#     # job_logs = subprocess.check_output(["gcloud", "ai-platform","jobs","describe",job_name])
+#     job_logs = subprocess.Popen(["gcloud", "ai-platform","jobs","describe",job_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+#
+#     output, err = job_logs.communicate(b"input data that is passed to subprocess' stdin")
+#
+#     status=""
+#     for item in (output.decode('UTF-8')).split("\n"):
+#         if ("state:" in item):
+#             status = item.strip()
+#             status = (status[status.find(':')+1:]).strip()
+#
+#     err_message=""
+#     if (status=="FAILED"):
+#         for item in (output.decode('UTF-8')).split("\n"):
+#             if ("errorMessage:" in item):
+#                 err_message = item.strip()
+#
+#     #get err_message down to etag
+#     return status, err_message

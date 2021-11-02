@@ -6,6 +6,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+    types: [assigned, opened, synchronize, reopened]
 
   workflow_dispatch:
 
@@ -18,42 +19,46 @@ jobs:
     steps:
      - uses: actions/checkout@v2
      - name: Set up Python ${{ matrix.python-version }}
-       # env:
-       #   SERVICE_AC: ${{ secrets.GCP_SERVICE_ACCOUNT }}
        uses: actions/setup-python@v2
        with:
          python-version: ${{ matrix.python-version }}
-     - name: Set environment variables
-       run: |
-        echo "NOW=$(date +'%Y-%m-%d_%H:%M')" >> $GITHUB_ENV
-        echo "GCP_BUCKET=keras-python-models" >> $GITHUB_ENV
-        echo "GCP_PROJECT=psp-keras-training" >> $GITHUB_ENV
-     - name: Echo current date
-       run: echo $NOW
-     - name: Install dependencies
+
+     - name: Install Python dependencies
        run: |
         echo "Installing Dependancies"
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         python -m pip install --upgrade pip
-        pip install flake8 pytest
+        pip3 install flake8 pytest
         pip3 install codecov
         pip3 install coverage
         pip3 install pytest
         pip3 install pytest-cov
         pip3 install bandit
         pip3 install safety
+        pip3 install pydot
+        pip3 install pydotplus
+        pip3 install graphviz
+        pip3 install google-cloud
+        pip3 install google-cloud-storage
+        pip3 install Cython
+        pip3 install httplib2==0.20
+        pip3 install pyparsing==2.4.7
+        sudo apt install graphviz
+
      - name: Package safety check
        run: |
         echo "Running package safety check"
         python3 -m safety check > package_safety_output.txt
         cat package_safety_output.txt
        continue-on-error: true
+
      - name: Bandit
        run: |
         echo "Running Bandit"
-        python3 -m bandit -r psp > bandit_output.txt
+        python3 -m bandit -r . > bandit_output.txt
         cat bandit_output.txt
        continue-on-error: true
+
      - name: Decrypting Service Account
        env:
         PASSPHRASE: ${{ secrets.GCP_PASSPHRASE }}
@@ -61,6 +66,8 @@ jobs:
         chmod +x ./.github/scripts/decrypt_secret.sh
         ./.github/scripts/decrypt_secret.sh
         cat $HOME/secrets/my_secret.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/secrets/my_secret.json" >> $GITHUB_ENV
+
      - name: Install GCP Dependancies
        run: |
         echo "Installing all GCP Dependancies"
@@ -72,10 +79,7 @@ jobs:
         gcloud config set project ${{ secrets.GCP_PROJECT }}
         gcloud config configurations list
         gcloud auth list
-     - name: Upload to GCP
-       run: |
-        echo "Uploading artifacts to GCP"
-        gsutil cp bandit_output.txt "gs://${GCP_BUCKET}/workflow_logs/bandit_logs/bandit_output_$(date +"%H:%M_%m_%d_%Y").txt"
+
      - name: Lint with flake8
        run: |
         echo "Running flake8"
@@ -83,33 +87,34 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics > flake8_output.txt
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics >> flake8_output.txt
-        gsutil cp flake8_output.txt "gs://${GCP_BUCKET}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
+        gsutil cp flake8_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
        continue-on-error: true
-     - name: Run Dummy Model
+
+     - name: Upload to GCP
+       run: |
+        echo "Uploading artifacts to GCP"
+        gsutil cp bandit_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/bandit_logs/bandit_output_$(date +"%H:%M_%m_%d_%Y").txt"
+        gsutil cp package_safety_output.txt "${{ secrets.GCP_BUCKET }}/safety_logs/bandit_logs/package_safety_output_$(date +"%H:%M_%m_%d_%Y").txt"
+        gsutil cp flake8_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
+
+     - name: Run Dummy Model locally
        run: |
         echo "Running dummy psp model"
-        cd psp
-        python3 main.py -config "config/dummy.json"
-    # - name: Testing with unittest
-    #   run: |
-    #     echo "Testing using unittest..."
-    #     python3 -m unittest discover
-    # - name: Test with pytest
-    #   run: |
-    #     echo "Running dataset tests"
-    #     pytest psp.tests.test_datasets
-    # - name: Coverage Report
-    #   run: |
-    #     echo "Running coverage report..."
-    #     pytest --cov-report term --cov=DCBLSTM_PSP tests/
-    # - name: Testing for vulnerabilities with bandit
-    #   run: |
-    #     echo "Running security checks with Bandit..."
-    # - name: Python security check using Bandit
-    #   uses: Joel-hanson/bandit-report-artifacts@V1
-    # - name: Bandit Check
-    #   uses: jpetrucciani/bandit-check@1.6.2
-    #     run: |
-    #       echo "Testing using bandit..."
-    #   with:
-    #     continue-on-error: true
+        python3 main.py --config="dummy"
+
+     - name: Run Dummy Model on GCP
+       run: |
+        echo "Running dummy psp model on GCP"
+        ./gcp_training.sh --config="dummy" --local=1
+
+     - name: Testing with unittest
+       run: |
+        echo "Testing all tests using unittest framework..."
+        python3 -m unittest discover -b
+
+     - name: Coverage Report
+       run: |
+        echo "Running coverage report..."
+        pytest --cov-report term --cov=test_dcblstm tests/
+
+#test to see if correct files output to Storage Bucket

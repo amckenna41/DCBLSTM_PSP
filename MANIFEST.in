@@ -1,0 +1,3 @@
+recursive-include training/config/*.json
+recursive-include notification_func/*.txt
+recursive-include training/training_utils/*.yaml

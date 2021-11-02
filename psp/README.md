@@ -90,48 +90,6 @@ python train.py
 
 ```
 
-
-    parser.add_argument('-batch_size', '--batch_size', type=int, default=120,
-                        help='batch size for training data (default: 120)')
-
-    parser.add_argument('-logs_dir', '--logs_dir', type=str, default=OUTPUT_DIR +'/logs',
-                        help='Directory for Tensorboard logs to be stored, stored by default in saved_models/logs')
-
-    parser.add_argument('-model_dir', '--model_dir', type=str, default=OUTPUT_DIR,
-                        help='Directory for saving models logs, default in saved_models')
-
-    parser.add_argument('--data_dir', type=str, default=DATA_DIR,
-                        help='Directory for training and test datasets, by default stored in data dir')
-
-    parser.add_argument('-e', '--epochs', type=int, default=10,
-                        help='The number of epochs to run on the model')
-
-    parser.add_argument('-model', '--model', choices=model_files, type=str.lower, default="psp_cdblstm",
-                        help='Select what model from the models directory to build and train locally')
-
-    parser.add_argument('-training_data', '--training_data', type =int, default=6133,
-                        help='Select what type of training dataset to use, 6133 or 5926, default:6133 ')
-
-    parser.add_argument('-filtered', '--filtered', type =bool, default=True,
-                        help='Select what type of training dataset to use, filtered or unfiltered, default: True/Filtered')
-
-    parser.add_argument('-test_dataset', '--test_dataset',
-                        help='Select what test dataset to use for evaluation, default is CB513',required=False, default = "all")
-
-    parser.add_argument('-show_plots', '--show_plots', type =bool, default=True,
-                        help='Select whether you want plots of the model history to show')
-
-    parser.add_argument('-cuda', '--cuda',
-                       help='Enable CUDA to train using GPU; default is CPU',required=False, default = False)
-
-
-
-
-
-
-
-
-
 ## Show TensorBoard Logs....
 $ cd ~/Desktop/tensorboard
 
@@ -171,6 +129,8 @@ To be able to run the model on the cloud you must have an existing GCP account a
 psp
 ├── saved_models
 │   └── psp_cdblstm_model_YYYY-MM-DD_HH:MM
+|                       └── logs
+|                       └── checkpoints
 │                       └── plots
 │                             └── figure1.png
 │                             └── figure2.png
@@ -179,13 +139,19 @@ psp
 │                       └── model_arch.json
 │                       └── model_output.csv
 │   └── psp_cdulstm_model_YYYY-MM-DD_HH:MM
+|                       └── logs
+|                       └── checkpoints
 │                       └── plots
 │                             └── figure1.png
 │                             └── figure2.png
 │                       └── model.h5
+|                       └── model.png
 │                       └── model_history.pckl
 │                       └── model_output.csv
+|                       └── training.log
 └-
+
+
 https://gist.githubusercontent.com/ryanflorence/daafb1e3cb8ad740b346/raw/37fc2af6e55acc2b2fbf2aea23fec5f5c48e2fc5/folder-structure.md
 ```
 

@@ -1,7 +1,9 @@
 # Models used in project
 
-<br>
-
+DCBLSTM
+-------
+The main methodology explored in this work is that of bidirectional LSTM's in combination with
+a CNN to capture long-distance and local dependancies, respectively, within the protein sequences. From this methodology came the DCBLSTM (deep convolutional long-short-term-memory) model.
 #Model Design
 ![alt text](https://github.com/amckenna41/protein_structure_prediction_DeepLearning/blob/master/images/model_design.png?raw=true)
 
@@ -29,6 +31,7 @@ psp_dcbgru_model
 psp_dcugru_model
 psp_cnn_model
 psp_dnn_model
+psp_brnn_model
 psp_rbm_model
 psp_rnn_model
 

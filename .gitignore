@@ -30,6 +30,7 @@ psp_venv/
 *.npy
 *.gz
 *.csv
+*.pckl
 *.pkl
 *.ipynb
 *.docx
@@ -40,11 +41,18 @@ psp_venv/
 /psp_gcp.egg-info
 /psp/checkpoints/
 /checkpoints
-/output_data
-/psp/output_data/
+/output
+/psp/output/
+/psp_gcp/output/
+/psp/logs/
+/psp_gcp/data/*.h5
 
 #ignore json files, specifically json storing cloud credentials
 *.json
 
-!/psp/config/*
-!/psp_gcp/config/*
+#dont ignore config files
+!/config/*json
+!/psp_gcp/config/*json
+
+#ignore secrets script
+/psp_gcp/config/secrets.sh

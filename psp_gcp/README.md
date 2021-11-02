@@ -1,5 +1,14 @@
 # Google Cloud Platform Distribution for Protein Structure Prediction #<a name="TOP"></a>
 
+* [Introduction](#introduction)
+* [Implementation](#implementation)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Running Locally](#)
+* [Running on GCP](#)
+* [Notification Function](#)
+* [Common Issues](#)
+
 [![GCP](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
 
 A full GCP pipeline for building, training and evaluating any of the models used in this project.
@@ -36,6 +45,9 @@ where $PROJECT_ID is your GCP project ID.
 
 ### Authenticate GCP account ###
 
+<details>
+<summary>Click to see how to authenticate on GCP</summary>
+
 1. In the GCP Console, go to the Create service account key page.
 
 1. From the Service account drop-down list, select New service account.
@@ -50,6 +62,7 @@ where $PROJECT_ID is your GCP project ID.
 ```
 export GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
 ```
+</details>
 
 ### Create Bucket ###
 
@@ -68,7 +81,7 @@ Using a terminal/command line, ensure that the current working directory is psp_
 ```
 ./gcp_training.sh --config=
 
-e.g ./gcp_training.sh --config=config/dcblstm.json
+e.g ./gcp_training.sh --config=dcblstm.json
 
 --config: relative path to desired model config file to train.
 
@@ -123,17 +136,27 @@ The cloud architecture used within the GCP for this project can be seen below we
 ```
 bucket_name
 ├── job_name
+|   └── model_logs
+|   └── model_checkpoints
 │   └── model_plots         
 │         └── figure1.png
 │         └── figure2.png
+|         └── ....png
 │   └── model.h5
+|   └── model.png
 │   └── model_history.pckl
 │   └── model_arch.json
 │   └── model_output.csv
+|   └── model_config.json
+|   └── training.log
 └-
 ```
 
-## GCP Notification Function ##
+Requirements
+-------------
+
+GCP Notification Function
+-------------------------
 
 This Google Cloud Function is used to notify when training has been completed and notifies some of the training results via an email server to a recipient. Currently, with Google Cloud's ML Engine/Ai-Platform there is no mechanism at which to know when training has been completed and the Ai job is finished, this function alleviates that.
 
@@ -149,5 +172,32 @@ $TOMAIL - receipient of training notification and results
 $FROMMAIL - sender of training notification, ideally a gmail account with less secure app access configured
 $EMAIL_PASS - password for less secure $FROMMAIL email account
 
-```
+Using GCP functionality for Workflow
+------------------------------------
+1. Encrypting Service Account json using gpg tool on command-line.
+gpg --symmetric --cipher-algo AES256 service-account.json
+
+Files and Directory structure
+-----------------------------
+
+* `/config` -
+* `/models` -
+* `/notification_func` -
+* `/training` -
+* 'gcp_hptuning.sh' -
+* 'gcp_notification_func.sh' -
+* 'gcp_predict.sh' -
+* 'gcp_training.sh' -
+* 'MANIFEST.in' -
+* 'setup.py'
+
+
+https://cloud.google.com/compute/docs/machine-types
+
+
+
+
 [Back to top](#TOP)
+
+#Set the ml-engine to point to the correc pythong3 distro
+#gcloud config set ml_engine/local_python $(which python3)

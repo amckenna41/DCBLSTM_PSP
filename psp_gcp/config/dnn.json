@@ -1,0 +1,143 @@
+{
+  "parameters": [
+    {
+      "training_data": "6133",
+      "filtered": 1,
+      "batch_size": 256,
+      "epochs": 1,
+      "logs_path": "logs",
+      "data_dir": "data",
+      "cuda": 0,
+      "test_dataset": "all",
+      "model": "psp_dnn_model"
+
+    }
+  ],
+  "model_parameters": [
+    {
+      "input": {
+        "input_shape": 700,
+        "num_aminoacids": 21,
+        "batch_size": null,
+        "dtype": "float32"
+      },
+
+      "embedding": {
+        "input_dim": 21,
+        "output_dim": 21,
+        "embeddings_initializer": "uniform",
+        "input_length": 700,
+        "name": "embedding"
+      },
+
+      "dropout1": {
+        "rate": 0.3
+      },
+
+      "dropout2": {
+        "rate": 0.3
+      },
+
+      "dropout3": {
+        "rate": 0.3
+      },
+
+      "dropout4": {
+        "rate": 0.3
+      },
+
+      "dropout5": {
+        "rate": 0.3
+      },
+
+      "dropout6": {
+        "rate": 0.3
+      },
+
+      "dense1": {
+        "units":600,
+        "kernel_initializer":"glorot_uniform",
+        "activation": "relu",
+        "name": "dense1"
+      },
+
+      "dense2": {
+        "units":300,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"relu",
+        "name": "dense2"
+      },
+
+      "dense3": {
+        "units":150,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"softmax",
+        "name": "dense3"
+      },
+
+      "dense4": {
+        "units":60,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"softmax",
+        "name": "dense4"
+      },
+
+      "dense5": {
+        "units":30,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"softmax",
+        "name": "dense5"
+      },
+
+      "dense6": {
+        "units":8,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"softmax",
+        "name": "dense6"
+      },
+
+      "dense7": {
+        "units":8,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"softmax",
+        "name": "main_output"
+      },
+
+      "optimizer": {
+          "learning_rate": 0.00015,
+          "beta_1": 0.9,
+          "beta_2": 0.999,
+          "epsilon": 1e-07,
+          "name": "Adam"
+      },
+
+      "callbacks": {
+        "tensorboard": 1,
+        "earlyStopping": 0,
+        "modelCheckpoint": 0,
+        "lr_scheduler": 1,
+        "csv_logger": 1
+      },
+
+      "lr_scheduler": "Step Decay"
+
+    }
+  ],
+
+"gcp_parameters": [
+  {
+    "project_id": "",
+    "package_path": "psp",
+    "module_name": "psp.main_gcp",
+    "bucket": "",
+    "runtime_version": "2.1",
+    "python_verion": "3.7",
+    "job_dir": "",
+    "region": "",
+    "scale_tier": "CUSTOM",
+    "master_machine_type": "n1-highmem-4",
+    "cuda": 0
+  }
+]
+
+}

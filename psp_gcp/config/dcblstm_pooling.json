@@ -1,0 +1,219 @@
+{
+  "parameters": [
+    {
+      "training_data": "6133",
+      "filtered": 1,
+      "batch_size": 256,
+      "epochs": 1,
+      "logs_path": "logs",
+      "data_dir": "data",
+      "cuda": 0,
+      "test_dataset": "all",
+      "model": "psp_dcblstm_pooling_model"
+    }
+  ],
+  "model_parameters": [
+    {
+      "input": {
+        "input_shape": 700,
+        "num_aminoacids": 21,
+        "batch_size": null,
+        "dtype": "float32"
+      },
+
+      "embedding": {
+        "input_dim": 21,
+        "output_dim": 21,
+        "embeddings_initializer": "uniform",
+        "input_length": 700,
+        "name": "embedding"
+      },
+
+      "conv": {
+        "kernel_regularizer": "l2",
+        "activation": "relu",
+        "kernel_initializer": "glorot_uniform",
+        "data_format": "channels_last",
+        "dilation_rate": 1,
+        "use_bias": 1,
+        "groups" :1,
+        "padding": "same",
+        "bias_initializer": "zeros",
+        "kernel_regularizer": null,
+        "bias_regularizer": null,
+        "activity_regularizer" : null,
+        "kernel_constraint": null,
+        "bias_constraint": null
+      },
+
+      "conv1": {
+        "filters": 32,
+        "kernel_size": 3,
+        "strides": 1,
+        "name": "conv1"
+      },
+
+      "dropout1": {
+        "rate": 0.3
+      },
+
+      "conv2": {
+        "filters": 64,
+        "kernel_size": 3,
+        "strides": 1,
+        "name": "conv2"
+      },
+
+      "dropout2": {
+        "rate": 0.3
+      },
+
+      "conv3": {
+        "filters": 128,
+        "kernel_size": 3,
+        "strides": 1,
+        "name": "conv3"
+      },
+
+      "dropout3": {
+        "rate": 0.3
+      },
+
+      "dropout4": {
+        "rate": 0.3
+      },
+
+      "batch_norm": {
+        "axis": -1,
+        "momentum":0.99,
+        "epsilon":0.001,
+        "center": 1,
+        "scale": 1,
+        "beta_initializer":"zeros",
+        "gamma_initializer":"ones",
+        "moving_mean_initializer":"zeros",
+        "moving_variance_initializer":"ones",
+        "beta_regularizer": null,
+        "gamma_regularizer":null,
+        "beta_constraint":null,
+        "gamma_constraint":null
+      },
+
+      "max_pool": {
+        "padding":"valid",
+        "data_format": "channels_lost"
+      },
+
+      "max_pool1": {
+        "strides":1,
+        "pool_size":2,
+        "name": "max_pool1"
+      },
+
+      "max_pool2": {
+        "strides":1,
+        "pool_size":2,
+        "name": "max_pool2"
+      },
+
+      "max_pool3": {
+        "strides":1,
+        "pool_size":2,
+        "name": "max_pool3"
+      },
+
+      "lstm": {
+        "activation":"tanh",
+        "recurrent_activation":"sigmoid",
+        "use_bias": 1,
+        "kernel_initializer":"glorot_uniform",
+        "recurrent_initializer":"orthogonal",
+        "bias_initializer":"zeros",
+        "kernel_regularizer":null,
+        "recurrent_regularizer":null,
+        "return_sequences":1,
+        "bias_regularizer":null,
+        "activity_regularizer":null,
+        "kernel_constraint":null,
+        "recurrent_constraint":null,
+        "bias_constraint":null,
+        "return_state":0,
+        "go_backwards":0,
+        "stateful":0,
+        "unroll":0,
+        "time_major":0,
+        "reset_after":1
+      },
+
+      "lstm1": {
+        "units": 250,
+        "dropout":0.5,
+        "recurrent_dropout":0.5,
+        "return_sequences":1
+      },
+
+      "lstm2": {
+        "units": 250,
+        "dropout":0.5,
+        "recurrent_dropout":0.5,
+        "return_sequences":1
+      },
+
+      "dense1": {
+        "units":600,
+        "kernel_initializer":"glorot_uniform",
+        "activation": "relu",
+        "name": "dense1"
+      },
+
+      "dense2": {
+        "units":300,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"relu",
+        "name": "dense2"
+      },
+
+      "dense3": {
+        "units":8,
+        "kernel_initializer":"glorot_uniform",
+        "activation":"softmax",
+        "name": "main_output"
+      },
+
+      "optimizer": {
+          "learning_rate": 0.00015,
+          "beta_1": 0.9,
+          "beta_2": 0.999,
+          "epsilon": 1e-07,
+          "name": "Adam"
+      },
+
+      "callbacks": {
+        "tensorboard": 1,
+        "earlyStopping": 0,
+        "modelCheckpoint": 0,
+        "lr_scheduler": 1,
+        "csv_logger": 1
+      },
+
+      "lr_scheduler": "Step Decay"
+
+    }
+  ],
+
+"gcp_parameters": [
+  {
+    "project_id": "",
+    "package_path": "psp",
+    "module_name": "psp.main_gcp",
+    "bucket": "",
+    "runtime_version": "2.1",
+    "python_verion": "3.7",
+    "job_dir": "",
+    "region": "",
+    "scale_tier": "CUSTOM",
+    "master_machine_type": "n1-highmem-4",
+    "cuda": 0
+  }
+  ]
+}
