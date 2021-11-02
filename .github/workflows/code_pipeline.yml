@@ -61,7 +61,7 @@ jobs:
 
      - name: Decrypting Service Account
        env:
-        PASSPHRASE: ${{ secrets.GCP_PASSPHRASE }}
+        PASSPHRASE: ${{ secrets.PASSPHRASE }}
        run: |
         chmod +x ./.github/scripts/decrypt_secret.sh
         ./.github/scripts/decrypt_secret.sh
