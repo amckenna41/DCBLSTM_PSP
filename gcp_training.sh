@@ -233,7 +233,7 @@ if [[ $LOCAL -eq 0 ]]
        --model_params "$MODEL_PARAMS"
 
   #stream logs to terminal
-  gcloud ai-platform jobs stream-logs $JOB_NAME
+  # gcloud ai-platform jobs stream-logs $JOB_NAME
 
 elif [[ $LOCAL -eq 1 ]]
 then

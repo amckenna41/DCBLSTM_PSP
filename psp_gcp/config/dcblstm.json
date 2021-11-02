@@ -163,14 +163,14 @@
   ],
   "gcp_parameters": [
     {
-      "project_id": "psp-keras-training",
+      "project_id": "",
       "package_path": "psp",
       "module_name": "psp.main_gcp",
-      "bucket": "gs://keras-python-models",
+      "bucket": "",
       "runtime_version": "2.1",
       "python_verion": "3.7",
-      "job_dir": "gs://keras-python-models/job_logs",
-      "region": "us-central1",
+      "job_dir": "",
+      "region": "",
       "scale_tier": "CUSTOM",
       "master_machine_type": "n1-highmem-8",
       "cuda": 0
