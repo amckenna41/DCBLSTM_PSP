@@ -376,8 +376,7 @@ class CASP10():
     def __init__(self):
 
         CASP10_PATH = 'casp10.h5'
-        CASP10_URL = "https://github.com/amckenna41/DCBLSTM_PSP/blob/master/psp/data/casp10.h5?raw=true"
-
+        CASP10_URL = "https://github.com/amckenna41/DCBLSTM_PSP/raw/master/data/casp10.h5"
         self.url = CASP10_URL
         self.test_path = CASP10_PATH
 
@@ -472,7 +471,7 @@ class CASP11():
     def __init__(self):
 
         CASP11_PATH = 'casp11.h5'
-        CASP11_URL = "https://github.com/amckenna41/DCBLSTM_PSP/blob/master/psp/data/casp11.h5?raw=true"
+        CASP11_URL = "https://github.com/amckenna41/DCBLSTM_PSP/raw/master/data/casp11.h5"
 
         self.url = CASP11_URL
         self.test_path = CASP11_PATH
