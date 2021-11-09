@@ -122,7 +122,7 @@ def main(args):
     model_output["Number of epochs"] = epochs
     model_output["Batch size"] = batch_size
     model_output["Tensorflow Version"] = tf_version
-    model_output["TensorBoard logs dir"] = logs_path
+    model_output["TensorBoard logs dir"] = os.path.join(model_output_folder, logs_path)
     model_output["Cuda"] = cuda
     model_output["LR Scheduler"] = lr_scheduler
 

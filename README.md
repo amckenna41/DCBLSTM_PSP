@@ -1,13 +1,9 @@
 # Secondary Protein Structure Prediction using Machine learning and Deep Learning #
 
-Status
-------
-> Development Stage
-
-[![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)](https://pypi.org/project/pySAR/)
 [![PythonV](https://img.shields.io/pypi/pyversions/pySAR?logo=2)](https://pypi.org/project/pySAR/)
-[![Build](https://img.shields.io/github/workflow/status/amckenna41/pySAR/Deploy%20to%20PyPI%20%F0%9F%93%A6)](https://github.com/amckenna41/pySAR/actions)
-[![Build Status](https://travis-ci.com/amckenna41/pySAR.svg?branch=main)](https://travis-ci.com/amckenna41/pySAR)
+[![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)](https://pypi.org/project/pySAR/)
+[![Build](https://img.shields.io/github/workflow/status/amckenna41/DCBLSTM_PSP/Protein%20Structure%20Prediction%20using%20Deep%20Convolutional%20LSTM's)](https://github.com/amckenna41/DCBLSTM/actions)
+[![Build Status](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP.svg?branch=master)](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
 [![Issues](https://img.shields.io/github/issues/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP/issues)
 [![Size](https://img.shields.io/github/repo-size/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP)
@@ -17,16 +13,15 @@ Table of Contents
 -----------------
 
   * [Introduction](#introduction)
-  * [Approach](#approach)
+  * [Approach and implementation](#approach and implementation)
   * [Datasets](#datasets)
-  * [Implementation](#implementation)
   * [Requirements](#requirements)
   * [Installation](#installation)
-  * [Cloud Distribution](#clouddistribution)
-  * [Tests](#tests)
+  * [Cloud Distribution](#cloud distribution)
   * [Directory Folders](#directoryfolders)
-  * [Output Directory Structure](#)
-  * [Issues](#Issues)
+  * [Output Directory Structure](#output directory structure)
+  * [Tests](#tests)
+  * [Open Issues](#Issues)
   * [Contact](#contact)
   * [References](#references)
 
@@ -119,11 +114,14 @@ Requirements
 * [tensorflow][tensorflow] >= 1.15
 * [tensorflow-gpu][tensorflow-gpu] >= 1.15
 * [tensorboard][tensorboard] >= 2.1.0
+* [keras][keras] >= 2.4.0
 * [requests][requests] >= 2.24.0
 * [fastaparser][fastaparser] >= 1.1
 * [matplotlib][matplotlib] >= 3.3.1
 * [seaborn][seaborn] >= 0.10.1
-
+* [pydot][pydot] ==1.4.2
+* [pydotplus][pydotplus] == 2.0.2
+* [graphviz][graphviz] == 0.18
 
 Installation
 -------------
@@ -143,9 +141,9 @@ source psp_venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Run main function to build and train model with from specified json config file, e.g running DCBLSTM model using dcblstm.json **
+**Run main function to build and train model with specified json config file, e.g running dummy model using dcblstm.json **
 ```
-python main.py -config "config/dcblstm.json"
+python main.py --config=dummy
 ```
 
 Cloud Distribution
@@ -160,21 +158,41 @@ To be able to run the model on the cloud you must have an existing GCP account a
 ./gcp_training.sh --config=dcblstm.json
 
 --config: relative path to desired model config file to train.
+--local: (0/1) train model locally or on GCP AI-Platform using GCP code pipeline.
 
 Output Directory Structure
 --------------------------
 The code pipeline created, either locally or globally using the GCP, compiles all of the training assets and logs into one output folder named using the model name with the current date/time appended to it. Below is the structure of that output folder
 
 ```
+output_folder
+├── job_name_DDMMYYY:MM
+|   └── model_logs
+|   └── model_checkpoints
+│   └── model_plots         
+│         └── figure1.png
+│         └── figure2.png
+|         └── ....png
+│   └── model.h5
+|   └── model.png
+│   └── model_history.pckl
+│   └── model_arch.json
+│   └── model_output.csv
+|   └── model_config.json
+|   └── training.log
+└-
+```
 Tests
 -----
 
-Run all unittests using unittest Python framework
+All unit tests implemented throughout the project were created using Python's unittest framework.
+
+Run all unittests from main project directory:
 ```
 python3 -m unittest discover
 ```
 
-To run tests for specific module, from the main psp folder run:
+To run tests for specific module, from the main project directory run:
 ```
 python -m unittest tests.MODULE_NAME -v
 ```
@@ -184,9 +202,13 @@ You can add the flag *-b* to suppress some of the verbose output when running th
 Directory folders
 -----------------
 
-* `/images` - images used for README
+* `/config` - configuration json files containing model and training parameters for building models.
+* `/data` - training and test datasets used in project.
+* `/docs` - documentation for project.
+* `/images` - images used for README and throughout repo.
 * `/psp` - main protein structure directory containing all modules and code required for building and training models locally.  
 * `/psp_gcp` - Google Cloud Platform distribution for training and building models for PSP on the cloud
+* `/tests` - unit tests for project using unittest Python framework.
 
 Issues
 ------
@@ -216,9 +238,6 @@ References
 \[13\]: https://digital-library.theiet.org/content/conferences/10.1049/cp_19991218 <br>
 \[14\]: https://academic.oup.com/bioinformatics/article/19/12/1589/258419 <br>
 
-## status
-> Development Stage
-
 [Back to top](#TOP)
 
 [python]: https://www.python.org/downloads/release/python-360/
@@ -231,4 +250,9 @@ References
 [tensorboard]: https://www.tensorflow.org/tensorboard
 [requests]: https://docs.python-requests.org/en/master/
 [fastaparser]: https://fastaparser.readthedocs.io/en/latest/
+[keras]: https://keras.io/
+[matplotlib]: https://matplotlib.org/
+[pydot]: https://pypi.org/project/pydot/
+[pydotplus]: https://pypi.org/project/pydotplus/
+[graphviz]: https://pypi.org/project/graphviz/
 [Issues]: https://github.com/amckenna41/DCBLSTM_PSP/issues

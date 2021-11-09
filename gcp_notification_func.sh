@@ -62,7 +62,7 @@ echo "#########################"
 echo ""
 
 #update any gcloud components
-# gcloud components update
+#yes | gcloud components update
 
 #listing existing pubsub topics
 gcloud pubsub topics list
@@ -96,32 +96,3 @@ gcloud functions deploy $FUNCTION_NAME \
     --trigger-topic $TOPIC \
     --set-env-vars BUCKET=$BUCKET_NAME,EMAIL_USER=$TOMAIL,FROM_MAIL=$FROMMAIL,EMAIL_PASS=$EMAIL_PASS \
     --allow-unauthenticated
-
-    #Shell script for making all the resources required for deployment
-    # PROJECT_ID='[PROJECT_ID]' #@param {type:"string"}
-    # REGION='[REGION_NAME]' #e.g 'us-central1', 'europe-west1'
-    # BUCKET_NAME='keras-python-models'
-    # TRAIN_PATH = 'cullpdb+profile_6133_filtered.npy'
-    # TEST_PATH = 'cb513+profile_split1.npy'
-    # CASP10_PATH = 'casp10.h5'
-    # CASP11_PATH = 'casp11.h5'
-
-    # gcloud components update      #update SDK
-    # gcloud auth list
-    # gcloud auth login
-    #
-    # gcloud init
-    #
-    # gcloud version
-    #
-    # gcloud projects create $PROJECT_ID
-    # gcloud config set project $PROJECT_ID
-    #
-    # #create bucket in given region
-    # gsutil mb -l $REGION gs://$BUCKET_NAME
-    #
-    # #list contents of bucket
-    # gsutil ls -r gs://$BUCKET_NAME/**
-    #
-    # #get size of bucket
-    # gsutil du -s gs://$BUCKET_NAME

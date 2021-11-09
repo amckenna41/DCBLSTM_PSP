@@ -121,3 +121,7 @@ To do list
 - [X] Add input parameter for what callbacks to use.
 - [X] change params = json.load(f) to params = json.load(f)[0]["parameters"]
 - [X] Add output folder name to output_results.csv
+- [ ] Change some column names in results file
+- [ ] Change where logs are stored in bucket - should be stored in output folder maybe
+- [ ] 2 columns of CASP10 precision in results file
+- [ ] Add comments to workflow

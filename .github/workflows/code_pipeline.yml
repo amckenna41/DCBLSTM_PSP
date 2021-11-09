@@ -1,6 +1,7 @@
 
 name: Protein Structure Prediction using Deep Convolutional LSTM's
 
+#initiate workflow on push or pull from master branch
 on:
   push:
     branches: [ master ]
@@ -8,6 +9,7 @@ on:
     branches: [ master ]
     types: [assigned, opened, synchronize, reopened]
 
+  #allow for workflow to be manually initiated from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -23,6 +25,7 @@ jobs:
        with:
          python-version: ${{ matrix.python-version }}
 
+    #install all required dependancies for project, including workflow specific requirements
      - name: Install Python dependencies
        run: |
         echo "Installing Dependancies"
@@ -35,16 +38,12 @@ jobs:
         pip3 install pytest-cov
         pip3 install bandit
         pip3 install safety
-        pip3 install pydot
-        pip3 install pydotplus
-        pip3 install graphviz
         pip3 install google-cloud
         pip3 install google-cloud-storage
         pip3 install Cython
-        pip3 install httplib2==0.20
-        pip3 install pyparsing==2.4.7
         sudo apt install graphviz
 
+    #run package safety check to look for known security vulnerabilities in packages
      - name: Package safety check
        run: |
         echo "Running package safety check"
@@ -52,6 +51,7 @@ jobs:
         cat package_safety_output.txt
        continue-on-error: true
 
+    #run Bandit security check for any known vulnerabilities in code
      - name: Bandit
        run: |
         echo "Running Bandit"
@@ -59,6 +59,7 @@ jobs:
         cat bandit_output.txt
        continue-on-error: true
 
+    #decrypt GCP Service Account gpg key for testing GCP pipeline
      - name: Decrypting Service Account
        env:
         PASSPHRASE: ${{ secrets.PASSPHRASE }}
@@ -68,6 +69,7 @@ jobs:
         cat $HOME/secrets/my_secret.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/secrets/my_secret.json" >> $GITHUB_ENV
 
+    #install all required GCP dependancies for testing GCP pipeline
      - name: Install GCP Dependancies
        run: |
         echo "Installing all GCP Dependancies"
@@ -80,6 +82,7 @@ jobs:
         gcloud config configurations list
         gcloud auth list
 
+    #run flake8 code linter on project
      - name: Lint with flake8
        run: |
         echo "Running flake8"
@@ -90,6 +93,7 @@ jobs:
         gsutil cp flake8_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
        continue-on-error: true
 
+    #upload artifacts and logs from workflow to GCP
      - name: Upload to GCP
        run: |
         echo "Uploading artifacts to GCP"
@@ -97,21 +101,25 @@ jobs:
         gsutil cp package_safety_output.txt "${{ secrets.GCP_BUCKET }}/safety_logs/bandit_logs/package_safety_output_$(date +"%H:%M_%m_%d_%Y").txt"
         gsutil cp flake8_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
 
+    #run dummy model to test local pipeline
      - name: Run Dummy Model locally
        run: |
         echo "Running dummy psp model"
         python3 main.py --config="dummy"
 
+    #run dummy model to test GCP pipeline
      - name: Run Dummy Model on GCP
        run: |
         echo "Running dummy psp model on GCP"
         ./gcp_training.sh --config="dummy" --local=1
 
+    #run all unittests
      - name: Testing with unittest
        run: |
         echo "Testing all tests using unittest framework..."
         python3 -m unittest discover -b
 
+    #run coverage report
      - name: Coverage Report
        run: |
         echo "Running coverage report..."

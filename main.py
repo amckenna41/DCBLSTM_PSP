@@ -20,7 +20,6 @@ from json.decoder import JSONDecodeError
 from psp.load_dataset import *
 from evaluate import *
 from psp._globals import *
-# import .plot_model as plot_model_
 from psp.plot_model import *
 from psp.evaluate import *
 from psp.utils import *
