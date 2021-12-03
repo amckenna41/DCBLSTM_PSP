@@ -18,7 +18,7 @@ try:
 except:
     from . _globals import *
 
-def plot_history(history, model_folder_path, show_histograms = True, show_boxplots = True,
+def plot_history(history, model_folder_path, show_histograms = False, show_boxplots = True,
                     show_kde = True, filter_outliers = True, save = True):
     """
     Description:
@@ -28,7 +28,7 @@ def plot_history(history, model_folder_path, show_histograms = True, show_boxplo
     Args:
         :history (dict): dictionary containing training history of keras model with all captured metrics.
         :model_folder_path (str): path to model folder used to save plots and models to.
-        :show_histograms (bool): visualise results via histograms, default: True.
+        :show_histograms (bool): visualise results via histograms, default: False.
         :show_boxplots (bool): visualise results via boxplots, default: True.
         :show_kde (bool): visualise results via kernel density plots, default: True.
         :filter_outliers (bool): if True, use is_outlier() function to filter outliers from arrays, default: True.
@@ -98,7 +98,7 @@ def plot_history(history, model_folder_path, show_histograms = True, show_boxplo
     plt.title('Model Root Mean Squared Error')
     plt.ylabel('Root Mean Squared Error')
     plt.xlabel('Epoch')
-    plt.legend(['train_mse', 'val_mse'], loc='upper left')
+    plt.legend(['train_rmse', 'val_rmse'], loc='upper left')
     plt.grid()
     if save:
         plt.savefig((os.path.join(plots_path, rmse_fig_filename)), dpi=200)
@@ -296,7 +296,8 @@ def plot_boxplots(history, save=True, filter_outliers=True):
 
     #Boxplot of training accuracy
     plt.figure(figsize=[10,8])
-    plt.boxplot(filtered, patch_artist=False)
+    plt.boxplot(filtered, patch_artist=True, boxprops=dict(facecolor="lightgreen", color="lightgreen"),
+        flierprops=dict(markerfacecolor='g', marker='D'))
     plt.xticks([1], ["Accuracy"], fontsize = 15)
     plt.title('Boxplot of training accuracy', fontsize = 20)
     plt.grid()
@@ -312,7 +313,9 @@ def plot_boxplots(history, save=True, filter_outliers=True):
 
     #Boxplot of training loss
     plt.figure(figsize=[10,8])
-    plt.boxplot(filtered, patch_artist=False)
+    # plt.boxplot(filtered, patch_artist=False)
+    plt.boxplot(filtered, patch_artist=True, boxprops=dict(facecolor="lightgreen", color="lightgreen"),
+        flierprops=dict(markerfacecolor='g', marker='D'))
     plt.xticks([1], ["Loss"], fontsize = 15)
     plt.title('Boxplot of training loss', fontsize = 20)
     plt.grid()
@@ -328,7 +331,8 @@ def plot_boxplots(history, save=True, filter_outliers=True):
 
     #Boxplot of training MSE
     plt.figure(figsize=[10,8])
-    plt.boxplot(filtered, patch_artist=False)
+    plt.boxplot(filtered, patch_artist=True, boxprops=dict(facecolor="lightgreen", color="lightgreen"),
+        flierprops=dict(markerfacecolor='g', marker='D'))
     plt.xticks([1], ["Mean Squared Error"], fontsize = 15)
     plt.title('Boxplot of training mean squared error', fontsize = 20)
     plt.grid()
@@ -344,7 +348,8 @@ def plot_boxplots(history, save=True, filter_outliers=True):
 
     #Boxplot of training RMSE
     plt.figure(figsize=[10,8])
-    plt.boxplot(filtered, patch_artist=False)
+    plt.boxplot(filtered, patch_artist=True, boxprops=dict(facecolor="lightgreen", color="lightgreen"),
+        flierprops=dict(markerfacecolor='g', marker='D'))
     plt.xticks([1], ["Root Mean Squared Error"], fontsize = 15)
     plt.title('Boxplot of training root mean squared error', fontsize = 20)
     plt.grid()
@@ -360,7 +365,8 @@ def plot_boxplots(history, save=True, filter_outliers=True):
 
     #Boxplot of training MAE
     plt.figure(figsize=[10,8])
-    plt.boxplot(filtered, patch_artist=False)
+    plt.boxplot(filtered, patch_artist=True, boxprops=dict(facecolor="lightgreen", color="lightgreen"),
+        flierprops=dict(markerfacecolor='g', marker='D'))
     plt.xticks([1], ["Mean Absolute Error"], fontsize = 15)
     plt.title('Boxplot of training mean absolute error', fontsize = 20)
     plt.grid()
@@ -558,7 +564,7 @@ def initialise_vars(history,model_folder_path):
     global history_rmse_array
     history_rmse_array = np.array(history_df_trans['root_mean_squared_error'][0])
     global history_val_rmse_array
-    history_val_rmse_array = np.array(history_df_trans['root_mean_squared_error'][0])
+    history_val_rmse_array = np.array(history_df_trans['val_root_mean_squared_error'][0])
 
     global history_mae_array
     history_mae_array = np.array(history_df_trans['mean_absolute_error'][0])

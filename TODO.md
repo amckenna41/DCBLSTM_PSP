@@ -116,7 +116,7 @@ To do list
 - [X] Try completely removing repeated modules and packages from psp to psp_gcp directories by using the psp dir for the psp_gcp ones as well.
 - [X] Add psp to sys.path so can import from psp_gcp
 - [X] Reset gcp_parameters in config back to ""
-- [ ] Update paths for casp10/11 downloads from repo.
+- [X] Update paths for casp10/11 downloads from repo.
 - [X] Add LR scheduler to config parameters.
 - [X] Add input parameter for what callbacks to use.
 - [X] change params = json.load(f) to params = json.load(f)[0]["parameters"]
@@ -124,4 +124,4 @@ To do list
 - [ ] Change some column names in results file
 - [ ] Change where logs are stored in bucket - should be stored in output folder maybe
 - [ ] 2 columns of CASP10 precision in results file
-- [ ] Add comments to workflow
+- [X] Add comments to workflow

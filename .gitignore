@@ -54,5 +54,10 @@ psp_venv/
 !/config/*json
 !/psp_gcp/config/*json
 
+#dont ignore results directory and its files
+!/results/*.pckl
+!/results/*.json
+!/results/*.csv
+
 #ignore secrets script
 /psp_gcp/config/secrets.sh

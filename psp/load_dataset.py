@@ -4,6 +4,7 @@
 
 #importing libraries and dependancies
 import numpy as np
+np.set_printoptions(precision=3, suppress=True)
 import gzip
 import h5py
 import os, sys
@@ -71,7 +72,7 @@ class CullPDB():
             self.download_cullpdb()
 
         #if all_data input parameter not between 0 and 1 then set to 1
-        if (self.all_data >1) or (self.all_data < 0):
+        if (self.all_data > 1) or (self.all_data < 0):
             self.all_data = 1
 
         #load in dataset
@@ -87,12 +88,8 @@ class CullPDB():
             None
         """
         print("\nLoading CullPDB {} training dataset (filtered: {})...\n".format(self.type, self.filtered))
-
         #load dataset
         data = np.load(os.path.join(DATA_DIR, self.train_path[:-3]))
-
-        # data = np.load(gzip.open(os.path.join(DATA_DIR, self.train_path),'rb'),allow_pickle=1)
-        # data = np.loadtxt(gzip.open(os.path.join(DATA_DIR, self.train_path)),delimiter=',')
 
         #reshape dataset
         data = np.reshape(data, (-1, 700, 57))

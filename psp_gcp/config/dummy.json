@@ -4,7 +4,7 @@
       "training_data": "6133",
       "filtered": 0,
       "batch_size": 256,
-      "epochs": 1,
+      "epochs": 2,
       "logs_path": "logs",
       "data_dir": "data",
       "cuda": 0,

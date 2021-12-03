@@ -11,6 +11,8 @@ from os.path import join, isfile
 import argparse
 import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, CSVLogger, LearningRateScheduler
+from tensorflow.core.protobuf import rewriter_config_pb2
+from tensorflow.compat.v1.keras.backend import set_session
 from datetime import date
 from datetime import datetime
 import time
@@ -29,16 +31,18 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'   #reduce TF log output to only include
 
 ### Tensorboard parameters and configuration ###
 tf.compat.v1.reset_default_graph()
-from tensorflow.core.protobuf import rewriter_config_pb2
 tf.keras.backend.clear_session()  # For easy reset of notebook state.
-from tensorflow.compat.v1.keras.backend import set_session
 config_proto = tf.compat.v1.ConfigProto()
+config_proto.allow_soft_placement = True
 off = rewriter_config_pb2.RewriterConfig.OFF
 config_proto.gpu_options.allow_growth = True
 config_proto.graph_options.rewrite_options.arithmetic_optimization = off
+#set tensorflow GPUOptions so TF doesn't overload GPU if present
+config_proto.gpu_options(per_process_gpu_memory_fraction=0.333)
 session = tf.compat.v1.Session(config=config_proto)
 # tf.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 set_session(session)
+
 
 #get model filenames from models directory
 remove_py = lambda x: os.path.splitext(x)[0]
@@ -47,9 +51,8 @@ all_models = list(map(remove_py,([f for f in listdir(join('psp','models')) if is
                 and f[:3] == 'psp']))))
 all_models.append('dummy_model')
 
-#set tensorflow GPUOptions so TF doesn't overload GPU if present
-gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
-sesh = tf.compat.v1.Session(config = tf.compat.v1.ConfigProto(gpu_options = gpu_options))
+# gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
+# sesh = tf.compat.v1.Session(config = tf.compat.v1.ConfigProto(gpu_options = gpu_options))
 
 #main starting function for PSP code pipeline
 def main(args):

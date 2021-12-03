@@ -71,7 +71,7 @@
 
       "conv3": {
         "filters": 128,
-        "kernel_size": 3,
+        "kernel_size": 1,
         "strides": 1,
         "name": "conv3"
       },

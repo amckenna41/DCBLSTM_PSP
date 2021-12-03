@@ -15,6 +15,8 @@ from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoa
 from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, \
     MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 from tensorflow.keras import activations
+from tensorflow.core.protobuf import rewriter_config_pb2
+from tensorflow.compat.v1.keras.backend import set_session
 import os
 from os.path import isfile, join
 from os import listdir
@@ -41,14 +43,19 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'   #reduce TF log output to only include
 
 ### Tensorboard parameters and configuration ###
 tf.compat.v1.reset_default_graph()
-from tensorflow.core.protobuf import rewriter_config_pb2
 tf.keras.backend.clear_session()  # For easy reset of notebook state.
-from tensorflow.compat.v1.keras.backend import set_session
+# gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 config_proto = tf.compat.v1.ConfigProto()
+tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
+config_proto.allow_soft_placement = True
 off = rewriter_config_pb2.RewriterConfig.OFF
 config_proto.gpu_options.allow_growth = True
 config_proto.graph_options.rewrite_options.arithmetic_optimization = off
+#set tensorflow GPUOptions so TF doesn't overload GPU if present
+# config_proto.gpu_options(per_process_gpu_memory_fraction=0.333)
 session = tf.compat.v1.Session(config=config_proto)
+
+# tf.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 set_session(session)
 
 #get model filenames from models and auxillary models directory
@@ -151,11 +158,11 @@ def main(args):
             logs_path)), histogram_freq=0, write_graph=True, write_images=True)
         all_callbacks.append(tensorboard)
     if (callbacks["earlyStopping"]):
-        earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
+        earlyStopping = EarlyStopping(monitor='loss', patience=5, verbose=1, mode='min')
         all_callbacks.append(earlyStopping)
     if (callbacks["modelCheckpoint"]):
         checkpoint = ModelCheckpoint(filepath=os.path.join(model_output_folder, 'checkpoints','model_' + current_datetime + '.h5'), \
-            verbose=1,save_best_only=True, monitor='val_accuracy', mode='max')
+            verbose=1,save_best_only=True, monitor='loss', mode='min')
         all_callbacks.append(checkpoint)
     if (callbacks["csv_logger"]):
         csv_logger = CSVLogger(os.path.join(model_output_folder, 'training.log'))
@@ -210,7 +217,7 @@ def main(args):
     save_history(history, history_filepath)
 
     #plot model history and all metric plots
-    plot_history(history.history, model_output_folder, show_histograms = True,
+    plot_history(history.history, model_output_folder, show_histograms = False,
         show_boxplots = True, show_kde = True, filter_outliers = True)
 
     #evaluating model on test datasets

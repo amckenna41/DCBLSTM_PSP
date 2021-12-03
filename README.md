@@ -1,4 +1,4 @@
-# Secondary Protein Structure Prediction using Machine learning and Deep Learning #
+# DCBLSTM-PSP: Secondary Protein Structure Prediction using Deep Learning #
 
 [![PythonV](https://img.shields.io/pypi/pyversions/pySAR?logo=2)](https://pypi.org/project/pySAR/)
 [![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)](https://pypi.org/project/pySAR/)
@@ -13,13 +13,14 @@ Table of Contents
 -----------------
 
   * [Introduction](#introduction)
-  * [Approach and implementation](#approach and implementation)
+  * [Approach and implementation](#approach)
   * [Datasets](#datasets)
   * [Requirements](#requirements)
   * [Installation](#installation)
-  * [Cloud Distribution](#cloud distribution)
+  * [Usage](#usage)
+  * [Cloud Distribution](#clouddistribution)
   * [Directory Folders](#directoryfolders)
-  * [Output Directory Structure](#output directory structure)
+  * [Output Directory Structure](#outputdirectorystructure)
   * [Tests](#tests)
   * [Open Issues](#Issues)
   * [Contact](#contact)
@@ -127,7 +128,7 @@ Installation
 -------------
 Clone Repository
 ```
-git clone https://github.com/amckenna41/DCBLSTM_PSP.git
+git clone -b main https://github.com/amckenna41/DCBLSTM_PSP.git
 ```
 
 **Create and activate Python virtual environment:**
@@ -160,6 +161,7 @@ To be able to run the model on the cloud you must have an existing GCP account a
 --config: relative path to desired model config file to train.
 --local: (0/1) train model locally or on GCP AI-Platform using GCP code pipeline.
 
+```
 Output Directory Structure
 --------------------------
 The code pipeline created, either locally or globally using the GCP, compiles all of the training assets and logs into one output folder named using the model name with the current date/time appended to it. Below is the structure of that output folder

@@ -3,8 +3,8 @@
     {
       "training_data": "6133",
       "filtered": 1,
-      "batch_size": 256,
-      "epochs": 20,
+      "batch_size": 120,
+      "epochs": 100,
       "logs_path": "logs",
       "data_dir": "data",
       "cuda": 0,
@@ -43,7 +43,7 @@
         "bias_constraint": null
       },
       "conv1": {
-        "filters": 32,
+        "filters": 64,
         "kernel_size": 3,
         "strides": 1,
         "name": "conv1"
@@ -52,7 +52,7 @@
         "rate": 0.3
       },
       "conv2": {
-        "filters": 64,
+        "filters": 128,
         "kernel_size": 3,
         "strides": 1,
         "name": "conv2"
@@ -61,7 +61,7 @@
         "rate": 0.3
       },
       "conv3": {
-        "filters": 128,
+        "filters": 256,
         "kernel_size": 3,
         "strides": 1,
         "name": "conv3"
@@ -70,8 +70,8 @@
         "rate": 0.3
       },
       "conv4": {
-        "filters": 256,
-        "kernel_size": 1,
+        "filters": 512,
+        "kernel_size": 3,
         "strides": 1,
         "name": "conv4"
       },
@@ -115,25 +115,25 @@
         "time_major": 0
       },
       "lstm1": {
-        "units": 250,
+        "units": 200,
         "dropout": 0.5,
         "recurrent_dropout": 0.5,
         "return_sequences": 1
       },
       "lstm2": {
-        "units": 250,
+        "units": 200,
         "dropout": 0.5,
         "recurrent_dropout": 0.5,
         "return_sequences": 1
       },
       "dense1": {
-        "units": 600,
+        "units": 100,
         "kernel_initializer": "glorot_uniform",
         "activation": "relu",
         "name": "dense1"
       },
       "dense2": {
-        "units": 300,
+        "units": 100,
         "kernel_initializer": "glorot_uniform",
         "activation": "relu",
         "name": "dense2"
@@ -145,7 +145,7 @@
         "name": "main_output"
       },
       "optimizer": {
-        "learning_rate": 0.00015,
+        "learning_rate": 0.0005,
         "beta_1": 0.9,
         "beta_2": 0.999,
         "epsilon": 1e-07,
@@ -153,8 +153,8 @@
       },
       "callbacks": {
         "tensorboard": 1,
-        "earlyStopping": 0,
-        "modelCheckpoint": 0,
+        "earlyStopping": 1,
+        "modelCheckpoint": 1,
         "lr_scheduler": 0,
         "csv_logger": 1
       },

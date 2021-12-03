@@ -1,19 +1,20 @@
-# Google Cloud Platform Distribution for Protein Structure Prediction #<a name="TOP"></a>
-
-* [Introduction](#introduction)
-* [Implementation](#implementation)
-* [Requirements](#requirements)
-* [Installation](#installation)
-* [Running Locally](#)
-* [Running on GCP](#)
-* [Notification Function](#)
-* [Common Issues](#)
-
-[![GCP](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+# Google Cloud Platform Distribution for Protein Structure Prediction <a name="TOP"></a>
 
 A full GCP pipeline for building, training and evaluating any of the models used in this project.
 
-## Installation ##
+Table of Contents
+-----------------
+
+* [Setup](#Setup)
+* [Implementation](#implementation)
+* [Requirements](#requirements)
+* [Running Locally](#)
+* [Running on GCP](#)
+
+![GCP](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+
+Setup
+--------
 
 ### Set up local development environment ###
 
@@ -74,20 +75,19 @@ where $REGION is GCP region and $BUCKET_NAME is the name of the bucket.
 
 ## Usage ##
 
-Using a terminal/command line, ensure that the current working directory is psp_gcp.  <br>
+Using a terminal/command line, ensure that the current working directory is the main DCBLSTM_PSP.  <br>
 
-**To call the model with the optimum parameters, from a command line, run:
+To call the model with the optimum parameters, from a command line, run:
 
 ```
-./gcp_training.sh --config=
-
-e.g ./gcp_training.sh --config=dcblstm.json
+e.g ./gcp_training.sh --config=dcblstm.json --local=0
 
 --config: relative path to desired model config file to train.
+--local: whether to run the GCP pipeline locally or on GCP (0 - run on GCP, 1 - run locally).
 
 ```
 
-To call the hyperparameter tuning script, from a command line call:
+<!-- To call the hyperparameter tuning script, from a command line call:
 ```
 ./gcp_hptuning
 ```
@@ -100,7 +100,7 @@ If you want to change any of the default hyperparameters then pass the parameter
 
 e.g.
 ./gcp_hptuning -e 10 -b 120 -td casp10
-```
+``` -->
 
 To get secondary structure prediction of protein sequence from pre-built model, from a command line, run:
 ```

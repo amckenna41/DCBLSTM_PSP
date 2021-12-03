@@ -60,14 +60,14 @@ jobs:
        continue-on-error: true
 
     #decrypt GCP Service Account gpg key for testing GCP pipeline
-     - name: Decrypting Service Account
-       env:
-        PASSPHRASE: ${{ secrets.PASSPHRASE }}
-       run: |
-        chmod +x ./.github/scripts/decrypt_secret.sh
-        ./.github/scripts/decrypt_secret.sh
-        cat $HOME/secrets/my_secret.json
-        echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/secrets/my_secret.json" >> $GITHUB_ENV
+     # - name: Decrypting Service Account
+     #   env:
+     #    PASSPHRASE: ${{ secrets.PASSPHRASE }}
+     #   run: |
+     #    chmod +x ./.github/scripts/decrypt_secret.sh
+     #    ./.github/scripts/decrypt_secret.sh
+     #    cat $HOME/secrets/my_secret.json
+     #    echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/secrets/my_secret.json" >> $GITHUB_ENV
 
     #install all required GCP dependancies for testing GCP pipeline
      - name: Install GCP Dependancies
@@ -94,12 +94,12 @@ jobs:
        continue-on-error: true
 
     #upload artifacts and logs from workflow to GCP
-     - name: Upload to GCP
-       run: |
-        echo "Uploading artifacts to GCP"
-        gsutil cp bandit_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/bandit_logs/bandit_output_$(date +"%H:%M_%m_%d_%Y").txt"
-        gsutil cp package_safety_output.txt "${{ secrets.GCP_BUCKET }}/safety_logs/bandit_logs/package_safety_output_$(date +"%H:%M_%m_%d_%Y").txt"
-        gsutil cp flake8_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
+     # - name: Upload to GCP
+     #   run: |
+     #    echo "Uploading artifacts to GCP"
+     #    gsutil cp bandit_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/bandit_logs/bandit_output_$(date +"%H:%M_%m_%d_%Y").txt"
+     #    gsutil cp package_safety_output.txt "${{ secrets.GCP_BUCKET }}/safety_logs/bandit_logs/package_safety_output_$(date +"%H:%M_%m_%d_%Y").txt"
+     #    gsutil cp flake8_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
 
     #run dummy model to test local pipeline
      - name: Run Dummy Model locally
@@ -111,7 +111,7 @@ jobs:
      - name: Run Dummy Model on GCP
        run: |
         echo "Running dummy psp model on GCP"
-        ./gcp_training.sh --config="dummy" --local=1
+      # ./gcp_training.sh --config="dummy" --local=1
 
     #run all unittests
      - name: Testing with unittest
