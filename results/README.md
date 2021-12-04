@@ -3,7 +3,7 @@
 
 Results
 -------
-This directory contains the best model attained from training the DCBLSTM models after rigorous tuning and trial and error. This model achieved a peak Q8 accuracy of X% with the CB513 dataset, whilst also acheiving X% and Y% accuracy with the CASP10 and CASP11 datasets. The model was trained for 100 epochs but due to the EarlyStopping TensorFlow callback, training was halted after ~60 epochs, after the loss metric did not improve any further. The directory structure and each file explanation is discussed further below:
+This directory contains the best model attained from training the DCBLSTM models after rigorous tuning and trial and error. This model achieved a peak Q8 accuracy of 92% with the CB513 dataset, whilst also achieving 90% and 89% accuracy with the CASP10 and CASP11 datasets. The model was trained for 100 epochs but due to the EarlyStopping TensorFlow callback, training was halted after ~60 epochs, after the loss metric did not improve any further. The directory structure and each file explanation is discussed further below:
 
 ```
 results

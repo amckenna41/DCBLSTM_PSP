@@ -43,14 +43,20 @@ Protein Structure Prediction (PSP) is the determination of a protein's structure
 Proteins are made up of one or more polypeptide chains of amino acid residues. The constituent amino acids are bonded together by peptide bonds. Proteins have a variety of roles within organisms including enzymes, cell signalling and ligand binding, immune response through antibodies and the various roles fulfilled via structural proteins [[3]](#references). Most proteins fall into the category of 4 structures. The primary structure is simply the sequence of amino acids, the secondary structure is recurring arrangements of adjacent amino acids in a polypeptide chain, tertiary structure is the 3-dimensional representation of a protein consisting of a polypeptide chain/backbone with 1 or more secondary protein structures [[4]](#references), quaternary structure is when a protein consists of more than one polypeptide chain [[5]](#references). A visualisation of these structures can be seen below.
 
 <br>
-<img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/protein_structure.jpeg" height="400" width="250">
+<p align="center">
+<img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/protein_structure.jpeg" height="450" width="300">
+</p>
 
 Approach
 --------
 
 Many different machine learning approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc [[6, 7, 8, 9, 10]](#references). There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory) [[11, 12]](#references). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. An LSTM cell is made up of 3 gates - input, output and forget [[13]](#references). The forget gate decodes what information the should 'forget' or not. The input gate updates the cell state and output gate controls the extent to which a value in the cell is used to compute the output activation of the LSTM. <br>
 
-![alt text](https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/lstm_cell.png?raw=true)
+<p align="center">
+<img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/lstm_cell.png">
+</p>
+<!-- ![alt text](https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/lstm_cell.png?raw=true) -->
+
 
 Bidirectional LSTM's which allow for the LSTM unit to consider the protein sequence in the forward and backward direction. Additionally, to map local dependancies and context between adjacent residues, a CNN preceded the recurrent component of the model where 1-Dimensional convolutional layers were used.
 Optimisation and regularisation techniques were applied to the model to maximise performance and efficiency.
@@ -94,15 +100,23 @@ Implementation
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-<!-- <img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250"> -->
+<p align="center">
+<img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/model.png">
+</p>
 
 
 Conclusions and Results
 -----------------------
 
-#insert graphs and tables here ....
+The DCBLSTM model was trained for 100 epochs, achieving a peak model accuracy of ~92% during training. The model reached this ceiling of accuracy after around 60 epochs where no further improvement was noted, thus the EarlyStopping TensorFlow callback halted training after 60 epochs. The mean squared error captured during training remained constant after around 20 epochs at ~0.10. The visualisations of the model accuracy and error can be seen below.
 
-The paper is available at...
+<p align="center">
+<img src="results/plots/accuracy_fig2021-11-26_15:09.png" alt="accuracy" width="450"/>
+
+<img src="results/plots/mse_fig2021-11-26_15:09.png" alt="error" width="450"/>
+</p>
+
+**The paper is available at...**
 
 
 Requirements
@@ -126,7 +140,7 @@ Requirements
 
 Installation
 -------------
-Clone Repository
+**Clone Repository:**
 ```
 git clone -b main https://github.com/amckenna41/DCBLSTM_PSP.git
 ```
@@ -142,7 +156,7 @@ source psp_venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Run main function to build and train model with specified json config file, e.g running dummy model using dcblstm.json **
+**Run main function to build and train model with specified json config file, e.g running dummy model using dummy.json:**
 ```
 python main.py --config=dummy
 ```
@@ -150,17 +164,16 @@ python main.py --config=dummy
 Cloud Distribution
 ------------------
 
-With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset locally due to the computational constraints. Thus, a Cloud implementation to train the model successfully was created using the Google Cloud Platform. The full code pipeline for this cloud distribution is in the <em>psp_gcp</em> folder and contains somewhat replicated code to that of the <em>psp</em> directory that is packaged up and ran on Google's infrastructure.
+With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset locally due to the computational constraints. Thus, a Cloud implementation to train the model successfully was created using the Google Cloud Platform. The full code pipeline for this cloud distribution is in the <em>psp_gcp</em> folder, where the code is packaged up and ran on Google's infrastructure.
 
 To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the README.md and in the <em>psp_gcp</em> directory, which contains the relevant commands and steps to follow to configure your GCP account. <br>
 
 **From a cmd line/terminal, to train current DCBLSTM model configuration from its config file:**
 ```
-./gcp_training.sh --config=dcblstm.json
+./gcp_training.sh --config=dcblstm.json --local=0
 
---config: relative path to desired model config file to train.
---local: (0/1) train model locally or on GCP AI-Platform using GCP code pipeline.
-
+--config: relative path to desired model config file to train (default=dummy.json)
+--local: (0/1) train model locally or on GCP AI-Platform using GCP code pipeline (local=0)
 ```
 Output Directory Structure
 --------------------------
@@ -189,12 +202,12 @@ Tests
 
 All unit tests implemented throughout the project were created using Python's unittest framework.
 
-Run all unittests from main project directory:
+**Run all unittests from main project directory:**
 ```
 python3 -m unittest discover
 ```
 
-To run tests for specific module, from the main project directory run:
+**To run tests for specific module, from the main project directory run:**
 ```
 python -m unittest tests.MODULE_NAME -v
 ```
@@ -211,6 +224,7 @@ Directory folders
 * `/psp` - main protein structure directory containing all modules and code required for building and training models locally.  
 * `/psp_gcp` - Google Cloud Platform distribution for training and building models for PSP on the cloud
 * `/tests` - unit tests for project using unittest Python framework.
+* `/results` - final trained DCBLSTM model and all its results and model artefacts.
 
 Issues
 ------
@@ -219,9 +233,9 @@ Any issues, errors or bugs can be raised via the [Issues](https://github.com/amc
 Contact
 -------
 
-If you have any questions or feedback, please contact amckenna41@qub.ac.uk or visit my [LinkedIn](https://www.linkedin.com/in/adam-mckenna-7a5b22151/)
+If you have any questions or feedback, please contact amckenna41@qub.ac.uk or visit my [LinkedIn](https://www.linkedin.com/in/adam-mckenna-7a5b22151/):
 
-![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/adam-mckenna-7a5b22151/)
 
 References
 ----------

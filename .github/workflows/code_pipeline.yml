@@ -77,10 +77,10 @@ jobs:
         sudo apt-get install apt-transport-https ca-certificates gnupg
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
         sudo apt-get update && sudo apt-get install google-cloud-sdk
-        gcloud auth activate-service-account --key-file=$HOME/secrets/my_secret.json
-        gcloud config set project ${{ secrets.GCP_PROJECT }}
-        gcloud config configurations list
-        gcloud auth list
+      # gcloud auth activate-service-account --key-file=$HOME/secrets/my_secret.json
+      # gcloud config set project ${{ secrets.GCP_PROJECT }}
+      # gcloud config configurations list
+      # gcloud auth list
 
     #run flake8 code linter on project
      - name: Lint with flake8

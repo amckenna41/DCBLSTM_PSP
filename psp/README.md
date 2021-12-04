@@ -1,14 +1,11 @@
 # Protein Structure Prediction
 
+Datasets
+--------
 
-
-
-## Conclusions and Results
-
-#insert graphs and tables here ....
-
-## Datasets
-
+An in-depth description of the training and test datasets used in this project was described in the
+readme of the data directory on the repo: https://github.com/amckenna41/DCBLSTM_PSP/tree/master/data
+<!--
 Training:
 cullpdb+profile_6133.npy.gz - this dataset is divided into training/testing/validation/test sets.
 cullpdb+profile_6133_filtered.npy.gz - this dataset is filtered to remove redundancies with the CB513 test dataset.
@@ -44,119 +41,69 @@ The CB513 dataset is available at:
 https://www.princeton.edu/~jzthree/datasets/ICML2014/
 
 The CASP10 and CASP11 datasets are available at:
-https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d
+https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d -->
 
-
+<!--
 ## Implementation
 
 This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
 
-<img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250">
+<img src="https://github.com/amckenna41/CDBLSTM_PSP/blob/master/images/model_design.png" height="400" width="250"> -->
+<!--
 
+## Conclusions and Results
+
+#insert graphs and tables here ....
 
 
 ## System Requirements:
 ```
 Python3
 hw requirements **
-```
-
-## Running model locally with default parameters:
-
-**From main repo dir, change to PSP directory:**
-```
-cd psp
-```
+``` -->
 
 **Create Python virtual environment:**
 ```
 python3 -m venv psp_venv
 source psp_venv/bin/activate
-
 ```
 **The required Python modules/packages can be installed by:**
 ```
-
 pip install -r requirements.txt
-
 ```
 
-**Run train function to build and train model:**
+**Run main function to build and train model with specified json config file, e.g running dummy model using dummy.json:**
+```
+python main.py --config=dummy
+
+--config: configuration json file
 ```
 
-python train.py
--batch_size : training dataset batch size
--logs_dir : Directory for TensorBoard logs generated from model
+Model Saving Structure
+----------------------
+
+The code pipeline created compiles all of the training assets and logs into one output folder named using the model name with the current date/time appended to it. Below is the structure of that output folder
 
 ```
-
-## Show TensorBoard Logs....
-$ cd ~/Desktop/tensorboard
-
-tensorboard --logdir=$LOGS_DIR --port=8080
-
---logdir='saved/models/logs'
-
-## Cloud Distribution
-
-With the inclusion of the recurrent layers (LSTM), the computational complexity of the network dramatically increases, therefore it is not feasible to build the model using the whole dataset locally due to the computational constraints. Thus, a Cloud implementation to run the model successfully was created using the Google Cloud Platform.
-
-**Change current working directory to psp_gcp:**
-```
-cd psp_gcp
-```
-
-To be able to run the model on the cloud you must have an existing GCP account and have the Google Cloud SDK/CLI pre-installed. Follow the README.md and in the psp_gcp directory, which contains the relevant commands and steps to follow to configure your GCP account. <br>
-
-**From a cmd line/terminal, to train current CDBLSTM model configuration:**
-```
-./gcp_training.sh
-
--b batch size
--e epochs
--ad proportion of training dataset to use
--m module - python module containing commands to build and train model
-
-```
-# Model Saving Structure
-
-* all model attributes and objects are stored in the '/saved_models' folder
-* when training a model, a new folder within the '/saved_models' folder will be created. This folder will be named according to - 'model-name + current-date/time.'  
-* model visualisations and plots will be stored within this newly created models folder in a folder called 'plots'
-- e.g
-
-```
-psp
-├── saved_models
-│   └── psp_cdblstm_model_YYYY-MM-DD_HH:MM
-|                       └── logs
-|                       └── checkpoints
-│                       └── plots
-│                             └── figure1.png
-│                             └── figure2.png
-│                       └── model.h5
-│                       └── model_history.pckl
-│                       └── model_arch.json
-│                       └── model_output.csv
-│   └── psp_cdulstm_model_YYYY-MM-DD_HH:MM
-|                       └── logs
-|                       └── checkpoints
-│                       └── plots
-│                             └── figure1.png
-│                             └── figure2.png
-│                       └── model.h5
-|                       └── model.png
-│                       └── model_history.pckl
-│                       └── model_output.csv
-|                       └── training.log
+output_folder
+├── job_name_DDMMYYY:MM
+|   └── model_logs
+|   └── model_checkpoints
+│   └── model_plots         
+│         └── figure1.png
+│         └── figure2.png
+|         └── ....png
+│   └── model.h5
+|   └── model.png
+│   └── model_history.pckl
+│   └── model_arch.json
+│   └── model_output.csv
+|   └── model_config.json
+|   └── training.log
 └-
-
-
-https://gist.githubusercontent.com/ryanflorence/daafb1e3cb8ad740b346/raw/37fc2af6e55acc2b2fbf2aea23fec5f5c48e2fc5/folder-structure.md
 ```
 
-## Directory folders:
+Directory folders
+-----------------
 
-* `/data` - downloads and loads in the required training and test datasets
-* `/models` - stores required Keras code to build required models, also plots the results and metrics from the models after training (plot_model)
-* `/tests` - tests for datasets and models
+* `/models` - python scripts for main and auxiliary models used in project.
