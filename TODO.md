@@ -2,12 +2,12 @@ To do list
 ----------
 
 - [X] Add workflow badge to README
-- [ ] Update Auxillary models
+- [X] Update Auxillary models
 - [X] Remove spacing between bottom of func comments and 1st line of func.
 - [X] Change globals module to _globals in psp dir.
-- [ ] Append each jobs results to a the one csv file including model and GCP parameters.
+- [X] Append each jobs results to a the one csv file including model and GCP parameters.
 - [X] Remove URL and filenames for datasets from globals.
-- [ ] Visualise GCP code pipeline
+- [X] Visualise GCP code pipeline
 - [ ] Create model version on AI Platform
 - [ ] Add API's required for GCP part
 - [ ] Add roles required on GCP.
@@ -18,10 +18,10 @@ To do list
 - [X] In workflow, test code pipeline by running dummy model and checking resultant files etc.
 - [ ] Continue Hyperparameter tuning of model
 - [X] Add https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d to Data Section
-- [ ] Fix README's
+- [X] Fix README's
 - [ ] Check Latest Travis Build
 - [X] Add AUC() metric class to models
-- [ ] Change colour of box in boxplot
+- [X] Change colour of box in boxplot
 - [ ] Fix Boxplots - what do they represent etc...
 - [X] Model Tests
 - [ ] Tests for inputting data for prediction - fasta, txt, pdb tests, add data folder in tests folder
@@ -46,14 +46,14 @@ To do list
 - [ ] Re do model tests
 - [X] Remove TensorBaord stuff from model and only keep in training file
 - [ ] Keras JSON Parser
-- [ ] Check variable and layer names for models
+- [X] Check variable and layer names for models
 - [X] Remove GCP config script
 - [X] Add Workflow tests for psp_gcp whereby gcloud sdk is installed and a few commands are attempted to see if it is working correctly etc
 - [X] Remove show plots parameter #unnessary
 - [X] Add help to argparse etc
 - [X] Full Stops in func comments.
 - [ ] Add allData var back into data func
-- [ ] Fix importlib model imports for auxillary models
+- [X] Fix importlib model imports for auxillary models
 - [X] Fix output file struture diagram to include logs, checkpoints folders.
 - [X] Add parameter descriptons for LR schedulers in utils.py
 - [X] Echo some of model parameters of config file in gcp_training job
@@ -64,21 +64,20 @@ To do list
 - [X] Change staging bucket to bucket in config
 - [X] Remove hard-coded GCP params in config and inject env vars using jq (do this for local psp version as well)
 - [ ] Change color of output in training script
-- [ ] Look at output suggestions from bandit and make any changes accordingly.
+- [X] Look at output suggestions from bandit and make any changes accordingly.
 - [ ] Look at output suggestions from flake8 and make any changes accordingly.
 - [ ] Add virtual env to workflow (add to readme)
 - [ ] Change gcp_notification_func to import secret values from secrets.sh
-- [ ] Tests
 - [ ] Get job status script
-- [ ] Move model layer params to model params
+- [X] Move model layer params to model params
 - [ ] A method to create a json config file??
 - [X] Indent optimizer in json to include metaparameters, check if these meta values are set and pass into opimizer function.
-- [ ] Input parameter of training script that decides whether to train locally or to GCP.
+- [X] Input parameter of training script that decides whether to train locally or to GCP.
 - [ ] Optimizer tests
-- [ ] Re-do config files such that each layer has its individual parameters indented, then pass in via **kwargs...
+- [X] Re-do config files such that each layer has its individual parameters indented, then pass in via **kwargs...
 - [ ] Change main.py to just pass in model-parameters
-- [ ]  Check to see all config jsons open without error.
-- [ ] Upload config file used in model in model folder.
+- [X]  Check to see all config jsons open without error.
+- [X] Upload config file used in model in model folder.
 - [ ] Tests_gcp
 - [ ] Update build and build status to point to same dir
 - [X] Change filtered to "True" to 1 in configs
@@ -125,3 +124,4 @@ To do list
 - [ ] Change where logs are stored in bucket - should be stored in output folder maybe
 - [ ] 2 columns of CASP10 precision in results file
 - [X] Add comments to workflow
+- [ ] Add reduceLROnPlateau to each config

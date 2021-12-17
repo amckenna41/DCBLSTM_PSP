@@ -9,7 +9,6 @@ import argparse
 import pandas as pd
 import os
 import sys
-from datetime import date, datetime
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns

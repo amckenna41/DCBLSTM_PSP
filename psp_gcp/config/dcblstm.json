@@ -156,7 +156,8 @@
         "earlyStopping": 1,
         "modelCheckpoint": 1,
         "lr_scheduler": 0,
-        "csv_logger": 1
+        "csv_logger": 1,
+        "reduceLROnPlateau": 0
       },
       "lr_scheduler": "Step Decay"
     }
@@ -173,7 +174,8 @@
       "region": "",
       "scale_tier": "CUSTOM",
       "master_machine_type": "n1-highmem-8",
-      "cuda": 0
+      "cuda": 0,
+      "tpu": 0
     }
   ]
 }

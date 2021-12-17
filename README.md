@@ -111,9 +111,9 @@ Conclusions and Results
 The DCBLSTM model was trained for 100 epochs, achieving a peak model accuracy of ~92% during training. The model reached this ceiling of accuracy after around 60 epochs where no further improvement was noted, thus the EarlyStopping TensorFlow callback halted training after 60 epochs. The mean squared error captured during training remained constant after around 20 epochs at ~0.10. The visualisations of the model accuracy and error can be seen below.
 
 <p align="center">
-<img src="results/plots/accuracy_fig2021-11-26_15:09.png" alt="accuracy" width="450"/>
+<img src="results/plots/accuracy_fig2021-11-26_15:09.png" alt="accuracy" width="400"/>
 
-<img src="results/plots/mse_fig2021-11-26_15:09.png" alt="error" width="450"/>
+<img src="results/plots/mse_fig2021-11-26_15:09.png" alt="error" width="400"/>
 </p>
 
 **The paper is available at...**

@@ -1,6 +1,6 @@
-########################################################################################
-###     DCBRNN - Deep Convolutional Bidirectional Simple Recurrent Neural network    ###
-########################################################################################
+################################################################################
+## DCBRNN - Deep Convolutional Bidirectional Simple Recurrent Neural network  ##
+################################################################################
 
 #import required modules and dependancies
 import tensorflow as tf
@@ -8,7 +8,8 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Bidirectional, SimpleRNN, Input, Conv1D, Embedding, Dense, Dropout, Concatenate, BatchNormalization
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
-from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
+from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError,
+    FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 
 def build_model(params):
     """
@@ -34,7 +35,7 @@ def build_model(params):
     #concatenate 2 input layers
     concat = Concatenate(axis=-1)([embed, auxiliary_input])
 
-    ####### 3x1D-Convolutional Layers with BatchNormalization and Dropout #######
+    ####### 3x1D-Convolutional Layers with BatchNormalization and Dropout ######
 
     conv_layer1 = Conv1D(**{**params["conv"], **params["conv1"]})(concat)
     batch_norm = BatchNormalization(**params["batch_norm"])(conv_layer1)

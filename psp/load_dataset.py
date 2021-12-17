@@ -27,7 +27,7 @@ class CullPDB():
         :filtered (bool): What cullPDB training dataset to use, filtered or unfiltered. Filtered
             dataset has protein overlap with CB513 test dataset removed, unfiltered does not, default = True.
     Returns:
-        CullPDB training dataset object
+        CullPDB training dataset object.
     """
     def __init__(self, type="5926", filtered=True, all_data=1, save_dir=DATA_DIR):
 
@@ -88,6 +88,7 @@ class CullPDB():
             None
         """
         print("\nLoading CullPDB {} training dataset (filtered: {})...\n".format(self.type, self.filtered))
+
         #load dataset
         data = np.load(os.path.join(DATA_DIR, self.train_path[:-3]))
 
@@ -100,7 +101,7 @@ class CullPDB():
         #secondary struture labels
         labels = data[:, :, 22:30]
 
-        # shuffle data
+        #shuffle data
         num_seqs, seqlen, feature_dim = np.shape(data)
         num_classes = labels.shape[2]
         seq_index = np.arange(0, num_seqs)#
@@ -121,7 +122,7 @@ class CullPDB():
                 val_hot = get_onehot(valhot, val_hot)
 
             else:
-                # calculate the indexes for each dimension based on all_data input parameter
+                #calculate the indexes for each dimension based on all_data input parameter
                 data_index = 5600
                 test_index = 272
                 val_index = 256
@@ -154,6 +155,7 @@ class CullPDB():
                 #one-hot encoding of val labels
                 val_hot = np.ones((valhot.shape[0], valhot.shape[1])) #target array
                 val_hot = get_onehot(valhot, val_hot)
+
             else:
                 data_index = 5430
                 val_index = 5926-5690
@@ -162,6 +164,7 @@ class CullPDB():
                 vallabel = labels[seq_index[5690:5926]] #8
                 valpssm = datapssm[seq_index[5690:5926]] # 21
 
+                #one-hot encoding of val labels
                 val_hot = np.ones((valhot.shape[0], valhot.shape[1])) #target array
                 val_hot = get_onehot(valhot, val_hot)
 
@@ -222,7 +225,7 @@ class CullPDB():
         #remove unrequired zipped version of dataset
         os.remove(os.path.join(DATA_DIR, self.train_path))
 
-        print('Dataset downloaded successfully - stored in {} of size {} \n'.format(
+        print('Dataset downloaded successfully - stored in {} of size {} .\n'.format(
             os.path.join(DATA_DIR, self.train_path[:-3]),self.dataset_size()))
 
     def __len__(self):
@@ -257,7 +260,7 @@ class CB513():
     Args:
         None
     Returns:
-        CB513 test dataset object
+        CB513 test dataset object/
     """
     def __init__(self, save_dir=DATA_DIR):
 
@@ -358,7 +361,7 @@ class CB513():
         return self.test_labelsel[protein_index,:,:]
 
     def dataset_size(self):
-        """ Get size of CB513 dataset """
+        """ Get size of CB513 dataset. """
         return str(round((os.path.getsize(os.path.join(DATA_DIR,self.test_path[:-3])))/(1024*1024))) + ' MB'
 
 class CASP10():

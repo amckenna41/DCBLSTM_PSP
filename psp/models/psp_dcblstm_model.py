@@ -8,7 +8,8 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Bidirectional, LSTM, Input, Conv1D, TimeDistributed, Embedding, Dense, Dropout, Concatenate, BatchNormalization
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop, Adagrad, Adadelta, Adamax
 from tensorflow.keras.regularizers import l2
-from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
+from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError,
+    FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 
 def build_model(params):
     """
@@ -56,7 +57,7 @@ def build_model(params):
 
     lstm_f2 = Bidirectional(LSTM(**{**params["lstm"], **params["lstm2"]}),name="blstm2")(lstm_f1)
 
-    ############################################################################################
+    ############################################################################
 
     #concatenate LSTM with convolutional layers
     concat_features = Concatenate(axis=-1)([lstm_f1, lstm_f2, concat_conv])

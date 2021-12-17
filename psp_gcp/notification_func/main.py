@@ -4,15 +4,15 @@
 
 #import required modules and dependancies
 # import base64
-from google.cloud import storage, exceptions
-from googleapiclient import errors
-from googleapiclient import discovery
-from google.cloud import logging
-from google.cloud import pubsub_v1
-from google.oauth2 import service_account
+from google.cloud import storage
+# from googleapiclient import errors
+# from googleapiclient import discovery
+# from google.cloud import logging
+# from google.cloud import pubsub_v1
+# from google.oauth2 import service_account
+# import imghdr
 import smtplib
 from email.message import EmailMessage
-import imghdr
 import mimetypes
 import os
 import json

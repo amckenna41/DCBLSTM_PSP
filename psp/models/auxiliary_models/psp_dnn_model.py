@@ -8,13 +8,13 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import  Input, Embedding, Dense, Dropout, Concatenate
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
-from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
+from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError,
+    FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 
 def build_model(params):
     """
     Description:
-        Building PSP-DNN neural network model. A network consisting of  unidirectional
-        7 fully-connected layers.
+        Building PSP-DNN neural network model. A network consisting of 7 fully-connected layers.
     Args:
         :params (dict): dictionary of various model parameters to use in
         building and training of network.

@@ -1,4 +1,3 @@
-
 ################################################################################
 ########                Google Cloud Platform Utilities                 ########
 ################################################################################
@@ -12,10 +11,10 @@ import subprocess
 from google.cloud import storage, exceptions
 from googleapiclient import errors
 from googleapiclient import discovery
-# from google.cloud import logging
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from oauth2client.client import GoogleCredentials
+import tensorflow as tf
 from tensorflow.keras.utils import plot_model
 import pickle
 import json
@@ -86,7 +85,6 @@ def upload_directory(local_path, gcs_folder_path):
     """
     if not (os.path.isdir(local_path)):
         raise OSError('Path to local directory not found.')
-        return
 
     #recursively iterate through directory, uploading each file individually to GCP bucket.
     for local_file in glob.glob(local_path + '/**'):
@@ -113,7 +111,7 @@ def upload_file(blob_path, filepath):
     try:
         blob.upload_from_filename(filepath)
     except Exception as e:
-        print("Error uploading blob {} to storage bucket {} ".format(blob_path, e.message))
+        print("Error uploading blob {} to storage bucket {} .".format(blob_path, e.message))
 
 def download_file(blob_path, filepath):
     """
@@ -133,7 +131,7 @@ def download_file(blob_path, filepath):
         blob.download_to_filename(filepath)
         print('Blob {} downloaded to {}.'.format(blob_path, filepath))
     except  Exception as e:
-        print("Error downloading blob {} from storage bucket {} ".format(blob_path, e.message))
+        print("Error downloading blob {} from storage bucket {}.".format(blob_path, e.message))
 
 def get_job_hyperparmeters(project_id, job_name):
     """
@@ -252,16 +250,16 @@ def delete_blob(blob_name):
     #delete blob
     try:
         blob.delete()
-        print("Blob {} deleted from {} bucket".format(blob_name, BUCKET_NAME))
+        print("Blob {} deleted from {} bucket.".format(blob_name, BUCKET_NAME))
     except Exception as e:
-        print("Error deleting blob {} from {} bucket: {}".format(blob_name, BUCKET_NAME, e.message))
+        print("Error deleting blob {} from {} bucket: {}.".format(blob_name, BUCKET_NAME, e.message))
 
 def get_model_output(job_name):
     """
     Description:
         Output results from metrics captured when training model. Output to CSV.
     Args:
-        :job_name (str): name of AI Platform training job
+        :job_name (str): name of AI Platform training job.
     Returns:
         None
     """
@@ -341,7 +339,7 @@ def parse_json_arch(arch_json):
     Description:
         Parse model architecture JSON.
     Args:
-        :arch_json (str): filepath to model json
+        :arch_json (str): filepath to model json.
     Returns:
         None
     """
@@ -378,6 +376,22 @@ def get_job_status(job_name):
 
     #get err_message down to etag
     return status, err_message
+
+def setup_tpu():
+    """
+    Description:
+        Initialize TPU for training.
+    Args:
+        None
+    Returns:
+        :strategy (TPUStrategy): TPU training strategy object.
+    """
+    resolver = tf.distribute.cluster_resolver.TPUClusterResolver()
+    tf.config.experimental_connect_to_cluster(resolver)
+    tf.tpu.experimental.initialize_tpu_system(resolver)
+    strategy = tf.distribute.experimental.TPUStrategy(resolver)
+
+    return strategy
 
 class StepDecay():
     """

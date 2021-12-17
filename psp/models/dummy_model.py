@@ -1,5 +1,5 @@
 ################################################################################
-######     Dummy model - Used for training and test purposes Only         ######
+######     Dummy model - Used for training and test purposes only         ######
 ################################################################################
 
 #import required modules and dependancies
@@ -8,7 +8,8 @@ import argparse
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv1D, Embedding, Dense, Dropout, Concatenate
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop, Adagrad, Adadelta, Adamax
-from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError, FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
+from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError,
+    FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 
 def build_model(params):
     """

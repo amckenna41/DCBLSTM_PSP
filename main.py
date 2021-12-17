@@ -5,23 +5,20 @@
 #importing required modules and dependancies
 import os
 import sys
-sys.path.insert(0,os.path.join(os.getcwd(),'psp'))
 from os import listdir
 from os.path import join, isfile
 import argparse
 import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, CSVLogger, LearningRateScheduler
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau, CSVLogger, LearningRateScheduler
 from tensorflow.core.protobuf import rewriter_config_pb2
 from tensorflow.compat.v1.keras.backend import set_session
-from datetime import date
-from datetime import datetime
 import time
 import importlib
 import json
 from json.decoder import JSONDecodeError
 from psp.load_dataset import *
 from evaluate import *
-from psp._globals import *
+from psp._globals import model_output, OUTPUT_DIR, current_datetime
 from psp.plot_model import *
 from psp.evaluate import *
 from psp.utils import *
@@ -43,16 +40,13 @@ session = tf.compat.v1.Session(config=config_proto)
 # tf.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 set_session(session)
 
-
 #get model filenames from models directory
-remove_py = lambda x: os.path.splitext(x)[0]
-all_models = list(map(remove_py,([f for f in listdir(join('psp','models')) if isfile(join('psp','models', f)) and f[:3] == 'psp'] + \
+def remove_py(x): return os.path.splitext(x)[0]
+# remove_py = lambda x: os.path.splitext(x)[0]
+all_models = list(map(remove_py,([f for f in listdir(join('psp','models')) if isfile(join('psp','models', f)) and f[:3] == 'psp'] +
                 ([f for f in listdir(join('psp','models','auxiliary_models')) if isfile(join('psp','models','auxiliary_models', f)) \
                 and f[:3] == 'psp']))))
 all_models.append('dummy_model')
-
-# gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
-# sesh = tf.compat.v1.Session(config = tf.compat.v1.ConfigProto(gpu_options = gpu_options))
 
 #main starting function for PSP code pipeline
 def main(args):
@@ -90,6 +84,7 @@ def main(args):
     tf_version = tf.__version__
     lr_scheduler = str(params["model_parameters"][0]["lr_scheduler"])
     callbacks = (params["model_parameters"][0]["callbacks"])
+    tpu = params["parameters"][0]["tpu"]
 
     #set model output dict to values in config
     model_output["Config"] = os.path.basename(config_file)
@@ -125,7 +120,7 @@ def main(args):
     cullpdb = CullPDB(type=training_data, filtered=filtered)
 
     #import model module from models or auxillary models folder
-    if (model_!="psp_dcblstm_model" and model_!="psp_dculstm_model" and model_!="dummy_model"):
+    if (model_ != "psp_dcblstm_model" and model_ != "psp_dculstm_model" and model_ != "dummy_model"):
         mod = importlib.import_module("models.auxiliary_models."+model_)
     else:
         mod = importlib.import_module("models."+model_)
@@ -155,7 +150,7 @@ def main(args):
     #initialise Tensorflow callbacks
     #append each callback if used
     if (int(callbacks["tensorboard"])):
-        tensorboard = tf.keras.callbacks.TensorBoard(log_dir=(os.path.join(model_folder_path,
+        tensorboard = TensorBoard(log_dir=(os.path.join(model_folder_path,
             logs_path)), histogram_freq=0, write_graph=True, write_images=True)
         all_callbacks.append(tensorboard)
     if (callbacks["earlyStopping"]):
@@ -168,21 +163,24 @@ def main(args):
     if (callbacks["csv_logger"]):
         csv_logger = CSVLogger(os.path.join(model_folder_path, 'training.log'))
         all_callbacks.append(csv_logger)
+    if (callbacks["reduceLROnPlateau"]):
+        reduceLROnPlateau = ReduceLROnPlateau(monitor="loss", factor=0.1, patience=10, verbose=1, mode="min")
+        all_callbacks.append(reduceLROnPlateau)
 
     #get LR Scheduler callback to use from parameter in config file
     #remove any whitespace or '-' from lr_schedule name
     lr_scheduler = lr_scheduler.lower().strip().replace(" ", "").replace("-","")
     if (lr_scheduler == "exceptionaldecay" or lr_scheduler == "exponential"):
         exponentialDecay = ExponentialDecay()
-        lr_schedule = tf.keras.callbacks.LearningRateScheduler(exponentialDecay)
+        lr_schedule = LearningRateScheduler(exponentialDecay)
         all_callbacks.append(lr_schedule)
     elif (lr_scheduler == "timebaseddecay" or lr_scheduler == "timebased"):
         timeBasedDecay = TimedBased()
-        lr_schedule = tf.keras.callbacks.LearningRateScheduler(timeBasedDecay)
+        lr_schedule = LearningRateScheduler(timeBasedDecay)
         all_callbacks.append(lr_schedule)
     elif (lr_scheduler == "stepdecay" or lr_scheduler == "exponential"):
         stepDecay = StepDecay()
-        lr_schedule = tf.keras.callbacks.LearningRateScheduler(stepDecay)
+        lr_schedule = LearningRateScheduler(stepDecay)
         all_callbacks.append(lr_schedule)
 
     #start time func to measure the training time

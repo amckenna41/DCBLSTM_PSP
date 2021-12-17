@@ -184,7 +184,8 @@
         "earlyStopping": 0,
         "modelCheckpoint": 0,
         "lr_scheduler": 1,
-        "csv_logger": 1
+        "csv_logger": 1,
+        "reduceLROnPlateau": 0
       },
 
       "lr_scheduler": "Step Decay"

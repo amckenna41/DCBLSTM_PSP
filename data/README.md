@@ -1,8 +1,8 @@
 
 # Datasets used in project
 
-Training Datasets:
-----------------------
+Training Datasets
+-----------------
 
 * cullpdb+profile_6133
 * cullpdb+profile_6133_filtered
@@ -24,8 +24,8 @@ The original 'cullpdb+profile_6133.npy.gz' and 'cullpdb+profile_6133_filtered.np
 The training datasets are available from [[1]](#references): <br>
 
 
-Test datasets:
---------------
+Test datasets
+-------------
 
 * cb513+profile_split1.npy [[1]](#references)
 * casp10.h5 [[3]](#references)

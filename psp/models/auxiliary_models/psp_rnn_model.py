@@ -57,7 +57,7 @@ def build_model(params):
 
     rnn_f3 = SimpleRNN(**{**params["rnn"], **params["rnn3"]})(rnn_f2)
 
-    ############################################################################################
+    ############################################################################
 
     #concatenate simple RNN's with convolutional layers
     concat_features = Concatenate(axis=-1)([rnn_f1, rnn_f2, rnn_f3, conv_features])

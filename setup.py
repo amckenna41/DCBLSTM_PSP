@@ -25,14 +25,25 @@ setup(name='DCBLSTM_PSP on GCP',
       license=psp_gcp.__license__,
       url=psp_gcp.__url__,
       classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Healthcare Industry',
+        'Intended Audience :: Information Technology',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Prog9amming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Medical Science Apps.',
+        'Topic :: Scientific/Engineering :: Mathematics'
       ],
       install_requires=[
           'Cython',
@@ -59,9 +70,9 @@ setup(name='DCBLSTM_PSP on GCP',
           'pydot',
           'graphviz'
       ],
-     packages=find_packages(),
-     include_package_data=True,
-     zip_safe=True)
+      packages=find_packages(),
+      include_package_data=True,
+      zip_safe=True)
 
        # old modules/libraries
        # 'numpy >= 1.19.3; python_version < "3.9.0"',

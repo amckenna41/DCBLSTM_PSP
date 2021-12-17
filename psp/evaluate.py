@@ -60,11 +60,11 @@ def evaluate_cullpdb(model, dataset):
 
     print('Evaluating model using CullPDB {} dataset'.format(dataset.type))
     score = model.evaluate({'main_input': dataset.test_hot, 'aux_input': dataset.test_pssm},
-        {'main_output': dataset.test_labels},verbose=1,batch_size=1)
+        {'main_output': dataset.test_labels}, verbose=1, batch_size=1)
 
     #predicting protein labels values for test proteins
     pred_cull = model.predict({'main_input': dataset.test_hot,
-        'aux_input': dataset.test_pssm}, verbose=1,batch_size=1)
+        'aux_input': dataset.test_pssm}, verbose=1, batch_size=1)
 
     #convert label and prediction array to float32
     test_labels = dataset.test_labels.astype(np.float32)
@@ -117,11 +117,11 @@ def evaluate_cb513(model):
 
     print('Evaluating model using CB513 dataset')
     score = model.evaluate({'main_input': cb513.test_hot, 'aux_input': cb513.test_pssm},
-        {'main_output': cb513.test_labels},verbose=1,batch_size=1)
+        {'main_output': cb513.test_labels}, verbose=1, batch_size=1)
 
     #predicting protein labels values for test proteins
     pred_cb = model.predict({'main_input': cb513.test_hot, 'aux_input': cb513.test_pssm},
-        verbose=1,batch_size=1)
+        verbose=1, batch_size=1)
 
     #convert label and prediction array to float32
     test_labels = cb513.test_labels.astype(np.float32)
@@ -174,11 +174,11 @@ def evaluate_casp10(model):
 
     print('Evaluating model using CASP10 dataset')
     score = model.evaluate({'main_input': casp10.test_hot,
-        'aux_input': casp10.test_pssm},{'main_output': casp10.test_labels},verbose=1,batch_size=1)
+        'aux_input': casp10.test_pssm},{'main_output': casp10.test_labels},verbose=1, batch_size=1)
 
     #predicting protein labels values for test proteins
     pred_casp = model.predict({'main_input': casp10.test_hot,
-        'aux_input': casp10.test_pssm}, verbose=1,batch_size=1)
+        'aux_input': casp10.test_pssm}, verbose=1, batch_size=1)
 
     #convert label and prediction array to float32
     test_labels = casp10.test_labels.astype(np.float32)
@@ -231,11 +231,11 @@ def evaluate_casp11(model):
 
     print('Evaluating model using CASP11 dataset')
     score = model.evaluate({'main_input': casp11.test_hot,
-        'aux_input': casp11.test_pssm},{'main_output': casp11.test_labels},verbose=1,batch_size=1)
+        'aux_input': casp11.test_pssm},{'main_output': casp11.test_labels},verbose=1, batch_size=1)
 
     #predicting protein labels values for test proteins
     pred_casp = model.predict({'main_input': casp11.test_hot,
-        'aux_input': casp11.test_pssm}, verbose=1,batch_size=1)
+        'aux_input': casp11.test_pssm}, verbose=1, batch_size=1)
 
     #convert label and prediction array to float32
     test_labels = casp11.test_labels.astype(np.float32)

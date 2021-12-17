@@ -21,8 +21,6 @@ import os
 from os.path import isfile, join
 from os import listdir
 import sys
-from datetime import date
-from datetime import datetime
 import time
 import importlib
 import pkgutil
@@ -89,11 +87,16 @@ def main(args):
     epochs = int(params["epochs"])
     logs_path = str(params["logs_path"])
     cuda = params["cuda"]
+    tpu = params["tpu"]
     test_dataset = str(params["test_dataset"])
     model_ = str(params["model"])
     tf_version = tf.__version__
     lr_scheduler = str(model_params["lr_scheduler"])
     callbacks = (model_params["callbacks"])
+
+    #if using TPU, initalise TensorFlow TPU Strategy
+    if (tpu):
+        tpu_strategy = setup_tpu()
 
     #initialise global GCP bucket variable
     initialise_bucket(bucket)
@@ -131,12 +134,14 @@ def main(args):
     model_output["Tensorflow Version"] = tf_version
     model_output["TensorBoard logs dir"] = os.path.join(model_output_folder, logs_path)
     model_output["Cuda"] = cuda
+    model_output["TPU"] = tpu
     model_output["LR Scheduler"] = lr_scheduler
 
     #load training dataset
     cullpdb = CullPDB(type=training_data, filtered=filtered)
 
     all_models.append(model_)
+
     #verify model specified in config parameter is an available trainable model
     if model_ not in all_models:
         raise ValueError('Model must be in available models.')
@@ -167,21 +172,24 @@ def main(args):
     if (callbacks["csv_logger"]):
         csv_logger = CSVLogger(os.path.join(model_output_folder, 'training.log'))
         all_callbacks.append(csv_logger)
+    if (callbacks["reduceLROnPlateau"]):
+        reduceLROnPlateau = ReduceLROnPlateau(monitor="loss", factor=0.1, patience=10, verbose=1, mode="min")
+        all_callbacks.append(reduceLROnPlateau)
 
     #get LR Scheduler callback to use from parameter in config file
     #remove any whitespace or '-' from lr_schedule name
     lr_scheduler = lr_scheduler.lower().strip().replace(" ", "").replace("-","")
     if (lr_scheduler == "exceptionaldecay" or lr_scheduler == "exponential"):
         exponentialDecay = ExponentialDecay()
-        lr_schedule = tf.keras.callbacks.LearningRateScheduler(exponentialDecay)
+        lr_schedule = LearningRateScheduler(exponentialDecay)
         all_callbacks.append(lr_schedule)
     elif (lr_scheduler == "timebaseddecay" or lr_scheduler == "timebased"):
         timeBasedDecay = TimedBased()
-        lr_schedule = tf.keras.callbacks.LearningRateScheduler(timeBasedDecay)
+        lr_schedule = LearningRateScheduler(timeBasedDecay)
         all_callbacks.append(lr_schedule)
     elif (lr_scheduler == "stepdecay" or lr_scheduler == "exponential"):
         stepDecay = StepDecay()
-        lr_schedule = tf.keras.callbacks.LearningRateScheduler(stepDecay)
+        lr_schedule = LearningRateScheduler(stepDecay)
         all_callbacks.append(lr_schedule)
 
     #start counter
@@ -195,7 +203,7 @@ def main(args):
                 {'main_output': cullpdb.trainlabel},validation_data=({'main_input': cullpdb.val_hot, 'aux_input': cullpdb.valpssm},
                 {'main_output': cullpdb.vallabel}), epochs=epochs, batch_size=batch_size, verbose=2,
                 callbacks=all_callbacks,shuffle=True)
-    else:   #training on CPU (default)
+    else:   #training on CPU (default) or TPU
         print('Fitting model...')
         history = model.fit({'main_input': cullpdb.train_hot, 'aux_input': cullpdb.trainpssm},
             {'main_output': cullpdb.trainlabel},validation_data=({'main_input': cullpdb.val_hot, 'aux_input': cullpdb.valpssm},

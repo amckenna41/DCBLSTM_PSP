@@ -16,6 +16,7 @@ venv/
 psp_venv/
 /psp_gcp/venv
 /psp_aws
+/*venv
 
 #ignore dataset files and models
 /psp_gcp/*.npy

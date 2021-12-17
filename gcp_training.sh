@@ -154,6 +154,7 @@ REGION=$(jq -r .gcp_parameters[0].region $CONFIG)
 SCALE_TIER=$(jq -r .gcp_parameters[0].scale_tier $CONFIG)
 MACHINE_TYPE=$(jq -r .gcp_parameters[0].master_machine_type $CONFIG)
 CUDA=$(jq -r .gcp_parameters[0].cuda $CONFIG)
+TPU=$(jq -r .gcp_parameters[0].tpu $CONFIG)
 
 if [ $CUDA -eq 1 ]; then
   # CONFIG="dummy.json"
@@ -166,7 +167,14 @@ fi
 export CUDA_VISIBLE_DEVICES=0   # - initialise CUDA env var
 # export CUDA_VISIBLE_DEVICES=1 - If using 1 CUDA enabled GPU
 
-echo ""
+#if using TPU or not
+if [ $TPU -eq 1 ]; then
+  echo ""
+  if [ "$SCALE_TIER" != "BASIC_TPU" ]; then
+    TPU=0
+  fi
+fi
+
 if [ $LOCAL -eq 0 ]; then
   echo "Running model on Google Cloud Platform..."
 else

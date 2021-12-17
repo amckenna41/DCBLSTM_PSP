@@ -106,4 +106,5 @@ output_folder
 Directory folders
 -----------------
 
-* `/models` - python scripts for main and auxiliary models used in project.
+* `/models` - python scripts for main models used in project.
+* `/models/auxillary_models` - python scripts for auxiliary models used in project.
