@@ -216,7 +216,7 @@
       "region": "",
       "scale_tier": "CUSTOM",
       "master_machine_type": "n1-highmem-4",
-      "cuda": 0
+      "tpu": 0
     }
   ]
 

@@ -87,7 +87,7 @@ def main(args):
     epochs = int(params["epochs"])
     logs_path = str(params["logs_path"])
     cuda = params["cuda"]
-    tpu = params["tpu"]
+    tpu = gcp_params["tpu"]
     test_dataset = str(params["test_dataset"])
     model_ = str(params["model"])
     tf_version = tf.__version__

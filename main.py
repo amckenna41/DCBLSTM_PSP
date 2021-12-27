@@ -119,9 +119,9 @@ def main(args):
 
     #import model module from models or auxillary models folder
     if (model_ != "psp_dcblstm_model" and model_ != "psp_dculstm_model" and model_ != "dummy_model"):
-        mod = importlib.import_module("models.auxiliary_models."+model_)
+        mod = importlib.import_module("psp.models.auxiliary_models."+model_)
     else:
-        mod = importlib.import_module("models."+model_)
+        mod = importlib.import_module("psp.models."+model_)
 
     #build model
     model = mod.build_model(params["model_parameters"][0])
