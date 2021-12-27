@@ -28,6 +28,16 @@ class CullPDB():
             dataset has protein overlap with CB513 test dataset removed, unfiltered does not, default = True.
     Returns:
         CullPDB training dataset object.
+    References:
+        [1]: Deng X, Cheng J. MSACompro: protein multiple sequence alignment using predicted
+             secondary structure, solvent accessibility, and residue-residue contacts.
+             BMC Bioinformatics 2011;12:472.
+        [2]: Wang, S., Peng, J., Ma, J., & Xu, J. (2015). Protein secondary structure prediction
+             using deep convolutional neural fields. In arXiv [q-bio.BM]. http://arxiv.org/abs/1512.00843
+        [3]: Ma, Y., Liu, Y., & Cheng, J. (2018). Protein secondary structure prediction based
+             on data partition and semi-random subspace method. Scientific Reports, 8(1), 1–10.
+             https://doi.org/10.1038/s41598-018-28084-8
+        [4]: http://www.princeton.edu/~jzthree/datasets/ICML2014/
     """
     def __init__(self, type="5926", filtered=True, all_data=1, save_dir=DATA_DIR):
 
@@ -226,11 +236,16 @@ class CullPDB():
         os.remove(os.path.join(DATA_DIR, self.train_path))
 
         print('Dataset downloaded successfully - stored in {} of size {} .\n'.format(
-            os.path.join(DATA_DIR, self.train_path[:-3]),self.dataset_size()))
+            os.path.join(DATA_DIR, self.train_path[:-3]),self.size()))
 
     def __len__(self):
         """ Get number of proteins in CullPDB dataset - length of the 1st dimension. """
         return (self.train_hot[:,0].shape[0])
+
+    def __repr__(self):
+        """ CullPDB object representation. """
+        return "<CullPDB(Shape: {} Size: {})>".format(
+            self.shape(), self.size())
 
     def __str__(self):
         """ Print string representation of CullPDB object. """
@@ -249,7 +264,7 @@ class CullPDB():
         """ Get data labels in CullPDB dataset specified by protein index argument. """
         return self.trainlabel[protein_index,:,:]
 
-    def dataset_size(self):
+    def size(self):
         """ Get size of CullPDB dataset """
         return str(round((os.path.getsize(os.path.join(DATA_DIR,self.train_path[:-3])))/(1024*1024))) + ' MB'
 
@@ -260,7 +275,13 @@ class CB513():
     Args:
         None
     Returns:
-        CB513 test dataset object/
+        CB513 test dataset object.
+    References:
+        [2]: Wang, S., Peng, J., Ma, J., & Xu, J. (2015). Protein secondary structure
+             prediction using deep convolutional neural fields. In arXiv [q-bio.BM].
+             http://arxiv.org/abs/1512.00843
+        [3]: http://www.princeton.edu/~jzthree/datasets/ICML2014/
+        [4]: https://github.com/alrojo/CB513
     """
     def __init__(self, save_dir=DATA_DIR):
 
@@ -342,11 +363,16 @@ class CB513():
         os.remove(os.path.join(DATA_DIR, self.test_path))
 
         print('Dataset downloaded successfully - stored in {} of size {} \n'.format(
-            os.path.join(DATA_DIR, self.test_path[:-3]),self.dataset_size()))
+            os.path.join(DATA_DIR, self.test_path[:-3]),self.size()))
 
     def __len__(self):
         """ Get number of proteins in CB513 dataset - length of the 1st dimension. """
         return (self.test_hot[:,0].shape[0])
+
+    def __repr__(self):
+        """ CB513 object representation. """
+        return "<CB513(Shape: {} Size: {})>".format(
+            self.shape(), self.size())
 
     def __str__(self):
         """ Print string representation of CB513 object. """
@@ -360,7 +386,7 @@ class CB513():
         """ Get data labels in CB513 dataset specified by protein index argument. """
         return self.test_labelsel[protein_index,:,:]
 
-    def dataset_size(self):
+    def size(self):
         """ Get size of CB513 dataset. """
         return str(round((os.path.getsize(os.path.join(DATA_DIR,self.test_path[:-3])))/(1024*1024))) + ' MB'
 
@@ -372,6 +398,9 @@ class CASP10():
         None
     Returns:
         CASP10 test dataset object.
+    References:
+        [2]: https://predictioncenter.org/casp10/index.cgi
+        [3]: https://github.com/amckenna41/DCBLSTM_PSP/tree/master/data
     """
     def __init__(self):
 
@@ -437,11 +466,16 @@ class CASP10():
         open(os.path.join(DATA_DIR, self.test_path), 'wb').write(r.content)
 
         print('Dataset downloaded successfully - stored in {} of size {} \n'.format(
-            os.path.join(DATA_DIR, self.test_path),self.dataset_size()))
+            os.path.join(DATA_DIR, self.test_path),self.size()))
 
     def __len__(self):
         """ Get number of proteins in CASP10 dataset - length of the 1st dimension. """
         return (self.test_hot[:,0].shape[0])
+
+    def __repr__(self):
+        """ CASP10 object representation. """
+        return "<CASP10(Shape: {} Size: {})>".format(
+            self.shape(), self.size())
 
     def __str__(self):
         """ Print string representation of CASP10 object. """
@@ -455,7 +489,7 @@ class CASP10():
         """ Get data labels in CASP10 dataset specified by protein index argument. """
         return self.test_labels[protein_index,:,:]
 
-    def dataset_size(self):
+    def size(self):
         """ Get size of CASP10 dataset. """
         return str(round((os.path.getsize(os.path.join(DATA_DIR,self.test_path)))/(1024*1024))) + ' MB'
 
@@ -467,6 +501,9 @@ class CASP11():
         None
     Returns:
         CASP11 test dataset object.
+    References:
+        [2]: https://predictioncenter.org/casp10/index.cgi
+        [3]: https://github.com/amckenna41/DCBLSTM_PSP/tree/master/data
     """
     def __init__(self):
 
@@ -533,7 +570,7 @@ class CASP11():
         open(os.path.join(DATA_DIR,self.test_path), 'wb').write(r.content)
 
         print('Dataset downloaded successfully - stored in {} of size {} \n'.format(
-            os.path.join(DATA_DIR, self.test_path),self.dataset_size()))
+            os.path.join(DATA_DIR, self.test_path),self.size()))
 
     def __len__(self):
         """ Get number of proteins in CASP11 dataset - length of the 1st dimension. """
@@ -543,6 +580,11 @@ class CASP11():
         """ Print string representation of CASP11 object. """
         return ('CASP11 Test datatset. Shape of dataset: {}.'.format(self.shape()))
 
+    def __repr__(self):
+        """ CASP11 object representation. """
+        return "<CASP11(Shape: {} Size: {})>".format(
+            self.shape(), self.size())
+
     def shape(self):
         """ Output shape of CASP11 object. """
         return self.test_hot.shape
@@ -551,7 +593,7 @@ class CASP11():
         """ Get data labels in CASP11 dataset specified by protein index argument. """
         return self.test_labels[protein_index,:,:]
 
-    def dataset_size(self):
+    def size(self):
         """ Get size of CASP11 dataset. """
         return str(round((os.path.getsize(os.path.join(DATA_DIR,self.test_path)))/(1024*1024))) + ' MB'
 

@@ -385,6 +385,9 @@ def setup_tpu():
         None
     Returns:
         :strategy (TPUStrategy): TPU training strategy object.
+    References:
+        [1]: https://www.tensorflow.org/guide/tpu
+        [2]: https://cloud.google.com/tpu/docs/tpus
     """
     resolver = tf.distribute.cluster_resolver.TPUClusterResolver()
     tf.config.experimental_connect_to_cluster(resolver)

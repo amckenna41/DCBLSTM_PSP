@@ -9,8 +9,8 @@ To do list
 - [X] Remove URL and filenames for datasets from globals.
 - [X] Visualise GCP code pipeline
 - [ ] Create model version on AI Platform
-- [ ] Add API's required for GCP part
-- [ ] Add roles required on GCP.
+- [X] Add API's required for GCP part
+- [X] Add roles required on GCP.
 - [ ] Create front-end React App that receives input from the finished job and results for each job and visualises and returns them to a front-end web app thing.
 - [ ] Update notification func to update when job failed and parse reason.
 - [ ] Add Releases
@@ -124,4 +124,7 @@ To do list
 - [ ] Change where logs are stored in bucket - should be stored in output folder maybe
 - [ ] 2 columns of CASP10 precision in results file
 - [X] Add comments to workflow
-- [ ] Add reduceLROnPlateau to each config
+- [X] Add reduceLROnPlateau to each config
+- [X] Add references to functions
+- [X] Add repr function to classes
+- [X] Change dataset_size func to size

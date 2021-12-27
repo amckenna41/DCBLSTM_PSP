@@ -1,139 +1,56 @@
-# language: python
-#
-# # set Python versions to be tested on
-# python:
-#   - 3.6
-#   - 3.7
-#   - 3.8
-#   - 3.9
-#
-# # install and update pip, clone bandit repo
-# before_install:
-#   - echo "Upgrading pip"
-#   - python3 -m pip install --upgrade pip
-#   # - git clone https://github.com/TravisToolbox/bandit
-#
-# # install all required libraries and dependancies
-# install:
-#   - echo "Install project dependancies and requirements"
-#   - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#   - pip3 install codecov
-#   - pip3 install coverage
-#   - pip3 install pytest
-#   - pip3 install pytest-cov
-#   - pip3 install flake8 pytest
-#   - pip3 install bandit
-#   - pip3 install safety
-#   - pip3 install pydot
-#   - pip3 install pydotplus
-#   - pip3 install graphviz
-#   - sudo apt install graphviz
-#
-# #   TRAVIS_ALLOW_FAILURE:
-# # set to true if the job is allowed to fail.
-# #
-# script:
-#   - echo "Running unit tests..."
-#   - python3 -m unittest discover
-#   - echo "Running pytest tests..."
-#   - python3 -m pytest tests/
-#   - echo "Running flake8 tests..."
-#   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-#   - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-#   - echo "Running Bandit tests..."
-#   - ./bandit/scan.sh
-#   - echo "Running coverage report..."
-#   - pytest --cov-report term --cov=pySAR tests/
-#
-# after_success:
-#   - codecov
-#   - coveralls
-#   - echo "Build success"
-# #
-# #
-# #
-# #
-# #      - name: Package safety check
-# #        run: |
-# #         echo "Running package safety check"
-# #         python3 -m safety check > package_safety_output.txt
-# #         cat package_safety_output.txt
-# #        continue-on-error: true
-# #
-# #      - name: Bandit
-# #        run: |
-# #         echo "Running Bandit"
-# #         python3 -m bandit -r psp > bandit_output.txt
-# #         cat bandit_output.txt
-# #        continue-on-error: true
-# #
-# #      - name: Decrypting Service Account
-# #        env:
-# #         PASSPHRASE: ${{ secrets.GCP_PASSPHRASE }}
-# #        run: |
-# #         chmod +x ./.github/scripts/decrypt_secret.sh
-# #         ./.github/scripts/decrypt_secret.sh
-# #         cat $HOME/secrets/my_secret.json
-# #         echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/secrets/my_secret.json" >> $GITHUB_ENV
-# #
-# #      - name: Install GCP Dependancies
-# #        run: |
-# #         echo "Installing all GCP Dependancies"
-# #         echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-# #         sudo apt-get install apt-transport-https ca-certificates gnupg
-# #         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-# #         sudo apt-get update && sudo apt-get install google-cloud-sdk
-# #         gcloud auth activate-service-account --key-file=$HOME/secrets/my_secret.json
-# #         gcloud config set project ${{ secrets.GCP_PROJECT }}
-# #         gcloud config configurations list
-# #         gcloud auth list
-# #         pip3 install google-cloud
-# #         pip3 install google-cloud-storage
-# #         pip3 install Cython
-# #
-# #      - name: Upload to GCP
-# #        run: |
-# #         echo "Uploading artifacts to GCP"
-# #         gsutil cp bandit_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/bandit_logs/bandit_output_$(date +"%H:%M_%m_%d_%Y").txt"
-# #
-# #      - name: Lint with flake8
-# #        run: |
-# #         echo "Running flake8"
-# #         # stop the build if there are Python syntax errors or undefined names
-# #         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics > flake8_output.txt
-# #         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-# #         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics >> flake8_output.txt
-# #         gsutil cp flake8_output.txt "${{ secrets.GCP_BUCKET }}/workflow_logs/flake8_logs/flake8_output_$(date +"%H:%M_%m_%d_%Y").txt"
-# #        continue-on-error: true
-# #
-# #      - name: Run Dummy Model locally
-# #        run: |
-# #         echo "Running dummy psp model"
-# #         cd psp
-# #         python3 main.py -config "dummy"
-# #
-# #      - name: Run Dummy Model on GCP
-# #        run: |
-# #         echo "Running dummy psp model on GCP"
-# #         cd psp_gcp
-# #         python3 setup.py install
-# #         ./gcp_training.sh --config="dummy"
-# #
-# #      - name: Testing with unittest
-# #        run: |
-# #         echo "Testing all tests using unittest framework..."
-# #         cd psp
-# #         python3 -m unittest discover
-# #
-# #      - name: Testing with pytest
-# #        run: |
-# #         echo "Testing all tests using pytest framework..."
-# #         pytest
-# #
-# #      - name: Coverage Report
-# #        run: |
-# #         echo "Running coverage report..."
-# #         cd psp
-# #         pytest --cov-report term --cov=test_dcblstm tests/
-# #
-# # #test to see if correct files output to Storage Bucket
+language: python
+
+# set Python versions to be tested on
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+  - 3.9
+
+# install and update pip, clone bandit repo
+before_install:
+  - echo "Upgrading pip"
+  - python3 -m pip install --upgrade pip
+
+# install all required libraries and dependancies
+install:
+  - echo "Install project dependancies and requirements"
+  - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+  - pip3 install codecov
+  - pip3 install coverage
+  - pip3 install pytest
+  - pip3 install pytest-cov
+  - pip3 install flake8 pytest
+  - pip3 install bandit
+  - pip3 install safety
+  - pip3 install pydot
+  - pip3 install pydotplus
+  - pip3 install Cython
+  - pip3 install google-cloud
+  - pip3 install google-cloud-storage
+  - pip3 install graphviz
+  - sudo apt install graphviz
+
+
+#   TRAVIS_ALLOW_FAILURE:
+# set to true if the job is allowed to fail.
+script:
+  - echo "Running unit tests..."
+  - python3 -m unittest discover
+  - echo "Running pytest tests..."
+  - python3 -m pytest tests/
+  - echo "Running flake8 tests..."
+  - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+  - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  # - echo "Running Bandit tests..."
+  # - ./bandit/scan.sh
+  - echo "Running coverage report..."
+  - pytest --cov-report term --cov=pySAR tests/
+  - python3 -m safety check > package_safety_output.txt
+  - echo "Running model locally"
+  - python3 main.py --config="dummy"
+  
+after_success:
+  - codecov
+  - coveralls
+  - echo "Build success"
