@@ -15,12 +15,13 @@ Table of Contents
   * [Introduction](#introduction)
   * [Approach and implementation](#approach)
   * [Datasets](#datasets)
+  * [Conclusions and Results](#conclusions-and-results)
   * [Requirements](#requirements)
   * [Installation](#installation)
   * [Usage](#usage)
-  * [Cloud Distribution](#clouddistribution)
-  * [Directory Folders](#directoryfolders)
-  * [Output Directory Structure](#outputdirectorystructure)
+  * [Cloud Distribution](#cloud-distribution)
+  * [Directory Folders](#directory-folders)
+  * [Output Directory Structure](#output-directory-structure)
   * [Tests](#tests)
   * [Open Issues](#Issues)
   * [Contact](#contact)
@@ -47,8 +48,8 @@ Proteins are made up of one or more polypeptide chains of amino acid residues. T
 <img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/protein_structure.jpeg" height="450" width="300">
 </p>
 
-Approach
---------
+Approach and implementation
+---------------------------
 
 Many different machine learning approaches for implementing effective PSP have been proposed which have included Convolutional Neural Nets, SVM's, random forests, KNN, Hidden Markov Models etc [[6, 7, 8, 9, 10]](#references). There has also been much recent research with the utilisation of recurrent neural nets, specifically using GRU's (Gated Recurrent Units) and LSTM's (Long-Short-Term-Memory) [[11, 12]](#references). These recurrent components help map long-distance dependancies in the protein chain, whereby an amino acid may be influenced by a residue much earlier or later in the sequence, this can be attributed to the complex protein folding process. An LSTM cell is made up of 3 gates - input, output and forget [[13]](#references). The forget gate decodes what information the should 'forget' or not. The input gate updates the cell state and output gate controls the extent to which a value in the cell is used to compute the output activation of the LSTM. <br>
 
@@ -61,6 +62,12 @@ Many different machine learning approaches for implementing effective PSP have b
 Bidirectional LSTM's which allow for the LSTM unit to consider the protein sequence in the forward and backward direction. Additionally, to map local dependancies and context between adjacent residues, a CNN preceded the recurrent component of the model where 1-Dimensional convolutional layers were used.
 Optimisation and regularisation techniques were applied to the model to maximise performance and efficiency.
 
+
+This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
+
+<p align="center">
+<img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/model.png">
+</p>
 
 Datasets
 --------
@@ -93,16 +100,6 @@ The CASP10 and CASP11 datasets are available at:
 https://drive.google.com/drive/folders/1404cRlQmMuYWPWp5KwDtA7BPMpl-vF-d OR
 https://github.com/amckenna41/DCBLSTM_PSP/tree/master/psp/data/casp10.h5 &
 https://github.com/amckenna41/DCBLSTM_PSP/tree/master/psp/data/casp11.h5
-
-
-Implementation
---------------
-
-This PSP project was implemented using the Keras API which is a deep learning API that runs on top of the TensorFlow machine learning framework. The model consisted of 3 main components, a 1-Dimensional CNN for capturing local context between adjacent amino acids, a bidirectional LSTM RNN for mapping long distance dependancies within the sequence and a deep fully-connected network used for dimensionality reduction and classification. The design of the model can be seen below:
-
-<p align="center">
-<img src="https://github.com/amckenna41/DCBLSTM_PSP/blob/master/images/model.png">
-</p>
 
 
 Conclusions and Results
@@ -156,9 +153,18 @@ source psp_venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Run main function to build and train model with specified json config file, e.g running dummy model using dummy.json:**
+Usage
+-----
+The functions for building, training and testing the models require a configuration json file for initialising the models' various parameters and layer values. For training locally, the config files are in the <em>/config<em> directory and for training on the GCP the config files are in the folder <em>/psp_gcp/config<em>. The main difference between these configs is the inclusion of the cloud-specific parameter values such as bucket, region, project, machine type etc. The local and GCP distributions are realised using the main.py and main_gcp.py functions, respectively. The cloud distribution requires using the ./gcp_training script to initialise all the various GCP Ai-Platform related parameters. 
+
+**Run local main function to build and train model with specified json config file, e.g running dummy model using dummy.json:**
 ```
 python main.py --config=dummy
+```
+
+**Run GCP training script to build and train model with specified json config file, e.g running dummy model using dummy.json:**
+```
+./gcp_training --config=dummy --local=0
 ```
 
 Cloud Distribution
@@ -175,6 +181,19 @@ To be able to run the model on the cloud you must have an existing GCP account a
 --config: relative path to desired model config file to train (default=dummy.json)
 --local: (0/1) train model locally or on GCP AI-Platform using GCP code pipeline (local=0)
 ```
+
+Directory folders
+-----------------
+
+* `/config` - configuration json files containing model and training parameters for building models.
+* `/data` - training and test datasets used in project.
+* `/docs` - documentation for project.
+* `/images` - images used for README and throughout repo.
+* `/psp` - main protein structure directory containing all modules and code required for building and training models locally.  
+* `/psp_gcp` - Google Cloud Platform distribution for training and building models for PSP on the cloud
+* `/tests` - unit tests for project using unittest Python framework.
+* `/results` - final trained DCBLSTM model and all its results and model artefacts.
+
 Output Directory Structure
 --------------------------
 The code pipeline created, either locally or globally using the GCP, compiles all of the training assets and logs into one output folder named using the model name with the current date/time appended to it. Below is the structure of that output folder
@@ -213,18 +232,6 @@ python -m unittest tests.MODULE_NAME -v
 ```
 
 You can add the flag *-b* to suppress some of the verbose output when running the unittests.
-
-Directory folders
------------------
-
-* `/config` - configuration json files containing model and training parameters for building models.
-* `/data` - training and test datasets used in project.
-* `/docs` - documentation for project.
-* `/images` - images used for README and throughout repo.
-* `/psp` - main protein structure directory containing all modules and code required for building and training models locally.  
-* `/psp_gcp` - Google Cloud Platform distribution for training and building models for PSP on the cloud
-* `/tests` - unit tests for project using unittest Python framework.
-* `/results` - final trained DCBLSTM model and all its results and model artefacts.
 
 Issues
 ------

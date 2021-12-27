@@ -34,7 +34,7 @@ off = rewriter_config_pb2.RewriterConfig.OFF
 config_proto.gpu_options.allow_growth = True
 config_proto.graph_options.rewrite_options.arithmetic_optimization = off
 #set tensorflow GPUOptions so TF doesn't overload GPU if present
-config_proto.gpu_options(per_process_gpu_memory_fraction=0.333)
+# config_proto.gpu_options(per_process_gpu_memory_fraction=0.333)
 session = tf.compat.v1.Session(config=config_proto)
 # tf.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 set_session(session)
