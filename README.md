@@ -155,7 +155,7 @@ pip install -r requirements.txt
 
 Usage
 -----
-The functions for building, training and testing the models require a configuration json file for initialising the models' various parameters and layer values. For training locally, the config files are in the <em>/config<em> directory and for training on the GCP the config files are in the folder <em>/psp_gcp/config<em>. The main difference between these configs is the inclusion of the cloud-specific parameter values such as bucket, region, project, machine type etc. The local and GCP distributions are realised using the main.py and main_gcp.py functions, respectively. The cloud distribution requires using the ./gcp_training script to initialise all the various GCP Ai-Platform related parameters. 
+The functions for building, training and testing the models require a configuration json file for initialising the models' various parameters and layer values. For training locally, the config files are in the <em>/config</em> directory and for training on the GCP the config files are in the folder <em>/psp_gcp/config</em>. The main difference between these configs is the inclusion of the cloud-specific parameter values such as bucket, region, project, machine type etc. The local and GCP distributions are realised using the main.py and main_gcp.py functions, respectively. The cloud distribution requires using the ./gcp_training script to initialise all the various GCP Ai-Platform related parameters. 
 
 **Run local main function to build and train model with specified json config file, e.g running dummy model using dummy.json:**
 ```
