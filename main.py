@@ -83,7 +83,6 @@ def main(args):
     tf_version = tf.__version__
     lr_scheduler = str(params["model_parameters"][0]["lr_scheduler"])
     callbacks = (params["model_parameters"][0]["callbacks"])
-    tpu = params["parameters"][0]["tpu"]
 
     #set model output dict to values in config
     model_output["Config"] = os.path.basename(config_file)
