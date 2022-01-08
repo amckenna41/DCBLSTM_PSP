@@ -234,6 +234,14 @@ python -m unittest tests.MODULE_NAME -v
 
 You can add the flag *-b* to suppress some of the verbose output when running the unittests.
 
+CI/CD
+-----
+
+CI/CD is implemented within the project with three main pipelines implemented that automatically build and test the project upon any changes made to the repo. The three pipelines are:
+* [GitHub Actions][GitHubActions]
+* [Travis CI][TravisCI]
+* [Circle CI][CircleCI]
+
 Issues
 ------
 Any issues, errors or bugs can be raised via the [Issues](https://github.com/amckenna41/DCBLSTM_PSP/issues) tab in the repository. Many of the existing issues in the tab are self-raised to keep a record of different bugs and problems that I came across during development so as to maintain a log of common problems that I can reference back to in future projects.
@@ -280,3 +288,6 @@ References
 [pydotplus]: https://pypi.org/project/pydotplus/
 [graphviz]: https://pypi.org/project/graphviz/
 [Issues]: https://github.com/amckenna41/DCBLSTM_PSP/issues
+[GitHubActions]: https://github.com/amckenna41/DCBLSTM_PSP/actions
+[TravisCI]: https://app.travis-ci.com/github/amckenna41/DCBLSTM_PSP
+[CircleCI]: https://app.circleci.com/pipelines/github/amckenna41/DCBLSTM_PSP

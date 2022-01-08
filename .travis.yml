@@ -46,7 +46,7 @@ script:
   # - ./bandit/scan.sh
   - echo "Running coverage report..."
   - pytest --cov-report term --cov=pySAR tests/
-  - python3 -m safety check > package_safety_output.txt
+  # - python3 -m safety check > package_safety_output.txt
   - echo "Running model locally"
   - python3 main.py --config="dummy"
   
