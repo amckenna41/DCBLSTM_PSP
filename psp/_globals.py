@@ -1,11 +1,9 @@
-
 ################################################################################
 ##########                  Global Variables                          ##########
 ################################################################################
 
 from datetime import date
 from datetime import datetime
-from google.cloud import storage
 
 #######################################################################
 ###### Get current date and time, store in current_datetime var #######

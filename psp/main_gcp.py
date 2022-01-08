@@ -27,7 +27,7 @@ import pkgutil
 import json
 from google.cloud import storage
 from json.decoder import JSONDecodeError
-from psp.load_dataset import *
+from psp.dataset import *
 from psp.plot_model import *
 from psp.gcp_utils import *
 from psp._globals import *

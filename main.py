@@ -16,7 +16,7 @@ import time
 import importlib
 import json
 from json.decoder import JSONDecodeError
-from psp.load_dataset import *
+from psp.dataset import *
 from psp._globals import model_output, OUTPUT_DIR, current_datetime
 from psp.plot_model import *
 from psp.evaluate import *

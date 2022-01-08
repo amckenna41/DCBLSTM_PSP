@@ -128,3 +128,6 @@ To do list
 - [X] Add references to functions
 - [X] Add repr function to classes
 - [X] Change dataset_size func to size
+- [ ] Change model tests to open up each models config and cross-reference with the config values.
+- [X] Change load_dataset to dataset.py
+- [X] Change setup to setUpClass(self) + @classmethod

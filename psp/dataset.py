@@ -205,7 +205,7 @@ class CullPDB():
         self.val_hot = val_hot
         self.valpssm = valpssm
         self.vallabel = vallabel
-        if not(self.filtered):
+        if not (self.filtered):
             self.test_hot = test_hot
             self.test_labels = test_labels
             self.test_pssm = test_pssm
@@ -291,7 +291,7 @@ class CB513():
         self.url = CB513_URL
         self.test_path = CB513_PATH
 
-        print("\nLoading CB513 test dataset ...\n")
+        print("\nLoading CB513 test dataset...\n")
 
         #download dataset if not already in data directory
         if not (os.path.isfile(os.path.join(DATA_DIR, self.test_path[:-3]))):

@@ -12,12 +12,12 @@ from sklearn.metrics import classification_report, confusion_matrix, roc_auc_sco
 from sklearn.metrics import plot_confusion_matrix
 try:
     from _globals import *
-    from load_dataset import *
+    from dataset import *
     from plot_model import *
     from utils import *
 except:
     from . _globals import *
-    from . load_dataset import *
+    from . dataset import *
     from . plot_model import *
     from . utils import *
 
@@ -310,8 +310,8 @@ def categorical_accuracy(y_true, y_pred):
     Returns:
         categorical_accuracy (float).
     """
-    return K.mean(K.equal(K.argmax(y_true, axis=-1),
-                  K.argmax(y_pred, axis=-1)))
+    return (K.mean(K.equal(K.argmax(y_true, axis=-1),
+                  K.argmax(y_pred, axis=-1))))
 
 def weighted_accuracy(y_true, y_pred):
     """
@@ -324,8 +324,8 @@ def weighted_accuracy(y_true, y_pred):
     Returns:
         weighted_accuracy (float).
     """
-    return K.sum(K.equal(K.argmax(y_true, axis=-1),
-                  K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
+    return (K.sum(K.equal(K.argmax(y_true, axis=-1),
+                  K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true))
 
 def sparse_categorical_accuracy(y_true, y_pred):
     """
@@ -437,7 +437,7 @@ def FN(y_true, y_pred):
     # FN = np.logical_and(K.eval(y_true) == 1, K.eval(y_pred) == 0)
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
     possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    fn = possible_positives - true_positives
+    fn = int(possible_positives - true_positives)
 
     return fn
 
@@ -454,7 +454,7 @@ def FP(y_true, y_pred):
     FP = np.logical_and(K.eval(y_true) == 0, K.eval(y_pred) == 1)
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
     predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    fp = predicted_positives - true_positives
+    fp = int(predicted_positives - true_positives)
 
     return fp
 

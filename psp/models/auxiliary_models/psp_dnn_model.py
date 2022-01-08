@@ -8,7 +8,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import  Input, Embedding, Dense, Dropout, Concatenate
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
-from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError,
+from tensorflow.keras.metrics import AUC, MeanSquaredError, RootMeanSquaredError, \
     FalseNegatives, FalsePositives, MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
 
 def build_model(params):

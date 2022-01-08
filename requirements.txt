@@ -17,3 +17,4 @@ pydotplus==2.0.2
 graphviz==0.18
 httplib2==0.20
 pyparsing==2.4.7
+pytest==6.2.4

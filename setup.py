@@ -68,7 +68,8 @@ setup(name='DCBLSTM_PSP on GCP',
           'seaborn',
           'cloudml-hypertune',
           'pydot',
-          'graphviz'
+          'graphviz',
+          'pytest'
       ],
       packages=find_packages(),
       include_package_data=True,
