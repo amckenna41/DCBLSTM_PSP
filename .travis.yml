@@ -42,10 +42,10 @@ script:
   - echo "Running flake8 tests..."
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
   - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-  # - echo "Running Bandit tests..."
+  - echo "Running Bandit tests..."
   # - ./bandit/scan.sh
   - echo "Running coverage report..."
-  - pytest --cov-report term --cov=pySAR tests/
+  # - pytest --cov-report term --cov=psp tests/
   # - python3 -m safety check > package_safety_output.txt
   - echo "Running model locally"
   - python3 main.py --config="dummy"

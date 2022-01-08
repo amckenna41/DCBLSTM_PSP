@@ -394,7 +394,7 @@ def precision(y_true, y_pred):
     """
     Description:
         Calculates the precision - positive predictive value, fraction of relevant instances
-        among the retrieved instances; true positives / true positives + false positives. 
+        among the retrieved instances; true positives / true positives + false positives.
     Args:
         :y_true (np.ndarray): ground truth class labels.
         :y_pred (np.ndarray): predicted class labels.

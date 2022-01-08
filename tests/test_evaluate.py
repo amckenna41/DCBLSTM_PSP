@@ -116,7 +116,7 @@ class EvaluationTests(unittest.TestCase):
         self.assertTrue(type(weight_acc_casp10.numpy()).__module__ == (np.__name__),'Data type must be numpy array')
         self.assertTrue(weight_acc_casp10 >= 0 and weight_acc_casp10 <=1)
 #4.)
-        cat_acc_casp11 = weighted_accuracy(self.casp11.test_labels, self.pred_casp11)
+        weight_acc_casp11 = weighted_accuracy(self.casp11.test_labels, self.pred_casp11)
         self.assertTrue(type(weight_acc_casp11.numpy()).__module__ == (np.__name__),'Data type must be numpy array')
         self.assertTrue(weight_acc_casp11 >= 0 and weight_acc_casp11 <=1)
 
