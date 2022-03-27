@@ -9,7 +9,8 @@
       "data_dir": "data",
       "cuda": 0,
       "test_dataset": "all",
-      "model": "dummy_model"
+      "model": "dummy_model",
+      "save_h5": 1 
     }
   ],
   "model_parameters": [

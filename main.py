@@ -83,6 +83,7 @@ def main(args):
     tf_version = tf.__version__
     lr_scheduler = str(params["model_parameters"][0]["lr_scheduler"])
     callbacks = (params["model_parameters"][0]["callbacks"])
+    save_h5 = params["parameters"][0]["save_h5"]
 
     #set model output dict to values in config
     model_output["Config"] = os.path.basename(config_file)
@@ -205,8 +206,11 @@ def main(args):
     #append training time to output file
     model_output['Training Time'] = elapsed
 
-    #save trained model
-    model.save(os.path.join(model_folder_path, 'model.h5'))
+    #save trained model in either hdf5 or SavedModel format
+    if (save_h5):
+        model.save(os.path.join(model_folder_path, 'model.h5'))
+    else:
+        model.save(os.path.join(model_folder_path, 'model'))
 
     #save model history pickle
     save_history(history, os.path.join(model_folder_path, 'history.pckl'))

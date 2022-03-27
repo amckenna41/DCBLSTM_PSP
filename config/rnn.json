@@ -9,8 +9,8 @@
       "data_dir": "data",
       "cuda": 0,
       "test_dataset": "all",
-      "model": "psp_rnn_model"
-
+      "model": "psp_rnn_model",
+      "save_h5": 1 
     }
   ],
   "model_parameters": [

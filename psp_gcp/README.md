@@ -82,6 +82,26 @@ gsutil mb -l $REGION gs://$BUCKET_NAME
 where $REGION is GCP region and $BUCKET_NAME is the name of the bucket.
 </details>
 
+### Enable GCP API's ###
+
+You will need to enable several API's to use and communicate with GCP's services including for storage, authentication, running the models and for logging/monitoring purposes. 
+
+1. To list all of the GCP API's available, run the following command:
+```
+gcloud services list
+```
+
+2. To enable each API service, run the following, replacing the API with its respective command:
+```
+gcloud services enable storage.googleapis.com
+```
+* Compute Engine API - compute.googleapis.com 
+* IAM API - iam.googleapis.com
+* Cloud Logging API - logging.googleapis.com
+* AI Platform training & prediction API - ml.googleapis.com
+* Cloud Monitoring API - monitoring.googleapis.com
+* Storage API - storage.googleapis.com
+
 Usage
 -----
 

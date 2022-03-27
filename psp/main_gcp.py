@@ -93,6 +93,7 @@ def main(args):
     tf_version = tf.__version__
     lr_scheduler = str(model_params["lr_scheduler"])
     callbacks = (model_params["callbacks"])
+    save_h5 = params["save_h5"]
 
     #if using TPU, initalise TensorFlow TPU Strategy
     if (tpu):
@@ -218,7 +219,12 @@ def main(args):
     #save model locally in saved models dir - create dir in this dir to store all model related objects
     print('Model saved in {} folder as {} '.format(
         os.path.dirname(model_output_folder), os.path.basename(os.path.join(model_output_folder, 'model.h5'))))
-    model.save(os.path.join(model_output_folder, 'model.h5'))
+    
+    #save trained model in either hdf5 or SavedModel format
+    if (save_h5):
+        model.save(os.path.join(model_output_folder, 'model.h5'))
+    else:
+        model.save(os.path.join(model_output_folder, 'model'))
 
     #save model history pickle
     history_filepath = os.path.join(model_output_folder, 'history.pckl')

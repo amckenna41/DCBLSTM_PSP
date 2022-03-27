@@ -1,6 +1,5 @@
 To do list
 ----------
-
 - [X] Add workflow badge to README
 - [X] Update Auxillary models
 - [X] Remove spacing between bottom of func comments and 1st line of func.
@@ -66,7 +65,7 @@ To do list
 - [ ] Change color of output in training script
 - [X] Look at output suggestions from bandit and make any changes accordingly.
 - [ ] Look at output suggestions from flake8 and make any changes accordingly.
-- [ ] Add virtual env to workflow (add to readme)
+- [X] Add virtual env to workflow (add to readme)
 - [ ] Change gcp_notification_func to import secret values from secrets.sh
 - [ ] Get job status script
 - [X] Move model layer params to model params
@@ -131,3 +130,5 @@ To do list
 - [ ] Change model tests to open up each models config and cross-reference with the config values.
 - [X] Change load_dataset to dataset.py
 - [X] Change setup to setUpClass(self) + @classmethod
+- [X] Add API enable commands to psp_gcp gcloud services enable appengine.googleapis.com
+- [X] https://www.tensorflow.org/tutorials/keras/save_and_load#savedmodel_format

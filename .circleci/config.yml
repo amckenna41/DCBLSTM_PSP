@@ -142,4 +142,10 @@ workflows:
             branches:
               only:
                 - master
-      
+      - gcp-model:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only:
+                - master
