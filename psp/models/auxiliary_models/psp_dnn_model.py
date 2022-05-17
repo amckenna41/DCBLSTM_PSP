@@ -29,7 +29,7 @@ def build_model(params):
         input_length=params["input"]["input_shape"])(main_input)
 
     #secondary input is the protein profile features
-    auxiliary_input = Input(shape=(params["input"]["input_shape"],params["input"]["num_aminoacids"]), name='aux_input')
+    auxiliary_input = Input(shape=(params["input"]["input_shape"], params["input"]["num_aminoacids"]), name='aux_input')
 
     #concatenate 2 input layers
     concat_features = Concatenate(axis=-1)([embed, auxiliary_input])
@@ -77,7 +77,7 @@ def build_model(params):
         optimizer = Adam(**params["optimizer"])
 
     #compile model using adam optimizer and the cateogorical crossentropy loss function
-    model.compile(optimizer = optimizer, loss={'main_output': 'categorical_crossentropy'}, \
+    model.compile(optimizer=optimizer, loss={'main_output': 'categorical_crossentropy'}, \
         metrics=['accuracy', MeanSquaredError(), RootMeanSquaredError(), FalseNegatives(),
             FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision()])
 

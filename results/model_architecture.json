@@ -1,5 +1,5 @@
 {
-   "class_name": "Functional",
+   "class_name": "Model",
    "config": {
       "name": "psp_dcblstm_model",
       "layers": [
@@ -116,7 +116,6 @@
                "dilation_rate": [
                   1
                ],
-               "groups": 1,
                "activation": "relu",
                "use_bias": 1,
                "kernel_initializer": {
@@ -165,7 +164,6 @@
                "dilation_rate": [
                   1
                ],
-               "groups": 1,
                "activation": "relu",
                "use_bias": 1,
                "kernel_initializer": {
@@ -214,7 +212,6 @@
                "dilation_rate": [
                   1
                ],
-               "groups": 1,
                "activation": "relu",
                "use_bias": 1,
                "kernel_initializer": {
@@ -496,7 +493,7 @@
                      "return_sequences": 1,
                      "return_state": 0,
                      "go_backwards": 0,
-                     "stateful": false,
+                     "stateful": 0,
                      "unroll": 0,
                      "time_major": 0,
                      "units": 200,
@@ -507,21 +504,18 @@
                         "class_name": "GlorotUniform",
                         "config": {
                            "seed": null
-                        },
-                        "shared_object_id": 33
+                        }
                      },
                      "recurrent_initializer": {
                         "class_name": "Orthogonal",
                         "config": {
                            "gain": 1.0,
                            "seed": null
-                        },
-                        "shared_object_id": 34
+                        }
                      },
                      "bias_initializer": {
                         "class_name": "Zeros",
-                        "config": {},
-                        "shared_object_id": 35
+                        "config": {}
                      },
                      "unit_forget_bias": true,
                      "kernel_regularizer": null,
@@ -565,7 +559,7 @@
                      "return_sequences": 1,
                      "return_state": 0,
                      "go_backwards": 0,
-                     "stateful": false,
+                     "stateful": 0,
                      "unroll": 0,
                      "time_major": 0,
                      "units": 200,
@@ -576,21 +570,18 @@
                         "class_name": "GlorotUniform",
                         "config": {
                            "seed": null
-                        },
-                        "shared_object_id": 39
+                        }
                      },
                      "recurrent_initializer": {
                         "class_name": "Orthogonal",
                         "config": {
                            "gain": 1.0,
                            "seed": null
-                        },
-                        "shared_object_id": 40
+                        }
                      },
                      "bias_initializer": {
                         "class_name": "Zeros",
-                        "config": {},
-                        "shared_object_id": 41
+                        "config": {}
                      },
                      "unit_forget_bias": true,
                      "kernel_regularizer": null,
@@ -873,6 +864,6 @@
          ]
       ]
    },
-   "keras_version": "2.7.0",
+   "keras_version": "2.3.0-tf",
    "backend": "tensorflow"
 }

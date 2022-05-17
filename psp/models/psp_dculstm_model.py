@@ -38,15 +38,15 @@ def build_model(params):
     ####### 3x1D-Convolutional Layers with BatchNormalization and Dropout ######
 
     conv_layer1 = Conv1D(**{**params["conv"], **params["conv1"]})(concat)
-    batch_norm = BatchNormalization(**params["batch_norm"],name="batchNorm_1")(conv_layer1)
+    batch_norm = BatchNormalization(**params["batch_norm"], name="batchNorm_1")(conv_layer1)
     conv1_dropout = Dropout(**params["dropout1"])(batch_norm)
 
     conv_layer2 = Conv1D(**{**params["conv"], **params["conv2"]})(concat)
-    batch_norm = BatchNormalization(**params["batch_norm"],name="batchNorm_2")(conv_layer2)
+    batch_norm = BatchNormalization(**params["batch_norm"], name="batchNorm_2")(conv_layer2)
     conv2_dropout = Dropout(**params["dropout2"])(batch_norm)
 
     conv_layer3 = Conv1D(**{**params["conv"], **params["conv3"]})(concat)
-    batch_norm = BatchNormalization(**params["batch_norm"],name="batchNorm_3")(conv_layer3)
+    batch_norm = BatchNormalization(**params["batch_norm"], name="batchNorm_3")(conv_layer3)
     conv3_dropout = Dropout(**params["dropout3"])(batch_norm)
 
     concat_conv = Concatenate(axis=-1)([conv1_dropout, conv2_dropout, conv3_dropout])

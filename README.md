@@ -10,6 +10,10 @@
 [![Size](https://img.shields.io/github/repo-size/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP)
 [![Commits](https://img.shields.io/github/commit-activity/w/amckenna41/DCBLSTM_PSP)](https://github.com/DCBLSTM_PSP)
 
+<p align="center">
+<img src="images/protein_banner.jpeg" alt="output" width="600"/>
+</p>
+
 Table of Contents
 -----------------
 
@@ -167,6 +171,11 @@ python main.py --config=dummy
 ```
 ./gcp_training --config=dummy --local=0
 ```
+
+<p align="center">
+<img src="images/terminal_output.png" alt="output" width="400"/>
+</p>
+
 
 Cloud Distribution
 ------------------

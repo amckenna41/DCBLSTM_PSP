@@ -89,7 +89,7 @@ def build_model(params):
         optimizer = Adam(**params["optimizer"])
 
     #compile model using adam optimizer and the cateogorical crossentropy loss function
-    model.compile(optimizer = optimizer, loss={'main_output': 'categorical_crossentropy'}, \
+    model.compile(optimizer=optimizer, loss={'main_output': 'categorical_crossentropy'}, \
         metrics=['accuracy', MeanSquaredError(), RootMeanSquaredError(), FalseNegatives(),
             FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision()])
 

@@ -143,7 +143,6 @@ BATCH_SIZE=$(jq -r .parameters[0].batch_size $CONFIG)
 EPOCHS=$(jq -r .parameters[0].epochs $CONFIG)
 OPTIMIZER=$(jq -r .model_parameters[0].optimizer.name $CONFIG)
 LEARNING_RATE=$(jq -r .model_parameters[0].optimizer.learning_rate $CONFIG)
-LEARNING_RATE_SCHEDULER=$(jq -r .model_parameters[0].lr_scheduler $CONFIG)
 LOGS_PATH=$(jq -r .parameters[0].logs_path $CONFIG)
 TEST_DATASET=$(jq -r .parameters[0].test_dataset $CONFIG)
 BUCKET=$(jq -r .gcp_parameters[0].bucket $CONFIG)
@@ -155,6 +154,13 @@ SCALE_TIER=$(jq -r .gcp_parameters[0].scale_tier $CONFIG)
 MACHINE_TYPE=$(jq -r .gcp_parameters[0].master_machine_type $CONFIG)
 CUDA=$(jq -r .gcp_parameters[0].cuda $CONFIG)
 TPU=$(jq -r .gcp_parameters[0].tpu $CONFIG)
+TENSORBOARD=$(jq -r .model_parameters[0].callbacks.tensorboard.tensorboard $CONFIG)
+EARLY_STOPPING=$(jq -r .model_parameters[0].callbacks.earlyStopping.earlyStopping $CONFIG)
+MODEL_CHECKPOINT=$(jq -r .model_parameters[0].callbacks.modelCheckpoint.modelCheckpoint $CONFIG)
+LR_SCHEDULER=$(jq -r .model_parameters[0].callbacks.lrScheduler.lrScheduler $CONFIG)
+LEARNING_RATE_SCHEDULER=$(jq -r .model_parameters[0].callbacks.lrScheduler.scheduler $CONFIG)
+CSV_LOGGER=$(jq -r .model_parameters[0].callbacks.csv_logger.csv_logger $CONFIG)
+REDUCE_LR_ON_PLATEAU=$(jq -r .model_parameters[0].callbacks.reduceLROnPlateau.reduceLROnPlateau $CONFIG)
 
 if [ $CUDA -eq 1 ]; then
   # CONFIG="dummy.json"
@@ -208,8 +214,15 @@ echo "Number of epochs: $EPOCHS"
 echo "Batch Size: $BATCH_SIZE"
 echo "Optimizer: $OPTIMIZER"
 echo "Learning Rate: $LEARNING_RATE"
-echo "Learning Rate Scheduler: $LEARNING_RATE_SCHEDULER"
 echo "Using Cuda: $CUDA_VISIBLE_DEVICES"
+echo "Callbacks:"
+echo "  Tensorboard: $TENSORBOARD"
+echo "  Early Stopping: $EARLY_STOPPING"
+echo "  Model Checkpoint: $MODEL_CHECKPOINT"
+echo "  Learning Rate Scheduler: $LR_SCHEDULER"
+echo "  Scheduler: $LEARNING_RATE_SCHEDULER"
+echo "  CSV Logger: $CSV_LOGGER"
+echo "  Reduce LR on plateau: $REDUCE_LR_ON_PLATEAU"
 echo ""
 echo "###################################################"
 

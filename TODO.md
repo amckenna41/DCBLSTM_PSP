@@ -132,3 +132,5 @@ To do list
 - [X] Change setup to setUpClass(self) + @classmethod
 - [X] Add API enable commands to psp_gcp gcloud services enable appengine.googleapis.com
 - [X] https://www.tensorflow.org/tutorials/keras/save_and_load#savedmodel_format
+- [ ] Add emojis to readme
+- [ ] Add banner image to readme

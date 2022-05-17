@@ -38,10 +38,8 @@
         "data_format": "channels_last",
         "dilation_rate": 1,
         "use_bias": 1,
-        "groups" :1,
         "padding": "same",
         "bias_initializer": "zeros",
-        "kernel_regularizer": null,
         "bias_regularizer": null,
         "activity_regularizer" : null,
         "kernel_constraint": null,
@@ -177,15 +175,52 @@
       },
 
       "callbacks": {
-        "tensorboard": 1,
-        "earlyStopping": 0,
-        "modelCheckpoint": 0,
-        "lr_scheduler": 1,
-        "csv_logger": 1,
-        "reduceLROnPlateau": 0
-      },
-
-      "lr_scheduler": "Step Decay"
+        "tensorboard": {
+          "tensorboard": 1,
+          "histogram_freq": 0,
+          "write_graph": 1,
+          "write_images": 0,
+          "write_steps_per_second": 0,
+          "update_freq": "epoch"
+        },
+        "earlyStopping": {
+          "earlyStopping": 1,
+          "monitor" : "val_loss",
+          "min_delta": 0,
+          "patience": 1,
+          "verbose": 1,
+          "mode": "auto",
+          "baseline": null
+        },
+        "modelCheckpoint": {
+          "filename": "checkpoints",
+          "modelCheckpoint": 1,
+          "monitor": "val_loss",
+          "verbose": 1,
+          "save_best_only": 0,
+          "save_weights_only": 0,
+          "mode": "auto"
+        },
+        "lrScheduler": {
+          "lrScheduler": 1,
+          "scheduler": "Step Decay"
+        },
+        "csv_logger": {
+          "csv_logger": 1,
+          "append": 0
+        },
+        "reduceLROnPlateau": {
+          "reduceLROnPlateau": 0,
+          "monitor": "val_loss",
+          "factor": 0.1,
+          "patience": 5,
+          "verbose": 1,
+          "mode": "auto",
+          "min_delta": 0.0001,
+          "cooldown": 0,
+          "min_lr": 0
+        }
+      }
 
     }
   ]

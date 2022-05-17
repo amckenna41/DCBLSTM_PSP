@@ -53,9 +53,9 @@ def build_model(params):
     conv_features = Concatenate(axis=-1)([conv1_dropout, conv2_dropout, conv3_dropout])
 
     ######### Recurrent Bidirectional Long-Short-Term-Memory Layers ########
-    gru_f1 = Bidirectional(GRU(**{**params["gru"], **params["gru1"]}),name="BGRU_layer1")(conv_features)
+    gru_f1 = Bidirectional(GRU(**{**params["gru"], **params["gru1"]}), name="BGRU_layer1")(conv_features)
 
-    gru_f2 = Bidirectional(GRU(**{**params["gru"], **params["gru2"]}),name="BGRU_layer2")(gru_f1)
+    gru_f2 = Bidirectional(GRU(**{**params["gru"], **params["gru2"]}), name="BGRU_layer2")(gru_f1)
 
     #concatenate GRU with convolutional layers
     concat_features = Concatenate(axis=-1)([gru_f1, gru_f2, conv_features])
@@ -94,7 +94,7 @@ def build_model(params):
         optimizer = Adam(**params["optimizer"])
 
     #compile model using adam optimizer and the cateogorical crossentropy loss function
-    model.compile(optimizer = optimizer, loss={'main_output': 'categorical_crossentropy'}, \
+    model.compile(optimizer=optimizer, loss={'main_output': 'categorical_crossentropy'}, \
         metrics=['accuracy', MeanSquaredError(), RootMeanSquaredError(), FalseNegatives(),
             FalsePositives(), TrueNegatives(), TruePositives(), MeanAbsoluteError(), Recall(), Precision()])
 

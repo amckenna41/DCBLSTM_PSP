@@ -5,27 +5,15 @@
 #import required modules and dependancies
 import tensorflow as tf
 import argparse
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Bidirectional, LSTM, Input, Conv1D, \
-    Embedding, Dense, Dropout, Activation,  Concatenate, Reshape,MaxPooling1D, Convolution1D,BatchNormalization
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, \
     ReduceLROnPlateau, LearningRateScheduler, CSVLogger
-from tensorflow.keras.metrics import AUC, MeanSquaredError, FalseNegatives, FalsePositives, \
-    MeanAbsoluteError, TruePositives, TrueNegatives, Precision, Recall
-from tensorflow.keras import activations
 from tensorflow.core.protobuf import rewriter_config_pb2
 from tensorflow.compat.v1.keras.backend import set_session
 import os
-from os.path import isfile, join
-from os import listdir
-import sys
 import time
 import importlib
 import pkgutil
 import json
-from google.cloud import storage
 from json.decoder import JSONDecodeError
 from psp.dataset import *
 from psp.plot_model import *
@@ -34,7 +22,6 @@ from psp._globals import *
 from psp.evaluate import *
 from psp.models import *
 from psp.models.auxiliary_models import *
-
 import warnings
 warnings.filterwarnings("ignore", message=r"Passing", category=FutureWarning)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'   #reduce TF log output to only include Errors
@@ -91,8 +78,8 @@ def main(args):
     test_dataset = str(params["test_dataset"])
     model_ = str(params["model"])
     tf_version = tf.__version__
-    lr_scheduler = str(model_params["lr_scheduler"])
     callbacks = (model_params["callbacks"])
+    lr_scheduler = str(callbacks["lrScheduler"]["scheduler"]) 
     save_h5 = params["save_h5"]
 
     #if using TPU, initalise TensorFlow TPU Strategy
@@ -158,23 +145,27 @@ def main(args):
 
     all_callbacks = []
 
-    #initialise Tensorflow callbacks, append each callback if used
-    if (callbacks["tensorboard"]):
-        tensorboard = tf.keras.callbacks.TensorBoard(log_dir=(os.path.join(model_output_folder,
-            logs_path)), histogram_freq=0, write_graph=True, write_images=True)
+    #initialise Tensorflow callbacks
+    #append each callback if used
+    if (callbacks["tensorboard"]["tensorboard"]):
+        callbacks["tensorboard"].pop('tensorboard')
+        tensorboard = TensorBoard(log_dir=(os.path.join(model_output_folder,logs_path)), **callbacks["tensorboard"])
         all_callbacks.append(tensorboard)
-    if (callbacks["earlyStopping"]):
-        earlyStopping = EarlyStopping(monitor='loss', patience=5, verbose=1, mode='min')
+    if (callbacks["earlyStopping"]["earlyStopping"]):
+        callbacks["earlyStopping"].pop('earlyStopping')
+        earlyStopping = EarlyStopping(**callbacks["earlyStopping"])
         all_callbacks.append(earlyStopping)
-    if (callbacks["modelCheckpoint"]):
-        checkpoint = ModelCheckpoint(filepath=os.path.join(model_output_folder, 'checkpoints','model_' + current_datetime + '.h5'), \
-            verbose=1,save_best_only=True, monitor='loss', mode='min')
+    if (callbacks["modelCheckpoint"]["modelCheckpoint"]):
+        callbacks["modelCheckpoint"].pop('modelCheckpoint')
+        checkpoint = ModelCheckpoint(filepath=os.path.join(model_output_folder, 'checkpoints','model_' + current_datetime + '.h5'), **callbacks["modelCheckpoint"])
         all_callbacks.append(checkpoint)
-    if (callbacks["csv_logger"]):
-        csv_logger = CSVLogger(os.path.join(model_output_folder, 'training.log'))
+    if (callbacks["csv_logger"]["csv_logger"]):
+        callbacks["csv_logger"].pop('csv_logger')
+        csv_logger = CSVLogger(filename=os.path.join(model_output_folder, 'training.log'), **callbacks["csv_logger"])
         all_callbacks.append(csv_logger)
-    if (callbacks["reduceLROnPlateau"]):
-        reduceLROnPlateau = ReduceLROnPlateau(monitor="loss", factor=0.1, patience=10, verbose=1, mode="min")
+    if (callbacks["reduceLROnPlateau"]["reduceLROnPlateau"]):
+        callbacks["reduceLROnPlateau"].pop('reduceLROnPlateau')
+        reduceLROnPlateau = ReduceLROnPlateau(**callbacks["reduceLROnPlateau"])
         all_callbacks.append(reduceLROnPlateau)
 
     #get LR Scheduler callback to use from parameter in config file
@@ -203,13 +194,13 @@ def main(args):
             history = model.fit({'main_input': cullpdb.train_hot, 'aux_input': cullpdb.trainpssm},
                 {'main_output': cullpdb.trainlabel},validation_data=({'main_input': cullpdb.val_hot, 'aux_input': cullpdb.valpssm},
                 {'main_output': cullpdb.vallabel}), epochs=epochs, batch_size=batch_size, verbose=2,
-                callbacks=all_callbacks,shuffle=True)
+                callbacks=all_callbacks, shuffle=True)
     else:   #training on CPU (default) or TPU
         print('Fitting model...')
         history = model.fit({'main_input': cullpdb.train_hot, 'aux_input': cullpdb.trainpssm},
             {'main_output': cullpdb.trainlabel},validation_data=({'main_input': cullpdb.val_hot, 'aux_input': cullpdb.valpssm},
             {'main_output': cullpdb.vallabel}), epochs=epochs, batch_size=batch_size, verbose=2,
-            callbacks=all_callbacks,shuffle=True)
+            callbacks=all_callbacks, shuffle=True)
 
     #stop counter, calculate elapsed time
     elapsed = (time.time() - start)

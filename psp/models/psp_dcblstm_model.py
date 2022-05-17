@@ -27,25 +27,25 @@ def build_model(params):
 
     #Embedding Layer used as input to the neural network
     embed = Embedding(output_dim=params["input"]["num_aminoacids"], input_dim=params["input"]["num_aminoacids"], \
-        input_length=params["input"]["input_shape"],name="embedding")(main_input)
+        input_length=params["input"]["input_shape"], name="embedding")(main_input)
 
     #secondary input is the protein profile features
-    auxiliary_input = Input(shape=(params["input"]["input_shape"],params["input"]["num_aminoacids"]), name='aux_input')
+    auxiliary_input = Input(shape=(params["input"]["input_shape"], params["input"]["num_aminoacids"]), name='aux_input')
 
     #concatenate 2 input layers
     concat = Concatenate(axis=-1)([embed, auxiliary_input])
 
     ####### 3x1D-Convolutional Layers with BatchNormalization and Dropout #######
     conv_layer1 = Conv1D(**{**params["conv"], **params["conv1"]})(concat)
-    batch_norm = BatchNormalization(**params["batch_norm"],name="batchNorm_1")(conv_layer1)
+    batch_norm = BatchNormalization(**params["batch_norm"], name="batchNorm_1")(conv_layer1)
     conv1_dropout = Dropout(**params["dropout1"])(batch_norm)
 
     conv_layer2 = Conv1D(**{**params["conv"], **params["conv2"]})(concat)
-    batch_norm = BatchNormalization(**params["batch_norm"],name="batchNorm_2")(conv_layer2)
+    batch_norm = BatchNormalization(**params["batch_norm"], name="batchNorm_2")(conv_layer2)
     conv2_dropout = Dropout(**params["dropout2"])(batch_norm)
 
     conv_layer3 = Conv1D(**{**params["conv"], **params["conv3"]})(concat)
-    batch_norm = BatchNormalization(**params["batch_norm"],name="batchNorm_3")(conv_layer3)
+    batch_norm = BatchNormalization(**params["batch_norm"], name="batchNorm_3")(conv_layer3)
     conv3_dropout = Dropout(**params["dropout3"])(batch_norm)
 
     #concatenate convolutional layers
@@ -53,9 +53,9 @@ def build_model(params):
 
     #########   Recurrent Bi-Directional Long-Short-Term-Memory Layers #########
 
-    lstm_f1 = Bidirectional(LSTM(**{**params["lstm"], **params["lstm1"]}),name="blstm1")(concat_conv)
+    lstm_f1 = Bidirectional(LSTM(**{**params["lstm"], **params["lstm1"]}), name="blstm1")(concat_conv)
 
-    lstm_f2 = Bidirectional(LSTM(**{**params["lstm"], **params["lstm2"]}),name="blstm2")(lstm_f1)
+    lstm_f2 = Bidirectional(LSTM(**{**params["lstm"], **params["lstm2"]}), name="blstm2")(lstm_f1)
 
     ############################################################################
 
@@ -65,14 +65,14 @@ def build_model(params):
 
     ####################  Dense Fully-Connected DNN layers  ####################
 
-    after_lstm_dense1 = TimeDistributed(Dense(**params["dense1"]),name="dense1")(concat_features)
+    after_lstm_dense1 = TimeDistributed(Dense(**params["dense1"]), name="dense1")(concat_features)
     after_lstm_dense1_dropout = Dropout(**params["dropout4"])(after_lstm_dense1)
 
-    after_lstm_dense2 = TimeDistributed(Dense(**params["dense2"]),name="dense2")(after_lstm_dense1_dropout)
+    after_lstm_dense2 = TimeDistributed(Dense(**params["dense2"]), name="dense2")(after_lstm_dense1_dropout)
     after_lstm_dense2_dropout = Dropout(**params["dropout4"])(after_lstm_dense2)
 
     #Final Dense layer with 8 nodes for the 8 output classifications
-    main_output = TimeDistributed(Dense(**params["dense3"]),name="main_output")(after_lstm_dense2_dropout)
+    main_output = TimeDistributed(Dense(**params["dense3"]), name="main_output")(after_lstm_dense2_dropout)
 
     #create model from inputs and outputs
     model = Model(inputs=[main_input, auxiliary_input], outputs=[main_output])

@@ -4,9 +4,6 @@
 
 #importing required modules and dependancies
 import os
-import sys
-from os import listdir
-from os.path import join, isfile
 import argparse
 import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau, CSVLogger, LearningRateScheduler
@@ -42,8 +39,8 @@ set_session(session)
 #get model filenames from models directory
 def remove_py(x): return os.path.splitext(x)[0]
 # remove_py = lambda x: os.path.splitext(x)[0]
-all_models = list(map(remove_py,([f for f in listdir(join('psp','models')) if isfile(join('psp','models', f)) and f[:3] == 'psp'] +
-                ([f for f in listdir(join('psp','models','auxiliary_models')) if isfile(join('psp','models','auxiliary_models', f)) \
+all_models = list(map(remove_py,([f for f in os.listdir(os.path.join('psp','models')) if os.path.isfile(os.path.join('psp','models', f)) and f[:3] == 'psp'] +
+                ([f for f in os.listdir(os.path.join('psp','models','auxiliary_models')) if os.path.isfile(os.path.join('psp','models','auxiliary_models', f)) \
                 and f[:3] == 'psp']))))
 all_models.append('dummy_model')
 
@@ -81,8 +78,8 @@ def main(args):
     test_dataset = str(params["parameters"][0]["test_dataset"])
     model_ = str(params["parameters"][0]["model"])
     tf_version = tf.__version__
-    lr_scheduler = str(params["model_parameters"][0]["lr_scheduler"])
     callbacks = (params["model_parameters"][0]["callbacks"])
+    lr_scheduler = str(callbacks["lrScheduler"]["scheduler"]) #str(params["model_parameters"][0]["lr_scheduler"])
     save_h5 = params["parameters"][0]["save_h5"]
 
     #set model output dict to values in config
@@ -99,15 +96,24 @@ def main(args):
 
     print("\n###################################################################")
     print("Running model locally with parameters...\n")
+    print("Configuration File: {}".format(config_file))
     print("Training Data: {} (filtered: {})".format(training_data, filtered))
     print("Test Dataset: {}".format(test_dataset))
     print("Model: {}".format(model_))
     print("Batch Size: {}".format(batch_size))
     print("Epochs: {}".format(epochs))
     print("Learning Rate: {}".format(learning_rate))
-    print("Learning Rate Scheduler: {}".format(lr_scheduler))
     print("Logs Path: {}".format(logs_path))
     print("Cuda: {}".format(cuda))
+    print('Callbacks:')
+    print('   TensorBoard: {}'.format(callbacks["tensorboard"]["tensorboard"]))
+    print('   Early Stopping: {}'.format(callbacks["earlyStopping"]["earlyStopping"]))
+    print('   Model Checkpoint: {}'.format(callbacks["modelCheckpoint"]["modelCheckpoint"]))
+    print('   Learning Rate Scheduler: {}'.format(callbacks["lrScheduler"]["lrScheduler"]))
+    if (callbacks["lrScheduler"]["lrScheduler"]):
+        print('     Scheduler: {}'.format(lr_scheduler))
+    print('   CSV Logger: {}'.format(callbacks["tensorboard"]["tensorboard"]))
+    print('   Reduce LR on Plateau: {}'.format(callbacks["tensorboard"]["tensorboard"]))
     print("###################################################################\n")
 
     #verify model specified in config file exists in available models
@@ -148,22 +154,25 @@ def main(args):
 
     #initialise Tensorflow callbacks
     #append each callback if used
-    if (int(callbacks["tensorboard"])):
-        tensorboard = TensorBoard(log_dir=(os.path.join(model_folder_path,
-            logs_path)), histogram_freq=0, write_graph=True, write_images=True)
+    if (callbacks["tensorboard"]["tensorboard"]):
+        callbacks["tensorboard"].pop('tensorboard')
+        tensorboard = TensorBoard(log_dir=(os.path.join(model_folder_path,logs_path)), **callbacks["tensorboard"])
         all_callbacks.append(tensorboard)
-    if (callbacks["earlyStopping"]):
-        earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='min')
+    if (callbacks["earlyStopping"]["earlyStopping"]):
+        callbacks["earlyStopping"].pop('earlyStopping')
+        earlyStopping = EarlyStopping(**callbacks["earlyStopping"])
         all_callbacks.append(earlyStopping)
-    if (callbacks["modelCheckpoint"]):
-        checkpoint = ModelCheckpoint(filepath=os.path.join(model_folder_path, 'checkpoints','model_' + current_datetime + '.h5'), \
-            verbose=1,save_best_only=True, monitor='val_accuracy', mode='max')
+    if (callbacks["modelCheckpoint"]["modelCheckpoint"]):
+        callbacks["modelCheckpoint"].pop('modelCheckpoint')
+        checkpoint = ModelCheckpoint(filepath=os.path.join(model_folder_path, 'checkpoints','model_' + current_datetime + '.h5'), **callbacks["modelCheckpoint"])
         all_callbacks.append(checkpoint)
-    if (callbacks["csv_logger"]):
-        csv_logger = CSVLogger(os.path.join(model_folder_path, 'training.log'))
+    if (callbacks["csv_logger"]["csv_logger"]):
+        callbacks["csv_logger"].pop('csv_logger')
+        csv_logger = CSVLogger(filename=os.path.join(model_folder_path, 'training.log'), **callbacks["csv_logger"])
         all_callbacks.append(csv_logger)
-    if (callbacks["reduceLROnPlateau"]):
-        reduceLROnPlateau = ReduceLROnPlateau(monitor="loss", factor=0.1, patience=10, verbose=1, mode="min")
+    if (callbacks["reduceLROnPlateau"]["reduceLROnPlateau"]):
+        callbacks["reduceLROnPlateau"].pop('reduceLROnPlateau')
+        reduceLROnPlateau = ReduceLROnPlateau(**callbacks["reduceLROnPlateau"])
         all_callbacks.append(reduceLROnPlateau)
 
     #get LR Scheduler callback to use from parameter in config file
@@ -246,8 +255,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Protein Secondary Structure Prediction.')
 
-    parser.add_argument('-config', '--config', type=str, required=True,
-                        help='File path to config json file.')
+    parser.add_argument('-config', '--config', type=str, required=True, help='File path to config json file.')
 
     #parse input args
     args = parser.parse_args()
