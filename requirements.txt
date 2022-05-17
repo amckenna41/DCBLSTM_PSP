@@ -6,7 +6,7 @@ matplotlib==3.3.1
 tensorboard==2.5.0
 #tensorflow==1.15
 #tensorflow-gpu==1.15
-tensorflow==2.5.1
+tensorflow==2.5.3
 tensorflow-gpu==2.5.1
 seaborn==0.10.1
 requests==2.24.0

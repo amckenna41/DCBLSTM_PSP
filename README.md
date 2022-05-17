@@ -3,7 +3,7 @@
 [![PythonV](https://img.shields.io/pypi/pyversions/pySAR?logo=2)](https://pypi.org/project/pySAR/)
 [![Platforms](https://img.shields.io/badge/platforms-linux%2C%20macOS%2C%20Windows-green)](https://pypi.org/project/pySAR/)
 [![Build](https://img.shields.io/github/workflow/status/amckenna41/DCBLSTM_PSP/Protein%20Structure%20Prediction%20using%20Deep%20Convolutional%20LSTM's)](https://github.com/amckenna41/DCBLSTM_PSP/actions)
-[![Build Status](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP.svg?branch=master)](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP)
+<!-- [![Build Status](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP.svg?branch=master)](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP) -->
 [![CircleCI](https://circleci.com/gh/amckenna41/DCBLSTM_PSP.svg?style=svg&circle-token=d860bb64668be19d44f106841b80eb47a8b7e7e8)](https://app.circleci.com/pipelines/github/amckenna41/DCBLSTM_PSP)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
 [![Issues](https://img.shields.io/github/issues/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP/issues)
@@ -11,7 +11,7 @@
 [![Commits](https://img.shields.io/github/commit-activity/w/amckenna41/DCBLSTM_PSP)](https://github.com/DCBLSTM_PSP)
 
 <p align="center">
-<img src="images/protein_banner.jpeg" alt="output" width="600"/>
+<img src="images/protein_banner.jpeg" alt="banner" width="100%" height="325"/>
 </p>
 
 Table of Contents
@@ -128,7 +128,7 @@ Requirements
 * [numpy][numpy] >= 1.16.0
 * [pandas][pandas] >= 1.1.0
 * [h5py][h5py] >= 2.10.0
-* [tensorflow][tensorflow] >= 1.15
+* [tensorflow][tensorflow] >= 2.2
 * [tensorflow-gpu][tensorflow-gpu] >= 1.15
 * [tensorboard][tensorboard] >= 2.1.0
 * [keras][keras] >= 2.4.0
