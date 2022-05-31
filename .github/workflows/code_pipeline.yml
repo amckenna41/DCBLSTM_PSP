@@ -120,10 +120,11 @@ jobs:
        run: |
         echo "Running coverage report..."
         pytest --cov-report term --cov=test_dcblstm tests/
-
-     - uses: actions/checkout@master
-     - uses: codecov/codecov-action@v2
+    
+     #running code cov 
      - name: Code Cov
+       uses: actions/checkout@master
+       uses: codecov/codecov-action@v2
        with:
          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
          files: ./coverage1.xml,./coverage2.xml 
@@ -131,7 +132,7 @@ jobs:
          name: codecov-umbrella 
          fail_ci_if_error: true 
          verbose: true 
-      run: |
+       run: |
         curl -Os https://uploader.codecov.io/latest/linux/codecov
         chmod +x codecov
         ./codecov -t ${{ secrets.CODECOV_TOKEN }}
