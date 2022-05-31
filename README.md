@@ -5,6 +5,7 @@
 [![Build](https://img.shields.io/github/workflow/status/amckenna41/DCBLSTM_PSP/Protein%20Structure%20Prediction%20using%20Deep%20Convolutional%20LSTM's)](https://github.com/amckenna41/DCBLSTM_PSP/actions)
 <!-- [![Build Status](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP.svg?branch=master)](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP) -->
 [![CircleCI](https://circleci.com/gh/amckenna41/DCBLSTM_PSP.svg?style=svg&circle-token=d860bb64668be19d44f106841b80eb47a8b7e7e8)](https://app.circleci.com/pipelines/github/amckenna41/DCBLSTM_PSP)
+<!-- [![Codecov](https://img.shields.io/codecov/c/github/"")](https://codecov.io/gh/"" "Code coverage (via Codecov)") -->
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
 [![Issues](https://img.shields.io/github/issues/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP/issues)
 [![Size](https://img.shields.io/github/repo-size/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP)
@@ -253,7 +254,7 @@ CI/CD is implemented within the project with three main pipelines implemented th
 
 Issues
 ------
-Any issues, errors or bugs can be raised via the [Issues](https://github.com/amckenna41/DCBLSTM_PSP/issues) tab in the repository. Many of the existing issues in the tab are self-raised to keep a record of different bugs and problems that I came across during development so as to maintain a log of common problems that I can reference back to in future projects.
+Any issues, errors or bugs can be raised via the [Issues](https://github.com/amckenna41/DCBLSTM_PSP/issues) tab in the repository.
 
 Contact
 -------
