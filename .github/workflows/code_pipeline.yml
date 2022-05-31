@@ -23,6 +23,12 @@ jobs:
        uses: actions/setup-python@v2
        with:
          python-version: ${{ matrix.python-version }}
+         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+         files: ./coverage1.xml,./coverage2.xml 
+         flags: unittests 
+         name: codecov-umbrella 
+         fail_ci_if_error: true 
+         verbose: true 
 
     #install all required dependancies for project, including workflow specific requirements
      - name: Install Python dependencies
@@ -123,15 +129,8 @@ jobs:
     
      #running code cov 
      - name: Code Cov
-       uses: actions/checkout@master
+     #uses: actions/checkout@master
        uses: codecov/codecov-action@v2
-       with:
-         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-         files: ./coverage1.xml,./coverage2.xml 
-         flags: unittests 
-         name: codecov-umbrella 
-         fail_ci_if_error: true 
-         verbose: true 
        run: |
         curl -Os https://uploader.codecov.io/latest/linux/codecov
         chmod +x codecov
