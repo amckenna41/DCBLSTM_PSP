@@ -130,7 +130,7 @@ jobs:
      #running code cov 
      - name: Code Cov
      #uses: actions/checkout@master
-       uses: codecov/codecov-action@v2
+      #  uses: codecov/codecov-action@v2
        run: |
         curl -Os https://uploader.codecov.io/latest/linux/codecov
         chmod +x codecov
