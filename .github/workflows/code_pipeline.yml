@@ -127,11 +127,22 @@ jobs:
     #     echo "Running coverage report..."
     #     pytest --cov-report term --cov=test_dcblstm tests/
     
-     #running code cov 
-     - name: Code Cov
-     #uses: actions/checkout@master
-      #  uses: codecov/codecov-action@v2
+     - name: Generate Report
        run: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov -t ${{ secrets.CODECOV_TOKEN }}
+        pip install coverage
+        coverage run -m unittest
+
+     - name: Upload Coverage to Codecov
+       uses: codecov/codecov-action@v2
+
+     #running code cov 
+    #  - name: Code Cov
+    #  #uses: actions/checkout@master
+    #   #  uses: codecov/codecov-action@v2
+    #    run: |
+    #     curl -Os https://uploader.codecov.io/latest/linux/codecov
+    #     chmod +x codecov
+    #     ./codecov -t ${{ secrets.CODECOV_TOKEN }}
+
+
+
