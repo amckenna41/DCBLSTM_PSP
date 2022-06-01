@@ -129,7 +129,7 @@ Requirements
 * [numpy][numpy] >= 1.16.0
 * [pandas][pandas] >= 1.1.0
 * [h5py][h5py] >= 2.10.0
-* [tensorflow][tensorflow] >= 2.2
+* [tensorflow][tensorflow] >= 2.5
 * [tensorflow-gpu][tensorflow-gpu] >= 1.15
 * [tensorboard][tensorboard] >= 2.1.0
 * [keras][keras] >= 2.4.0

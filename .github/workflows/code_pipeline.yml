@@ -122,10 +122,10 @@ jobs:
         echo "Testing all tests using unittest framework..."
         python3 -m unittest discover -b
     #run coverage report
-     - name: Coverage Report
-       run: |
-        echo "Running coverage report..."
-        pytest --cov-report term --cov=test_dcblstm tests/
+    #  - name: Coverage Report
+    #    run: |
+    #     echo "Running coverage report..."
+    #     pytest --cov-report term --cov=test_dcblstm tests/
     
      #running code cov 
      - name: Code Cov
