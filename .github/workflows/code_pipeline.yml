@@ -110,6 +110,7 @@ jobs:
        run: |
         echo "Running dummy psp model"
         python3 main.py --config="dummy"
+        
     #run dummy model to test GCP pipeline
      - name: Run Dummy Model on GCP
        run: |
@@ -121,28 +122,13 @@ jobs:
        run: |
         echo "Testing all tests using unittest framework..."
         python3 -m unittest discover -b
-    #run coverage report
-    #  - name: Coverage Report
-    #    run: |
-    #     echo "Running coverage report..."
-    #     pytest --cov-report term --cov=test_dcblstm tests/
-    
+
+    #generate coverage report
      - name: Generate Report
-       run: |
-        pip install coverage
-        coverage run -m unittest
+       run: pytest --cov .
 
-     - name: Upload Coverage to Codecov
-       uses: codecov/codecov-action@v2
-
-     #running code cov 
-    #  - name: Code Cov
-    #  #uses: actions/checkout@master
-    #   #  uses: codecov/codecov-action@v2
-    #    run: |
-    #     curl -Os https://uploader.codecov.io/latest/linux/codecov
-    #     chmod +x codecov
-    #     ./codecov -t ${{ secrets.CODECOV_TOKEN }}
-
-
-
+    #upload to Code Coverage
+     - name: Upload Coverage Report to Codecov
+       uses: codecov/codecov-action@v3
+       with:
+         flags: DCBLSTM_workflow
