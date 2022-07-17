@@ -5,7 +5,7 @@
 [![Build](https://img.shields.io/github/workflow/status/amckenna41/DCBLSTM_PSP/Protein%20Structure%20Prediction%20using%20Deep%20Convolutional%20LSTM's)](https://github.com/amckenna41/DCBLSTM_PSP/actions)
 <!-- [![Build Status](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP.svg?branch=master)](https://app.travis-ci.com/amckenna41/DCBLSTM_PSP) -->
 [![CircleCI](https://circleci.com/gh/amckenna41/DCBLSTM_PSP.svg?style=svg&circle-token=d860bb64668be19d44f106841b80eb47a8b7e7e8)](https://app.circleci.com/pipelines/github/amckenna41/DCBLSTM_PSP)
-<!-- [![Codecov](https://img.shields.io/codecov/c/github/"")](https://codecov.io/gh/"" "Code coverage (via Codecov)") -->
+[![codecov](https://codecov.io/gh/amckenna41/DCBLSTM_PSP/branch/master/graph/badge.svg?token=4PQDVGKGYN)](https://codecov.io/gh/amckenna41/DCBLSTM_PSP)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
 [![Issues](https://img.shields.io/github/issues/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP/issues)
 [![Size](https://img.shields.io/github/repo-size/amckenna41/DCBLSTM_PSP)](https://github.com/amckenna41/DCBLSTM_PSP)
@@ -114,9 +114,9 @@ Conclusions and Results
 The DCBLSTM model was trained for 100 epochs, achieving a peak model accuracy of ~92% during training. The model reached this ceiling of accuracy after around 60 epochs where no further improvement was noted, thus the EarlyStopping TensorFlow callback halted training after 60 epochs. The mean squared error captured during training remained constant after around 20 epochs at ~0.10. The visualisations of the model accuracy and error can be seen below.
 
 <p align="center">
-<img src="results/plots/accuracy_fig2021-11-26_15:09.png" alt="accuracy" width="400"/>
+<img src="results/plots/accuracy_fig2022-05-15_20:15.png" alt="accuracy" width="400"/>
 
-<img src="results/plots/mse_fig2021-11-26_15:09.png" alt="error" width="400"/>
+<img src="results/plots/mse_fig2022-05-15_20:15.png" alt="error" width="400"/>
 </p>
 
 **The paper is available at...**

@@ -6,3 +6,5 @@ __credits__ = ['AJ McKenna']
 __version__ = "1.0.2"
 __license__ = 'MIT'
 __name__ = 'DCBLSTM_PSP'
+__status__ = "Production"
+__maintainer__ = "AJ McKenna"
